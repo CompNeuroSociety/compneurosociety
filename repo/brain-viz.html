@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+  canvas{display:block}
+  #err{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font:11px "IBM Plex Mono",monospace;color:#6db9c9;text-align:center}
+</style>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div id="err">3D brain unavailable</div>
+<script type="module">
+// Adapted from the site's script_subsurface.js — same model, shader, camera and
+// 32-electrode light layout. EEG intensities are synthesized (same ±10 range as
+// the original's normalized eeg_data_10ex.json) so the page stays lightweight.
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { SubsurfaceScatteringShader } from 'three/addons/shaders/SubsurfaceScatteringShader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+
+const canvas = document.getElementById('canvas');
+let camera, scene, renderer, model, model2;
+const lights = {};
+const lightNames = ['fp1','fp2','fz','f3','f4','f7','f8','fc1','fc2','fc5','fc6','cz','c3','c4','t3','t4','a1','a2','cp1','cp2','cp5','cp6','pz','p3','p4','t5','t6','po3','po4','oz','o1','o2'];
+const pos = {fp1:[-33,-16,-102],fp2:[33,-16,-102],f7:[-60,-16,-60],f8:[60,-16,-60],f3:[-40,30,-60],f4:[40,30,-60],fz:[0,50,-60],pz:[0,60,70],a1:[-90,-16,0],a2:[90,-16,0],t3:[-66,0,0],t4:[66,0,0],c3:[-60,50,0],cz:[0,80,0],c4:[60,40,0],t5:[-80,-10,30],p3:[-60,50,70],p4:[60,50,70],t6:[80,-10,30],o1:[-40,-10,90],o2:[40,-10,90],oz:[0,-5,100],fc1:[-25,50,-30],fc2:[25,50,-30],fc5:[-60,20,-20],fc6:[60,20,-20],cp1:[-25,60,40],cp2:[25,60,40],cp5:[-50,40,50],cp6:[50,40,50],po3:[-30,15,80],po4:[30,15,80]};
+
+let tick = 0;
+let last = 0;
+try { init(); animate(0); } catch (e) { fail(); }
+
+function fail(){ document.getElementById('err').style.display = 'flex'; }
+
+function size(){ return Math.min(window.innerWidth, window.innerHeight); }
+
+function init(){
+  camera = new THREE.PerspectiveCamera(45, 1, 1, 5000);
+  camera.position.set(0, 300, -500);
+  camera.lookAt(0, 0, 0);
+  scene = new THREE.Scene();
+  scene.background = null;
+  scene.add(new THREE.AmbientLight(0xc1c1c1, 2));
+  lightNames.forEach((name, i) => {
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.001, 8, 8), new THREE.MeshBasicMaterial({ color: 0xc1c100 }));
+    const pl = new THREE.PointLight(0xc1c100, 0.5, 50, 0);
+    mesh.add(pl);
+    mesh.position.set(...pos[name]);
+    mesh.userData = { cur: 0.5, freq: 0.05 + (i % 7) * 0.013, phase: i * 1.7 };
+    scene.add(mesh);
+    lights[name] = mesh;
+  });
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setClearColor(0x000000, 0);
+  const s = size();
+  renderer.setSize(s, s);
+  canvas.style.margin = 'auto';
+  canvas.style.position = 'absolute';
+  canvas.style.inset = '0';
+  const controls = new OrbitControls(camera, document.body);
+  controls.minDistance = 500; controls.maxDistance = 3000;
+  controls.enablePan = false; controls.enableZoom = false;
+  window.addEventListener('resize', () => { const n = size(); renderer.setSize(n, n); });
+  initMaterial();
+}
+
+function initMaterial(){
+  const loader = new THREE.TextureLoader();
+  const imgTexture = loader.load('white.jpg');
+  imgTexture.colorSpace = THREE.SRGBColorSpace;
+  const shader = SubsurfaceScatteringShader;
+  const uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+  uniforms['map'].value = imgTexture;
+  uniforms['diffuse'].value = new THREE.Vector3(1.0, 0.2, 0.2);
+  uniforms['shininess'].value = 500;
+  uniforms['thicknessMap'].value = loader.load('white.jpg');
+  uniforms['thicknessColor'].value = new THREE.Vector3(0.5, 0.3, 0.0);
+  uniforms['thicknessDistortion'].value = 0.25;
+  uniforms['thicknessAmbient'].value = 0.0;
+  uniforms['thicknessAttenuation'].value = 0.1;
+  uniforms['thicknessPower'].value = 2.0;
+  uniforms['thicknessScale'].value = 25.0;
+  const material = new THREE.ShaderMaterial({ uniforms, vertexShader: shader.vertexShader, fragmentShader: shader.fragmentShader, lights: true });
+  material.extensions = { derivatives: true };
+  new OBJLoader().load('brain_model.obj', (object) => {
+    model = object.children[0];
+    model.position.set(0, 0, 0);
+    model.scale.setScalar(50);
+    model.material = material;
+    model2 = model.clone();
+    model2.scale.x *= -1;
+    scene.add(model); scene.add(model2);
+  }, undefined, fail);
+}
+
+// Synthetic EEG: smooth per-electrode oscillation in the original's ±10 range
+function updateLights(){
+  tick++;
+  for (const name of lightNames) {
+    const m = lights[name], u = m.userData;
+    const target = 10 * Math.sin(tick * u.freq + u.phase) * (0.55 + 0.45 * Math.sin(tick * 0.011 + u.phase * 2));
+    u.cur += (target - u.cur) / 30;
+    m.children[0].intensity = u.cur;
+  }
+}
+
+const frameDur = 1000 / 19; // same 19 fps budget as the original
+function animate(now){
+  requestAnimationFrame(animate);
+  if (!last || now - last >= frameDur) {
+    updateLights();
+    renderer.render(scene, camera);
+    last = now;
+  }
+}
+</script>
+</body>
+</html>
