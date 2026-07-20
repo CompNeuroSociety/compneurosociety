@@ -97,31 +97,43 @@ if ($('grid-team')) $('grid-team').innerHTML = D.TEAM.map(p => personCard(p, 'va
 // --- Projects page ---
 if ($('current-project')) {
   const P = D.CURRENT_PROJECT, A = D.APPLICATIONS;
-  const apply = A.open
-    ? `<a class="btn" href="${A.formUrl}" target="_blank">Apply to join this team →</a>
-       <span style="font-size:12px;color:var(--muted)">Meetings have started — sign up ASAP.</span>`
-    : `<span class="btn-ghost" style="color:var(--faint) !important">Applications closed</span>
-       <span class="mono" style="font-size:12px;color:var(--faint)">${esc(A.closedNote)}</span>`;
-  $('current-project').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
-      <span class="tag solid">${esc(P.term).toUpperCase()} · ACTIVE</span>
-      <span class="mono" style="font-size:12px;color:var(--faint)">${esc(P.meeting)}</span></div>
-    <h2 style="font-size:28px;font-weight:900;color:#fff;margin:16px 0 8px">${esc(P.name)}</h2>
-    <p style="font-size:14.5px;line-height:1.7;color:var(--muted);max-width:78ch;margin:0">${esc(P.summary)}</p>
-    <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px">
-      <div style="border:1px solid var(--line);border-radius:14px;padding:18px 20px">
-        <div class="mono" style="font-size:11px;color:var(--teal);margin-bottom:10px">// weekly cadence</div>
-        ${P.cadence.map(c => `<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0">
-          <span class="mono" style="color:var(--teal);font-size:11px;flex:none">⦿</span>
-          <span style="font-size:13px;line-height:1.55">${esc(c)}</span></div>`).join('')}
-      </div>
-      <div style="border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
-        <div><div class="mono" style="font-size:11px;color:var(--purple);margin-bottom:6px">// mentorship</div>
-          <div style="font-size:13px;line-height:1.6">${esc(P.mentors)}</div></div>
-        <div><div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:6px">// the paper</div>
-          <a class="mono" style="font-size:12px;word-break:break-all;line-height:1.6" href="${P.paperUrl}" target="_blank">eneuro.org → ENEURO.0423-18.2019 (pdf) ↗</a></div>
-      </div></div>
-    <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap">${apply}</div>`;
+  if (P) {
+    const apply = A.open
+      ? `<a class="btn" href="${A.formUrl}" target="_blank">Apply to join this team →</a>
+         <span style="font-size:12px;color:var(--muted)">Meetings have started — sign up ASAP.</span>`
+      : `<span class="btn-ghost" style="color:var(--faint) !important">Applications closed</span>
+         <span class="mono" style="font-size:12px;color:var(--faint)">${esc(A.closedNote)}</span>`;
+    $('current-project').innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <span class="tag solid">${esc(P.term).toUpperCase()} · ACTIVE</span>
+        <span class="mono" style="font-size:12px;color:var(--faint)">${esc(P.meeting)}</span></div>
+      <h2 style="font-size:28px;font-weight:900;color:#fff;margin:16px 0 8px">${esc(P.name)}</h2>
+      <p style="font-size:14.5px;line-height:1.7;color:var(--muted);max-width:78ch;margin:0">${esc(P.summary)}</p>
+      <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px">
+        <div style="border:1px solid var(--line);border-radius:14px;padding:18px 20px">
+          <div class="mono" style="font-size:11px;color:var(--teal);margin-bottom:10px">// weekly cadence</div>
+          ${P.cadence.map(c => `<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0">
+            <span class="mono" style="color:var(--teal);font-size:11px;flex:none">⦿</span>
+            <span style="font-size:13px;line-height:1.55">${esc(c)}</span></div>`).join('')}
+        </div>
+        <div style="border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+          <div><div class="mono" style="font-size:11px;color:var(--purple);margin-bottom:6px">// mentorship</div>
+            <div style="font-size:13px;line-height:1.6">${esc(P.mentors)}</div></div>
+          <div><div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:6px">// the paper</div>
+            <a class="mono" style="font-size:12px;word-break:break-all;line-height:1.6" href="${P.paperUrl}" target="_blank">eneuro.org → ENEURO.0423-18.2019 (pdf) ↗</a></div>
+        </div></div>
+      <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap">${apply}</div>`;
+  } else {
+    const apply = A.open
+      ? `<a class="btn" href="${A.formUrl}" target="_blank">Apply for the next project team →</a>`
+      : `<span class="btn-ghost" style="color:var(--faint) !important">Applications closed</span>
+         <span class="mono" style="font-size:12px;color:var(--faint)">${esc(A.closedNote)}</span>`;
+    $('current-project').innerHTML = `
+      <span class="tag dim">NO ACTIVE PROJECT</span>
+      <h2 style="font-size:28px;font-weight:900;color:#fff;margin:16px 0 8px">Next project team forming soon</h2>
+      <p style="font-size:14.5px;line-height:1.7;color:var(--muted);max-width:78ch;margin:0">We're between project cycles right now — check out past projects below, or apply to be first in line when the next team kicks off.</p>
+      <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap">${apply}</div>`;
+  }
 }
 if ($('past-projects')) {
   $('past-projects').innerHTML = D.PAST_PROJECTS.map(p => `

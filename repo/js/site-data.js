@@ -7,8 +7,9 @@
 //    themselves: next 2 upcoming + latest past on home, full timeline on
 //    events.html, countdowns included. Put photos in images/ first.
 //  • PEOPLE: edit LEADERSHIP / GRAD_COUNCIL / MENTORS / TEAM (people.html).
-//  • PROJECTS: CURRENT_PROJECT + PAST_PROJECTS (projects.html);
-//    APPLICATIONS.open flips the apply button on/off.
+//  • PROJECTS: CURRENT_PROJECT (set to `null` when there's no active team,
+//    the page shows a "forming soon" placeholder) + PAST_PROJECTS
+//    (projects.html); APPLICATIONS.open flips the apply button on/off.
 //  • LINKS: every form/social URL, used across pages.
 // ============================================================================
 
@@ -80,14 +81,14 @@ export const LEADERSHIP = [
     links: [{ label: "LinkedIn", url: "https://www.linkedin.com/in/sia-kakkar-a4b77427b/" }] },
 ];
 
-export const GRAD_COUNCIL = [
-  { name: "Jake Tear", role: "Neuroscience PhD · Riddle Lab", photo: "images/jaketear.jpg",
-    bio: "I'm interested in improving the utility of EEG measures for precision psychiatry. Fun fact: I enjoy surfing and was on the UCSB surf team prior to joining FSU!", links: [] },
-  { name: "Yicheng Zheng", role: "Neuroscience PhD · Wilber Lab", photo: "images/yicheng.jpeg",
-    bio: "I investigate the mechanisms underlying spatial navigation using electrophysiology in rodents, and explore potential treatments for spatial awareness deficits in Alzheimer's disease. Fun fact: my dog has its own Instagram page!", links: [] },
-  { name: "Greg Owanga", role: "Biomathematics PhD · Bertram Lab", photo: "images/greg_tennessee.jpg",
-    bio: "I study how neuron populations in the gustatory cortex form and reorganize functional networks, combining network theory, signal processing and visualization. Fun fact: I'm writing a book and I'm a lifelong Lewis Hamilton fan.", links: [] },
-];
+// export const GRAD_COUNCIL = [
+//   { name: "Jake Tear", role: "Neuroscience PhD · Riddle Lab", photo: "images/jaketear.jpg",
+//     bio: "I'm interested in improving the utility of EEG measures for precision psychiatry. Fun fact: I enjoy surfing and was on the UCSB surf team prior to joining FSU!", links: [] },
+//   { name: "Yicheng Zheng", role: "Neuroscience PhD · Wilber Lab", photo: "images/yicheng.jpeg",
+//     bio: "I investigate the mechanisms underlying spatial navigation using electrophysiology in rodents, and explore potential treatments for spatial awareness deficits in Alzheimer's disease. Fun fact: my dog has its own Instagram page!", links: [] },
+//   { name: "Greg Owanga", role: "Biomathematics PhD · Bertram Lab", photo: "images/greg_tennessee.jpg",
+//     bio: "I study how neuron populations in the gustatory cortex form and reorganize functional networks, combining network theory, signal processing and visualization. Fun fact: I'm writing a book and I'm a lifelong Lewis Hamilton fan.", links: [] },
+// ];
 
 export const MENTORS = [
   { name: "Dr. Carmen Varela", role: "Faculty Advisor", photo: "images/varela.jpg",
@@ -113,21 +114,11 @@ export const APPLICATIONS = {
   formUrl: "https://forms.office.com/r/Hh5dPKHHGW",
 };
 
-export const CURRENT_PROJECT = {
-  term: "Spring 2026",
-  name: "Pena Lab Replication → ReScience",
-  summary: "Replicating a previously published computational neuroscience paper (coded in NEURON with Python) in a significantly different way — for example with the Brian2 package, or Julia or Octave. Goal: a published ReScience replication.",
-  paperUrl: "https://www.eneuro.org/content/eneuro/6/2/ENEURO.0423-18.2019.full.pdf",
-  mentors: "Dr. Rodrigo Pena, Dr. Juan Lopez, and PhD student Ty Roachford — Stiles Nicholson Brain Institute",
-  meeting: "Mondays 6–7pm · PDB A204",
-  cadence: [
-    "1–2 collaboration sessions per month (virtual or in-person)",
-    "2–3 workshops per month led by the Project Lead or Open Science Coordinators",
-    "Monthly check-in with the Pena Lab (virtual)",
-  ],
-};
+export const CURRENT_PROJECT = null;
 
 export const PAST_PROJECTS = [
+  { name: "Pena Lab Replication → ReScience", image: "images/PenaWorkshopWebsiteFlyer.png",
+    summary: "Replicated a previously published computational neuroscience paper — originally coded in NEURON — using a different tool, focused on computational modeling and reproducibility, with mentorship from the Pena Lab toward a ReScience publication." },
   { name: "Brain-to-Text Competition Team", image: "images/projects/brain-to-text-1.jpg",
     summary: "Decoding neural signals to translate brain activity into text — signal processing, machine learning and neural decoding with LLMs, with weekly team meetings and a competition showcase." },
   { name: "Computational Retina Model Team", image: "images/projects/retina-model-1.jpg",
