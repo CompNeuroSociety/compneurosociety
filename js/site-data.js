@@ -33,9 +33,8 @@ export const LINKS = {
 // --- EVENTS (newest first). The two "example" entries are placeholders -
 // --- replace them with real events and delete the `example: true` line.
 export const EVENTS = [
-  { title: "Fall Kickoff GBM", date: "2026-09-03T18:00", location: "TBA",
-    blurb: "Meet the society, see the Spring project results, and hear this year's plan. All majors welcome.",
-    image: "images/gbm.png" },
+  { title: "Fall Involvement Fair", date: "2026-08-27T17:00", location: "Tucker Civic Center",
+    blurb: "Come meet the CompNeuroSociety team and learn about our upcoming events, projects, and how to get involved!" },
   { title: "Python Basics 4 Neuro/DataSci - Part 1", date: "2026-09-15T18:00", location: "TBA",
     blurb: "With Codeducation - data types, loops, functions and plotting, from zero.",
     image: "images/python_coded.jpg" },
