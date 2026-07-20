@@ -43,7 +43,7 @@ if ($('home-events')) {
   }
   if (!upcoming.length) {
     cards.push(`<div class="event-card" style="grid-column:span 2;border-style:dashed;display:flex;align-items:center;justify-content:center;text-align:center">
-      <span class="mono" style="font-size:12.5px;color:var(--faint);line-height:1.8">no upcoming events posted yet —<br>join the <a href="${D.LINKS.groupme}" target="_blank">GroupMe</a> to hear first</span></div>`);
+      <span class="mono" style="font-size:12.5px;color:var(--faint);line-height:1.8">no upcoming events posted yet -<br>join the <a href="${D.LINKS.groupme}" target="_blank">GroupMe</a> to hear first</span></div>`);
   }
   if (past[0]) {
     const e = past[0];
@@ -89,7 +89,7 @@ if ($('grid-mentors')) {
     `<div style="border:1px dashed #263241;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;gap:10px">
       <div class="mono" style="font-size:11px;color:var(--faint)">// open seat</div>
       <h3 style="font-size:16px;font-weight:800;color:#fff;margin:0">Mentor a project team</h3>
-      <p style="font-size:12.5px;line-height:1.6;color:var(--muted);margin:0">Experience in computational neuroscience or a related field? Roughly 2–4 hours a month — you choose how to contribute.</p>
+      <p style="font-size:12.5px;line-height:1.6;color:var(--muted);margin:0">Experience in computational neuroscience or a related field? Roughly 2–4 hours a month - you choose how to contribute.</p>
       <a class="btn-ghost" style="width:fit-content;padding:10px 18px;font-size:12px" href="${D.LINKS.mentorForm}" target="_blank">become a mentor →</a></div>`;
 }
 if ($('grid-team')) $('grid-team').innerHTML = D.TEAM.map(p => personCard(p, 'var(--pink)')).join('');
@@ -100,7 +100,7 @@ if ($('current-project')) {
   if (P) {
     const apply = A.open
       ? `<a class="btn" href="${A.formUrl}" target="_blank">Apply to join this team →</a>
-         <span style="font-size:12px;color:var(--muted)">Meetings have started — sign up ASAP.</span>`
+         <span style="font-size:12px;color:var(--muted)">Meetings have started - sign up ASAP.</span>`
       : `<span class="btn-ghost" style="color:var(--faint) !important">Applications closed</span>
          <span class="mono" style="font-size:12px;color:var(--faint)">${esc(A.closedNote)}</span>`;
     $('current-project').innerHTML = `
@@ -131,7 +131,7 @@ if ($('current-project')) {
     $('current-project').innerHTML = `
       <span class="tag dim">NO ACTIVE PROJECT</span>
       <h2 style="font-size:28px;font-weight:900;color:#fff;margin:16px 0 8px">Next project team forming soon</h2>
-      <p style="font-size:14.5px;line-height:1.7;color:var(--muted);max-width:78ch;margin:0">We're between project cycles right now — check out past projects below, or apply to be first in line when the next team kicks off.</p>
+      <p style="font-size:14.5px;line-height:1.7;color:var(--muted);max-width:78ch;margin:0">We're between project cycles right now - check out past projects below, or apply to be first in line when the next team kicks off.</p>
       <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap">${apply}</div>`;
   }
 }

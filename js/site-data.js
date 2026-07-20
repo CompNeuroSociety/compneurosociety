@@ -1,5 +1,5 @@
 // ============================================================================
-//  CompNeuroSociety — SITE CONTENT (the only file you need to edit!)
+//  CompNeuroSociety - SITE CONTENT (the only file you need to edit!)
 // ============================================================================
 //  HOW TO UPDATE:
 //  • EVENTS: add new events to the TOP of the list. Date format
@@ -30,35 +30,35 @@ export const LINKS = {
   fiuPage: "project_fiu.html",
 };
 
-// --- EVENTS (newest first). The two "example" entries are placeholders —
+// --- EVENTS (newest first). The two "example" entries are placeholders -
 // --- replace them with real events and delete the `example: true` line.
 export const EVENTS = [
   { title: "Fall Kickoff GBM", date: "2026-09-03T18:00", location: "TBA",
     blurb: "Meet the society, see the Spring project results, and hear this year's plan. All majors welcome.",
     image: "images/gbm.png" },
-  { title: "Python Basics 4 Neuro/DataSci — Part 1", date: "2026-09-15T18:00", location: "TBA",
-    blurb: "With Codeducation — data types, loops, functions and plotting, from zero.",
+  { title: "Python Basics 4 Neuro/DataSci - Part 1", date: "2026-09-15T18:00", location: "TBA",
+    blurb: "With Codeducation - data types, loops, functions and plotting, from zero.",
     image: "images/python_coded.jpg" },
   { title: "Intro to ML/AI 4 NeuroSci", date: "2025-10-20T19:00", location: "WJB 2029",
-    blurb: "Machine learning basics — key concepts and real-world applications for neuroscience. Perfect for beginners.",
+    blurb: "Machine learning basics - key concepts and real-world applications for neuroscience. Perfect for beginners.",
     image: "images/mlworkshop.jpg" },
   { title: "A Conversation with Devon White, CEO of FIELD", date: "2025-10-09T17:45", location: "Virtual",
     blurb: "How cutting-edge neurotechnology and brain-data processing are transforming human intelligence and potential.",
     image: "images/devonworkshop.jpg" },
-  { title: "Python Basics 4 Neuro/DataSci — Part 2", date: "2025-09-18T18:00", location: "PDB A204",
-    blurb: "With Codeducation — LFPs, spike-train plots, correlation and summary statistics on neural data.",
+  { title: "Python Basics 4 Neuro/DataSci - Part 2", date: "2025-09-18T18:00", location: "PDB A204",
+    blurb: "With Codeducation - LFPs, spike-train plots, correlation and summary statistics on neural data.",
     image: "images/python_coded.jpg" },
-  { title: "Python Basics 4 Neuro/DataSci — Part 1", date: "2025-09-16T18:00", location: "Thagard 211",
-    blurb: "With Codeducation — data types, loops, functions and basic plotting for students with no Python experience.",
+  { title: "Python Basics 4 Neuro/DataSci - Part 1", date: "2025-09-16T18:00", location: "Thagard 211",
+    blurb: "With Codeducation - data types, loops, functions and basic plotting for students with no Python experience.",
     image: "images/python_coded.jpg" },
   { title: "Workshop on Computational Neuroscience", date: "2025-06-27T14:00", location: "PDB A204",
     blurb: "Multi-level brain modeling and recent research, led by Dr. Rodrigo Pena from the FAU Stiles Nicholson Brain Institute.",
     image: "images/PenaWorkshopWebsiteFlyer.png" },
   { title: "Intro to Python, GitHub, VS Code Workshop", date: "2025-04-17T21:15", location: "FSU",
-    blurb: "Python, GitHub and VS Code — purpose, installation, and usage for beginners starting to code.",
+    blurb: "Python, GitHub and VS Code - purpose, installation, and usage for beginners starting to code.",
     image: "images/placeholder.png" },
   { title: "Inaugural GBM", date: "2025-04-04T21:15", location: "FSU",
-    blurb: "Our first General Body Meeting — the mission, upcoming events, and the intersection of neuroscience and computing.",
+    blurb: "Our first General Body Meeting - the mission, upcoming events, and the intersection of neuroscience and computing.",
     image: "images/gbm.png" },
 ];
 
@@ -94,6 +94,15 @@ export const MENTORS = [
   { name: "Dr. Carmen Varela", role: "Faculty Advisor", photo: "images/varela.jpg",
     bio: "Ph.D. in Computational Neuroscience @ UChicago. Assistant Professor @ FSU in Psychology and Neuroscience.",
     links: [{ label: "Lab Website", url: "https://varelalab.create.fsu.edu/" }] },
+  { name: "Dr. Rodrigo Pena", role: "Pena Lab · Principal Investigator", photo: "images/rodrigo_pena.jpg",
+    bio: "Ph.D. in Computational Neuroscience. Assistant Professor of Biological Sciences @ FAU (Stiles-Nicholson Brain Institute), modeling the brain across scales - ion channels, synapses, neurons, networks and systems.",
+    links: [{ label: "Lab Website", url: "https://penaslab.com" }, { label: "Scholar", url: "https://scholar.google.com/citations?user=17avyRAAAAAJ" }] },
+  { name: "Dr. Juan Lopez", role: "Pena Lab · Postdoctoral Researcher", photo: "images/juan_lopez.jpg",
+    bio: "Ph.D. '24 and M.S. '18 @ FAU. Computational neuroscientist modeling Drosophila connectomes and neural circuits - including the Giant Fiber escape reflex - to understand how neurons communicate.",
+    links: [{ label: "LinkedIn", url: "https://www.linkedin.com/in/juanlopezphd" }] },
+  { name: "Ty Roachford", role: "Pena Lab · Ph.D. Student", photo: "images/ty_roachford.jpg",
+    bio: "Ph.D. student in Theoretical and Computational Neuroscience @ FAU Stiles-Nicholson Brain Institute. Interested in evolutionary, ultra-low-power intelligent networks.",
+    links: [{ label: "Website", url: "https://www.tyfoodsforthought.com" }] },
 ];
 
 export const TEAM = [
@@ -118,9 +127,9 @@ export const CURRENT_PROJECT = null;
 
 export const PAST_PROJECTS = [
   { name: "Pena Lab Replication → ReScience", image: "images/PenaWorkshopWebsiteFlyer.png",
-    summary: "Replicated a previously published computational neuroscience paper — originally coded in NEURON — using a different tool, focused on computational modeling and reproducibility, with mentorship from the Pena Lab toward a ReScience publication." },
+    summary: "Replicated a previously published computational neuroscience paper - originally coded in NEURON - using a different tool, focused on computational modeling and reproducibility, with mentorship from the Pena Lab toward a ReScience publication." },
   { name: "Brain-to-Text Competition Team", image: "images/projects/brain-to-text-1.jpg",
-    summary: "Decoding neural signals to translate brain activity into text — signal processing, machine learning and neural decoding with LLMs, with weekly team meetings and a competition showcase." },
+    summary: "Decoding neural signals to translate brain activity into text - signal processing, machine learning and neural decoding with LLMs, with weekly team meetings and a competition showcase." },
   { name: "Computational Retina Model Team", image: "images/projects/retina-model-1.jpg",
-    summary: "Replicated a published computational model of the retina in NEURON — visual processing, modeling best practices and scientific reproducibility, with weekly learning sprints." },
+    summary: "Replicated a published computational model of the retina in NEURON - visual processing, modeling best practices and scientific reproducibility, with weekly learning sprints." },
 ];
