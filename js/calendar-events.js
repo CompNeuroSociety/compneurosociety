@@ -10,7 +10,6 @@ export const CALENDAR_EVENTS = [
   {"title": "Pena Lab Project Meeting 5 [Room PDB A204]", "date": "2026-03-02T18:00", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.png"},
   {"title": "Pena Lab Project Meeting 4 [Room PDB A204]", "date": "2026-02-23T18:00", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.png"},
   {"title": "Pena Lab Project Meeting 3 [Room PDB A204]", "date": "2026-02-16T18:00", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.png"},
-  {"title": "Workshop Series (0-to-hero from Python Foundations to ML/AI for BCI)", "date": "2026-02-11T18:00", "location": "TBA", "blurb": "", "image": "images/placeholder.png"},
   {"title": "Pena Lab Project Meeting 2 [Room PDB A204]", "date": "2026-02-09T18:00", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.png"},
   {"title": "Pena Lab Project Meeting 1 [Room PDB A204]", "date": "2026-02-04T18:00", "location": "Psychology Department Building, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.png"},
   {"title": "[CNS] - Projects Start Window", "date": "2026-02-02T18:00", "location": "TBA", "blurb": "", "image": "images/placeholder.png"},
