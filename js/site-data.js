@@ -42,7 +42,7 @@ export const LINKS = {
 export const EVENTS = [
   { title: "Fall Involvement Fair", date: "2026-08-27T17:00", location: "Tucker Civic Center",
     blurb: "Come meet the CompNeuroSociety team and learn about our upcoming events, projects, and how to get involved!" },
-  { title: "Python Basics 4 Neuro/DataSci - Part 1", date: "2026-09-15T18:00", location: "TBA",
+  { title: "Python Basics 4 Neuro/DataSci - Part 1", date: "2025-09-15T18:00", location: "TBA",
     blurb: "With Codeducation - data types, loops, functions and plotting, from zero.",
     image: "images/python_coded.jpg" },
   { title: "Intro to ML/AI 4 NeuroSci", date: "2025-10-20T19:00", location: "WJB 2029",
@@ -132,7 +132,7 @@ export const APPLICATIONS = {
 export const CURRENT_PROJECT = null;
 
 export const PAST_PROJECTS = [
-  { name: "Pena Lab Replication → ReScience", image: "images/PenaWorkshopWebsiteFlyer.png",
+  { name: "Pena Lab Replication → ReScience", image: "images/projects/PenaPosterGroup.jpg",
     summary: "Replicated a previously published computational neuroscience paper - originally coded in NEURON - using a different tool, focused on computational modeling and reproducibility, with mentorship from the Pena Lab toward a ReScience publication." },
   { name: "Brain-to-Text Competition Team", image: "images/projects/brain-to-text-1.jpg",
     summary: "Decoding neural signals to translate brain activity into text - signal processing, machine learning and neural decoding with LLMs, with weekly team meetings and a competition showcase." },
