@@ -1,0 +1,62 @@
+name: Sync events from Google Calendar
+
+# Regenerates js/calendar-events.js from the club's public Google Calendar
+# (scripts/fetch_calendar_events.py, stdlib-only — nothing to install).
+# If the fetch or parse fails, the script exits non-zero and the last good
+# data stays live.
+#
+# NOTE: pushes made with GITHUB_TOKEN do NOT trigger the automatic
+# "pages build and deployment" run for branch-served Pages, so after pushing
+# we explicitly request a Pages build via the REST API.
+
+on:
+  workflow_dispatch: {}        # manual "Run workflow" button for instant syncs
+  schedule:
+    - cron: "23 */6 * * *"     # every 6h at :23 (off-peak minute; cron is UTC)
+
+permissions:
+  contents: write
+  pages: write                 # request Pages builds
+  actions: write               # keepalive: re-enable this workflow's cron
+
+concurrency:
+  group: sync-events
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Regenerate js/calendar-events.js
+        run: python3 scripts/fetch_calendar_events.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "events-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/calendar-events.js
+          if git diff --cached --quiet; then
+            echo "No event changes."
+          else
+            git commit -m "chore: sync events from Google Calendar"
+            # A human may push while this runs; rebase (only touches the
+            # generated file, so conflicts are effectively impossible) + retry.
+            for i in 1 2 3; do
+              git pull --rebase origin "${GITHUB_REF_NAME}" && git push && break
+              sleep $((i * 10))
+            done
+            # GITHUB_TOKEN pushes don't trigger branch-based Pages builds —
+            # request one explicitly so the live site actually updates.
+            curl -sf -X POST \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/builds" \
+              || echo "::warning::Could not request a Pages build; site may serve stale events until the next human push."
+          fi
+
+      - name: Keepalive (public-repo crons are disabled after 60 days of repo inactivity)
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/refresh-events.yml/enable"
+        env:
+          GH_TOKEN: ${{ github.token }}

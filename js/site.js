@@ -1,10 +1,31 @@
 // Renders all data-driven sections from js/site-data.js.
 // Pages opt in by including elements with the ids used below.
 import * as D from './site-data.js';
+import { CALENDAR_EVENTS } from './calendar-events.js';
 
 const $ = (id) => document.getElementById(id);
 const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// --- Merge hard-coded EVENTS with the auto-synced CALENDAR_EVENTS ---
+// A calendar entry is dropped if a hard-coded event on the same day shares
+// most of its title words (titles differ slightly between the two sources),
+// so hand-curated blurbs/images always win.
+const titleWords = (t) => new Set(String(t || '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').split(' ').filter(Boolean));
+function sameEvent(a, b) {
+  if (String(a.date).slice(0, 10) !== String(b.date).slice(0, 10)) return false;
+  const wa = titleWords(a.title), wb = titleWords(b.title);
+  let shared = 0;
+  wa.forEach(w => { if (wb.has(w)) shared++; });
+  // Require >=2 shared words when both titles have >=2 (one generic word like
+  // "python" shouldn't merge two different events on the same day).
+  const min = Math.min(wa.size, wb.size);
+  return shared >= Math.max(min >= 2 ? 2 : 1, Math.ceil(min / 2));
+}
+const ALL_EVENTS = [
+  ...D.EVENTS,
+  ...(CALENDAR_EVENTS || []).filter(c => !D.EVENTS.some(h => sameEvent(h, c))),
+];
 
 function fmt(ev) {
   const dt = new Date(ev.date);
@@ -13,6 +34,7 @@ function fmt(ev) {
   const days = Math.floor(diff / 864e5), hours = Math.floor((diff % 864e5) / 36e5);
   const h12 = ((dt.getHours() + 11) % 12) + 1, mins = String(dt.getMinutes()).padStart(2, '0');
   return { ...ev, dt, future,
+    image: ev.image || 'images/placeholder.png',
     dateStr: MONTHS[dt.getMonth()] + ' ' + String(dt.getDate()).padStart(2, '0'),
     year: dt.getFullYear(),
     time: h12 + ':' + mins + (dt.getHours() >= 12 ? 'pm' : 'am'),
@@ -20,7 +42,7 @@ function fmt(ev) {
     tag: ev.example ? 'EXAMPLE' : (future ? 'UPCOMING' : 'PAST') };
 }
 
-const dated = D.EVENTS.filter(e => !isNaN(new Date(e.date))).map(fmt);
+const dated = ALL_EVENTS.filter(e => !isNaN(new Date(e.date))).map(fmt);
 const upcoming = dated.filter(e => e.future).sort((a, b) => a.dt - b.dt);
 const past = dated.filter(e => !e.future).sort((a, b) => b.dt - a.dt);
 
