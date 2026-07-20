@@ -82,17 +82,26 @@ function personCard(p, roleColor) {
     <div class="pad"><h3>${esc(p.name)}</h3><div class="role" style="color:${roleColor}">${esc(p.role)}</div>
     <p>${esc(p.bio)}</p>${links ? `<div class="links">${links}</div>` : ''}</div></div>`;
 }
-if ($('grid-leadership')) $('grid-leadership').innerHTML = D.LEADERSHIP.map(p => personCard(p, 'var(--teal)')).join('');
-if ($('grid-gradcouncil')) $('grid-gradcouncil').innerHTML = D.GRAD_COUNCIL.map(p => personCard(p, 'var(--purple)')).join('');
+if ($('grid-leadership')) $('grid-leadership').innerHTML = (D.LEADERSHIP || []).map(p => personCard(p, 'var(--teal)')).join('');
+if ($('grid-gradcouncil')) {
+  const gc = D.GRAD_COUNCIL || [];
+  if (gc.length) {
+    $('grid-gradcouncil').innerHTML = gc.map(p => personCard(p, 'var(--purple)')).join('');
+  } else {
+    // No grad council listed right now (GRAD_COUNCIL commented out) — hide the empty section + its jump chip.
+    const sec = $('gradcouncil'); if (sec) sec.style.display = 'none';
+    const chip = document.querySelector('.jump-chips a[href="#gradcouncil"]'); if (chip) chip.style.display = 'none';
+  }
+}
 if ($('grid-mentors')) {
-  $('grid-mentors').innerHTML = D.MENTORS.map(p => personCard(p, 'var(--teal)')).join('') +
+  $('grid-mentors').innerHTML = (D.MENTORS || []).map(p => personCard(p, 'var(--teal)')).join('') +
     `<div style="border:1px dashed #263241;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;gap:10px">
       <div class="mono" style="font-size:11px;color:var(--faint)">// open seat</div>
       <h3 style="font-size:16px;font-weight:800;color:#fff;margin:0">Mentor a project team</h3>
       <p style="font-size:12.5px;line-height:1.6;color:var(--muted);margin:0">Experience in computational neuroscience or a related field? Roughly 2–4 hours a month - you choose how to contribute.</p>
       <a class="btn-ghost" style="width:fit-content;padding:10px 18px;font-size:12px" href="${D.LINKS.mentorForm}" target="_blank">become a mentor →</a></div>`;
 }
-if ($('grid-team')) $('grid-team').innerHTML = D.TEAM.map(p => personCard(p, 'var(--pink)')).join('');
+if ($('grid-team')) $('grid-team').innerHTML = (D.TEAM || []).map(p => personCard(p, 'var(--pink)')).join('');
 
 // --- Projects page ---
 if ($('current-project')) {
