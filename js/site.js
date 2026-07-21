@@ -65,7 +65,7 @@ if ($('home-events')) {
   }
   if (!upcoming.length) {
     cards.push(`<div class="event-card" style="grid-column:span 2;border-style:dashed;display:flex;align-items:center;justify-content:center;text-align:center">
-      <span class="mono" style="font-size:12.5px;color:var(--faint);line-height:1.8">no upcoming events posted yet -<br>join the <a href="${D.LINKS.groupme}" target="_blank">GroupMe</a> to hear first</span></div>`);
+      <span class="mono" style="font-size:12.5px;color:var(--faint);line-height:1.8">no upcoming events posted yet -<br>join the <a href="${D.LINKS.discord}" target="_blank">Discord</a> to hear first</span></div>`);
   }
   if (past[0]) {
     const e = past[0];
@@ -84,7 +84,7 @@ if ($('event-spotlight') && upcoming[0]) {
     <div><span class="tag solid">UP NEXT · ${e.countdown}</span><div class="date">${e.dateStr}</div>
       <div class="mono" style="font-size:12px;color:var(--faint);margin-top:4px">${e.time} · ${esc(e.location)}</div></div>
     <div><h3>${esc(e.title)}</h3><p>${esc(e.blurb)}</p></div>
-    <a class="btn teal" href="${D.LINKS.groupme}" target="_blank">Get reminders</a></div>`;
+    <a class="btn teal" href="${D.LINKS.discord}" target="_blank">Get reminders</a></div>`;
 }
 if ($('event-timeline')) {
   $('event-timeline').innerHTML = [...dated].sort((a, b) => b.dt - a.dt).map(e => `
@@ -187,3 +187,20 @@ if (burger && menu) {
   menu.querySelector('.mm-close').addEventListener('click', () => menu.classList.remove('open'));
   menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.remove('open')));
 }
+
+// --- Conversion tracking ---
+// Fires a GA4 'cta_click' event when a data-link CTA or a footer link is clicked.
+// In GA4, mark 'cta_click' (or specific cta_id values like 'joinForm' / 'discord')
+// as a key event to measure signups and community joins from organic search.
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('a');
+  if (!a) return;
+  let id = a.dataset.link;
+  if (!id) {
+    if (a.closest('.site-footer')) id = 'footer:' + (a.textContent || '').trim().toLowerCase();
+    else return;
+  }
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', 'cta_click', { cta_id: id, link_url: a.href });
+  }
+});

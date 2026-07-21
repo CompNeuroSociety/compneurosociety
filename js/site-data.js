@@ -29,12 +29,12 @@ export const LINKS = {
   contactForm: "https://forms.office.com/Pages/ResponsePage.aspx?id=61Bkowbbp0KNGwJnGfcB48ET8YNcvAVKnZIUvImXTKdUM0RNSEgwMzFOME04TDdXVzNUTFoyTlNWVi4u",
   instagram: "https://www.instagram.com/compneurosocietyfsu/",
   linkedin: "https://linkedin.com/company/compneurosociety-at-fsu",
-  groupme: "https://groupme.com/join_group/105475595/FTxvss9F",
-  noleCentral: "https://nolecentral.dsa.fsu.edu/organization/compneurosociety",
+  discord: "https://discord.gg/jVtSsNzaA",
+  hq: "https://hq.fsu.edu/compneurosociety",
   calendar: "https://calendar.google.com/calendar/embed?src=compneurosociety%40outlook.com&ctz=America%2FNew_York",
   email: "compneurosociety@outlook.com",
   constitution: "constitution.pdf",
-  fiuPage: "project_fiu.html",
+  chaptersPage: "chapters.html",
 };
 
 // --- EVENTS (newest first). The two "example" entries are placeholders -

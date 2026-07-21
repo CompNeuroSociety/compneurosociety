@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://compneurosociety.com/sitemap.xml
