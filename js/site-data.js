@@ -21,12 +21,12 @@
 // ============================================================================
 
 export const LINKS = {
-  joinForm: "https://forms.office.com/r/6PWtUbDKyw",
-  teamForm: "https://forms.office.com/r/S9BmCN4BW4",
-  projectForm: "https://forms.office.com/r/Hh5dPKHHGW",
-  mentorForm: "https://forms.office.com/r/bSLpSmSnjp",
-  leadEventForm: "https://forms.office.com/r/b0y9dAKg0k",
-  contactForm: "https://forms.office.com/Pages/ResponsePage.aspx?id=61Bkowbbp0KNGwJnGfcB48ET8YNcvAVKnZIUvImXTKdUM0RNSEgwMzFOME04TDdXVzNUTFoyTlNWVi4u",
+  joinForm: "https://docs.google.com/forms/d/e/1FAIpQLSeqCh_WXl_rf-VN8YQPkutY8kIcHM4SX1K7l_qnbl7gqzzCAA/viewform",
+  teamForm: "https://docs.google.com/forms/d/e/1FAIpQLSfd-vkrRiNgYRNY7rwi8tR3r-pd48KYgRtGMRNDFoUBXBLprQ/viewform",
+  projectForm: "https://docs.google.com/forms/d/e/1FAIpQLScRBfy8KiEscIm7tHRrBUQkJ1IZqItF0BFHA04Gez7lOR_j0w/viewform",
+  mentorForm: "https://docs.google.com/forms/d/e/1FAIpQLSemPSmSWOTgw2W4bqnN6N7dHp5ah236jmIFHwJ-VauATRxm6Q/viewform",
+  leadEventForm: "https://docs.google.com/forms/d/e/1FAIpQLSfA6zFAnmT1cDZghn1a9XTLhUvKN5pWfXS3K3inVgz028DkCQ/viewform",
+  contactForm: "https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform",
   instagram: "https://www.instagram.com/compneurosocietyfsu/",
   linkedin: "https://linkedin.com/company/compneurosociety-at-fsu",
   discord: "https://discord.gg/jVtSsNzaA",
@@ -126,7 +126,7 @@ export const TEAM = [
 export const APPLICATIONS = {
   open: true,
   closedNote: "Applications reopen Mid-December",
-  formUrl: "https://forms.office.com/r/Hh5dPKHHGW",
+  formUrl: "https://docs.google.com/forms/d/e/1FAIpQLScRBfy8KiEscIm7tHRrBUQkJ1IZqItF0BFHA04Gez7lOR_j0w/viewform",
 };
 
 export const CURRENT_PROJECT = null;
