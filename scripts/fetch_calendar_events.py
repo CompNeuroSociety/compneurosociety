@@ -23,8 +23,13 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 # --- Config -----------------------------------------------------------------
+# Public iCal feed of the club's Google Calendar (calendar id
+# compneurosociety@gmail.com, display name "CompNeuroSociety Events").
+# The calendar MUST be set to "Make available to public" in Google Calendar
+# settings -> Access permissions, or this unauthenticated fetch returns 404.
+# (The old compneurosociety@outlook.com feed is dead and was replaced 2026-07.)
 FEED_URL = ("https://calendar.google.com/calendar/ical/"
-            "compneurosociety%40outlook.com/public/basic.ics")
+            "compneurosociety%40gmail.com/public/basic.ics")
 LOCAL_TZ = ZoneInfo("America/New_York")
 OUT_PATH = Path(__file__).resolve().parent.parent / "js" / "calendar-events.js"
 IMAGES_DIR = Path(__file__).resolve().parent.parent / "images"

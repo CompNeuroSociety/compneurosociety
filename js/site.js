@@ -52,14 +52,14 @@ if ($('home-events')) {
   if (upcoming[0]) {
     const e = upcoming[0];
     cards.push(`<div class="event-card panel-glow">
-      <div class="row"><span class="tag solid">UP NEXT · ${e.countdown}</span><span class="mono" style="font-size:11px;color:var(--faint)">${e.time}</span></div>
+      <div class="row"><span class="tag solid">UP NEXT - ${e.countdown}</span><span class="mono" style="font-size:11px;color:var(--faint)">${e.time}</span></div>
       <div class="date teal">${e.dateStr}</div><h3>${esc(e.title)}</h3><p>${esc(e.blurb)}</p>
       <a class="btn teal" style="padding:10px 20px;font-size:12.5px" href="events.html">Details</a></div>`);
   }
   if (upcoming[1]) {
     const e = upcoming[1];
     cards.push(`<div class="event-card">
-      <div class="row"><span class="tag teal">UPCOMING · ${e.countdown}</span><span class="mono" style="font-size:11px;color:var(--faint)">${e.time}</span></div>
+      <div class="row"><span class="tag teal">UPCOMING - ${e.countdown}</span><span class="mono" style="font-size:11px;color:var(--faint)">${e.time}</span></div>
       <div class="date">${e.dateStr}</div><h3>${esc(e.title)}</h3><p>${esc(e.blurb)}</p>
       <a class="btn-ghost" style="padding:9px 18px;font-size:12.5px" href="events.html">Details</a></div>`);
   }
@@ -70,9 +70,9 @@ if ($('home-events')) {
   if (past[0]) {
     const e = past[0];
     cards.push(`<div class="event-card past"><img src="${e.image}" alt="${esc(e.title)}">
-      <div class="pad"><span class="tag dim">PAST · RECAP</span><h3 style="margin-top:8px">${esc(e.title)}</h3>
-      <p class="small-meta">${e.dateStr.toLowerCase()} ${e.year} · ${esc(e.location)}</p>
-      <a href="${D.LINKS.instagram}" target="_blank" style="font-size:12.5px;font-weight:700">Photos on Instagram →</a></div></div>`);
+      <div class="pad"><span class="tag dim">PAST - RECAP</span><h3 style="margin-top:8px">${esc(e.title)}</h3>
+      <p class="small-meta">${e.dateStr.toLowerCase()} ${e.year} - ${esc(e.location)}</p>
+      <a href="${D.LINKS.instagram}" target="_blank" style="font-size:12.5px;font-weight:700">Photos on Instagram</a></div></div>`);
   }
   $('home-events').innerHTML = cards.join('');
 }
@@ -81,15 +81,15 @@ if ($('home-events')) {
 if ($('event-spotlight') && upcoming[0]) {
   const e = upcoming[0];
   $('event-spotlight').innerHTML = `<div class="panel panel-glow spotlight">
-    <div><span class="tag solid">UP NEXT · ${e.countdown}</span><div class="date">${e.dateStr}</div>
-      <div class="mono" style="font-size:12px;color:var(--faint);margin-top:4px">${e.time} · ${esc(e.location)}</div></div>
+    <div><span class="tag solid">UP NEXT - ${e.countdown}</span><div class="date">${e.dateStr}</div>
+      <div class="mono" style="font-size:12px;color:var(--faint);margin-top:4px">${e.time} - ${esc(e.location)}</div></div>
     <div><h3>${esc(e.title)}</h3><p>${esc(e.blurb)}</p></div>
     <a class="btn teal" href="${D.LINKS.discord}" target="_blank">Get reminders</a></div>`;
 }
 if ($('event-timeline')) {
   $('event-timeline').innerHTML = [...dated].sort((a, b) => b.dt - a.dt).map(e => `
     <div class="timeline-row ${e.future ? '' : 'past'}">
-      <div class="d" style="color:${e.future ? 'var(--teal)' : 'var(--faint)'}">${e.dateStr}<small>${e.year} · ${e.time}</small></div>
+      <div class="d" style="color:${e.future ? 'var(--teal)' : 'var(--faint)'}">${e.dateStr}<small>${e.year} - ${e.time}</small></div>
       <img src="${e.image}" alt="${esc(e.title)}">
       <div><h3>${esc(e.title)}</h3><p>${esc(e.blurb)}</p></div>
       <div class="side"><span class="tag ${e.example ? 'purple' : (e.future ? 'teal' : 'dim')}">${e.tag}</span>
@@ -99,7 +99,7 @@ if ($('event-timeline')) {
 
 // --- People page ---
 function personCard(p, roleColor) {
-  const links = (p.links || []).map(l => `<a href="${l.url}" target="_blank">${esc(l.label)} →</a>`).join('');
+  const links = (p.links || []).map(l => `<a href="${l.url}" target="_blank">${esc(l.label)}</a>`).join('');
   return `<div class="person-card"><img src="${p.photo}" alt="${esc(p.name)}">
     <div class="pad"><h3>${esc(p.name)}</h3><div class="role" style="color:${roleColor}">${esc(p.role)}</div>
     <p>${esc(p.bio)}</p>${links ? `<div class="links">${links}</div>` : ''}</div></div>`;
@@ -120,8 +120,8 @@ if ($('grid-mentors')) {
     `<div style="border:1px dashed #263241;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;gap:10px">
       <div class="mono" style="font-size:11px;color:var(--faint)">// open seat</div>
       <h3 style="font-size:16px;font-weight:800;color:#fff;margin:0">Mentor a project team</h3>
-      <p style="font-size:12.5px;line-height:1.6;color:var(--muted);margin:0">Experience in computational neuroscience or a related field? Roughly 2–4 hours a month - you choose how to contribute.</p>
-      <a class="btn-ghost" style="width:fit-content;padding:10px 18px;font-size:12px" href="${D.LINKS.mentorForm}" target="_blank">become a mentor →</a></div>`;
+      <p style="font-size:12.5px;line-height:1.6;color:var(--muted);margin:0">Experience in computational neuroscience or a related field? Roughly 2-4 hours a month - you choose how to contribute.</p>
+      <a class="btn-ghost" style="width:fit-content;padding:10px 18px;font-size:12px" href="${D.LINKS.mentorForm}" target="_blank">become a mentor</a></div>`;
 }
 if ($('grid-team')) $('grid-team').innerHTML = (D.TEAM || []).map(p => personCard(p, 'var(--pink)')).join('');
 
@@ -130,13 +130,13 @@ if ($('current-project')) {
   const P = D.CURRENT_PROJECT, A = D.APPLICATIONS;
   if (P) {
     const apply = A.open
-      ? `<a class="btn" href="${A.formUrl}" target="_blank">Apply to join this team →</a>
+      ? `<a class="btn" href="${A.formUrl}" target="_blank">Apply to join this team</a>
          <span style="font-size:12px;color:var(--muted)">Meetings have started - sign up ASAP.</span>`
       : `<span class="btn-ghost" style="color:var(--faint) !important">Applications closed</span>
          <span class="mono" style="font-size:12px;color:var(--faint)">${esc(A.closedNote)}</span>`;
     $('current-project').innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
-        <span class="tag solid">${esc(P.term).toUpperCase()} · ACTIVE</span>
+        <span class="tag solid">${esc(P.term).toUpperCase()} - ACTIVE</span>
         <span class="mono" style="font-size:12px;color:var(--faint)">${esc(P.meeting)}</span></div>
       <h2 style="font-size:28px;font-weight:900;color:#fff;margin:16px 0 8px">${esc(P.name)}</h2>
       <p style="font-size:14.5px;line-height:1.7;color:var(--muted);max-width:78ch;margin:0">${esc(P.summary)}</p>
@@ -144,19 +144,19 @@ if ($('current-project')) {
         <div style="border:1px solid var(--line);border-radius:14px;padding:18px 20px">
           <div class="mono" style="font-size:11px;color:var(--teal);margin-bottom:10px">// weekly cadence</div>
           ${P.cadence.map(c => `<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0">
-            <span class="mono" style="color:var(--teal);font-size:11px;flex:none">⦿</span>
+            <span class="mono" style="color:var(--teal);font-size:11px;flex:none">></span>
             <span style="font-size:13px;line-height:1.55">${esc(c)}</span></div>`).join('')}
         </div>
         <div style="border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
           <div><div class="mono" style="font-size:11px;color:var(--purple);margin-bottom:6px">// mentorship</div>
             <div style="font-size:13px;line-height:1.6">${esc(P.mentors)}</div></div>
           <div><div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:6px">// the paper</div>
-            <a class="mono" style="font-size:12px;word-break:break-all;line-height:1.6" href="${P.paperUrl}" target="_blank">eneuro.org → ENEURO.0423-18.2019 (pdf) ↗</a></div>
+            <a class="mono" style="font-size:12px;word-break:break-all;line-height:1.6" href="${P.paperUrl}" target="_blank">eneuro.org -> ENEURO.0423-18.2019 (pdf)</a></div>
         </div></div>
       <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap">${apply}</div>`;
   } else {
     const apply = A.open
-      ? `<a class="btn" href="${A.formUrl}" target="_blank">Apply for the next project team →</a>`
+      ? `<a class="btn" href="${A.formUrl}" target="_blank">Apply for the next project team</a>`
       : `<span class="btn-ghost" style="color:var(--faint) !important">Applications closed</span>
          <span class="mono" style="font-size:12px;color:var(--faint)">${esc(A.closedNote)}</span>`;
     $('current-project').innerHTML = `

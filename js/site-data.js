@@ -31,7 +31,7 @@ export const LINKS = {
   linkedin: "https://linkedin.com/company/compneurosociety-at-fsu",
   discord: "https://discord.gg/jVtSsNzaA",
   hq: "https://hq.fsu.edu/compneurosociety",
-  calendar: "https://calendar.google.com/calendar/embed?src=compneurosociety%40outlook.com&ctz=America%2FNew_York",
+  calendar: "https://calendar.google.com/calendar/embed?src=compneurosociety%40gmail.com&ctz=America%2FNew_York",
   email: "compneurosociety@outlook.com",
   constitution: "constitution.pdf",
   chaptersPage: "chapters.html",
@@ -88,11 +88,11 @@ export const LEADERSHIP = [
 ];
 
 // export const GRAD_COUNCIL = [
-//   { name: "Jake Tear", role: "Neuroscience PhD · Riddle Lab", photo: "images/jaketear.jpg",
+//   { name: "Jake Tear", role: "Neuroscience PhD - Riddle Lab", photo: "images/jaketear.jpg",
 //     bio: "I'm interested in improving the utility of EEG measures for precision psychiatry. Fun fact: I enjoy surfing and was on the UCSB surf team prior to joining FSU!", links: [] },
-//   { name: "Yicheng Zheng", role: "Neuroscience PhD · Wilber Lab", photo: "images/yicheng.jpeg",
+//   { name: "Yicheng Zheng", role: "Neuroscience PhD - Wilber Lab", photo: "images/yicheng.jpeg",
 //     bio: "I investigate the mechanisms underlying spatial navigation using electrophysiology in rodents, and explore potential treatments for spatial awareness deficits in Alzheimer's disease. Fun fact: my dog has its own Instagram page!", links: [] },
-//   { name: "Greg Owanga", role: "Biomathematics PhD · Bertram Lab", photo: "images/greg_tennessee.jpg",
+//   { name: "Greg Owanga", role: "Biomathematics PhD - Bertram Lab", photo: "images/greg_tennessee.jpg",
 //     bio: "I study how neuron populations in the gustatory cortex form and reorganize functional networks, combining network theory, signal processing and visualization. Fun fact: I'm writing a book and I'm a lifelong Lewis Hamilton fan.", links: [] },
 // ];
 
@@ -100,13 +100,13 @@ export const MENTORS = [
   { name: "Dr. Carmen Varela", role: "Faculty Advisor", photo: "images/varela.jpg",
     bio: "Ph.D. in Computational Neuroscience @ UChicago. Assistant Professor @ FSU in Psychology and Neuroscience.",
     links: [{ label: "Lab Website", url: "https://varelalab.create.fsu.edu/" }] },
-  { name: "Dr. Rodrigo Pena", role: "Pena Lab · Principal Investigator", photo: "images/rodrigo_pena.jpg",
+  { name: "Dr. Rodrigo Pena", role: "Pena Lab - Principal Investigator", photo: "images/rodrigo_pena.jpg",
     bio: "Ph.D. in Computational Neuroscience. Assistant Professor of Biological Sciences @ FAU (Stiles-Nicholson Brain Institute), modeling the brain across scales - ion channels, synapses, neurons, networks and systems.",
     links: [{ label: "Lab Website", url: "https://penaslab.com" }, { label: "Scholar", url: "https://scholar.google.com/citations?user=17avyRAAAAAJ" }] },
-  { name: "Dr. Juan Lopez", role: "Pena Lab · Postdoctoral Researcher", photo: "images/juan_lopez.jpg",
+  { name: "Dr. Juan Lopez", role: "Pena Lab - Postdoctoral Researcher", photo: "images/juan_lopez.jpg",
     bio: "Ph.D. '24 and M.S. '18 @ FAU. Computational neuroscientist modeling Drosophila connectomes and neural circuits - including the Giant Fiber escape reflex - to understand how neurons communicate.",
     links: [{ label: "LinkedIn", url: "https://www.linkedin.com/in/juanlopezphd" }] },
-  { name: "Ty Roachford", role: "Pena Lab · Ph.D. Student", photo: "images/ty_roachford.jpg",
+  { name: "Ty Roachford", role: "Pena Lab - Ph.D. Student", photo: "images/ty_roachford.jpg",
     bio: "Ph.D. student in Theoretical and Computational Neuroscience @ FAU Stiles-Nicholson Brain Institute. Interested in evolutionary, ultra-low-power intelligent networks.",
     links: [{ label: "Website", url: "https://www.tyfoodsforthought.com" }] },
 ];
@@ -116,9 +116,9 @@ export const TEAM = [
     bio: "Interests: neuromorphic computing, computational biology, brain-machine interfaces. Fun fact: I've been vegetarian for 8 years!", links: [] },
   { name: "Eva Zlochower", role: "Team Member", photo: "images/members/EvaZlochower.png",
     bio: "Interests: psychopharmacology and precision treatment/diagnosis. Fun fact: I love finding new songs to learn on my guitar.", links: [] },
-  { name: "Thomas Hall", role: "Team Member · Computer Science", photo: "images/members/ThomasHall.jpg",
+  { name: "Thomas Hall", role: "Team Member - Computer Science", photo: "images/members/ThomasHall.jpg",
     bio: "Interests: machine learning / NeuroAI. Fun fact: cats are my favorite animals.", links: [] },
-  { name: "Victoria Montalvo", role: "Team Member · Behavioral Neuroscience & Biochemistry", photo: "images/members/VictoriaMontalvo.jpg",
+  { name: "Victoria Montalvo", role: "Team Member - Behavioral Neuroscience & Biochemistry", photo: "images/members/VictoriaMontalvo.jpg",
     bio: "Interests: brain mapping, neuronal activity and neurodegenerative diseases. Fun fact: I love trail running and swimming!", links: [] },
 ];
 
@@ -132,7 +132,7 @@ export const APPLICATIONS = {
 export const CURRENT_PROJECT = null;
 
 export const PAST_PROJECTS = [
-  { name: "Pena Lab Replication → ReScience", image: "images/projects/PenaPosterGroup.jpg",
+  { name: "Pena Lab Replication -> ReScience", image: "images/projects/PenaPosterGroup.jpg",
     summary: "An undergraduate research project that replicated a previously published computational neuroscience paper - originally coded in NEURON - using a different tool, focused on computational modeling and reproducibility, with mentorship from the Pena Lab toward a ReScience publication." },
   { name: "Brain-to-Text Competition Team", image: "images/projects/brain-to-text-1.jpg",
     summary: "An undergraduate computational neuroscience project decoding neural signals to translate brain activity into text - signal processing, machine learning and neural decoding with LLMs, with weekly team meetings and a competition showcase." },
