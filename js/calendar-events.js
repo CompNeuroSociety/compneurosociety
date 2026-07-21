@@ -2,6 +2,7 @@
 // Synced from the club's public Google Calendar; merged with the
 // hard-coded EVENTS in site-data.js by js/site.js (hard-coded wins).
 export const CALENDAR_EVENTS = [
+  {"title": "Involvement Fair!", "date": "2026-08-27T17:00", "location": "Donald L. Tucker Civic Center, 505 W Pensacola St, Tallahassee, FL 32301, USA", "blurb": "Come find us!", "image": "images/placeholder.png"},
   {"title": "Pena Lab Project Meeting 10 [Room PDB A204]", "date": "2026-04-13T18:00", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.png"},
   {"title": "Pena Lab Project Meeting 9 [Room PDB A204]", "date": "2026-04-06T18:00", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.png"},
   {"title": "Pena Lab Project Meeting 8 [Room PDB A204]", "date": "2026-03-30T18:00", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.png"},
