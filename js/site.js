@@ -188,19 +188,37 @@ if (burger && menu) {
   menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.remove('open')));
 }
 
-// --- Conversion tracking ---
-// Fires a GA4 'cta_click' event when a data-link CTA or a footer link is clicked.
-// In GA4, mark 'cta_click' (or specific cta_id values like 'joinForm' / 'discord')
-// as a key event to measure signups and community joins from organic search.
+// --- Google Analytics (GA4) event tracking ---
+// Sends meaningful, well-named GA4 events on the actions that matter, so
+// conversions show up cleanly (works for both data-link CTAs and plain links).
+// Recommended GA4 event names are used where they fit:
+//   generate_lead  - a form was opened (membership / project / team / mentor / lead-event / contact)
+//   join_group     - Discord invite clicked
+//   outbound_click - social / external link (Instagram, LinkedIn, FSU HQ)
+//   select_content - Google Calendar opened
+//   contact        - mailto: clicked
+// In GA4 (Admin -> Events), mark generate_lead and join_group as KEY EVENTS
+// to measure signups and community joins. cta_id/form params let you segment.
+const track = (name, params) => { if (typeof window.gtag === 'function') window.gtag('event', name, params); };
+const FORM_BY_KEY = { joinForm: 'membership', teamForm: 'team_profile', projectForm: 'project_application', mentorForm: 'mentor_interest', leadEventForm: 'lead_event', contactForm: 'contact' };
+const FORM_BY_ID = { LSeqCh: 'membership', 'LSfd-v': 'team_profile', LScRBf: 'project_application', LSemPS: 'mentor_interest', LSfA6z: 'lead_event', LScl6m: 'contact' };
+const formName = (key, href) => {
+  if (key && FORM_BY_KEY[key]) return FORM_BY_KEY[key];
+  for (const frag in FORM_BY_ID) if (href.indexOf(frag) >= 0) return FORM_BY_ID[frag];
+  return 'form';
+};
 document.addEventListener('click', (e) => {
   const a = e.target.closest('a');
   if (!a) return;
-  let id = a.dataset.link;
-  if (!id) {
-    if (a.closest('.site-footer')) id = 'footer:' + (a.textContent || '').trim().toLowerCase();
-    else return;
-  }
-  if (typeof window.gtag === 'function') {
-    window.gtag('event', 'cta_click', { cta_id: id, link_url: a.href });
-  }
+  const href = a.href || '';
+  const key = (a.dataset && a.dataset.link) || '';
+  const base = { link_url: href, link_text: (a.textContent || '').trim().slice(0, 80), cta_id: key };
+  if (/docs\.google\.com\/forms/.test(href))   track('generate_lead',  { ...base, form: formName(key, href) });
+  else if (/discord\.(gg|com)/.test(href))      track('join_group',     { ...base, group: 'discord' });
+  else if (/instagram\.com/.test(href))         track('outbound_click', { ...base, target: 'instagram' });
+  else if (/linkedin\.com/.test(href))          track('outbound_click', { ...base, target: 'linkedin' });
+  else if (/hq\.fsu\.edu/.test(href))           track('outbound_click', { ...base, target: 'fsu_hq' });
+  else if (/calendar\.google\.com/.test(href))  track('select_content', { ...base, content_type: 'calendar' });
+  else if (href.indexOf('mailto:') === 0)       track('contact',        { ...base, method: 'email' });
+  else if (key)                                 track('cta_click',      base);
 });
