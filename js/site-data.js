@@ -62,7 +62,7 @@ export const EVENTS = [
     image: "images/PenaWorkshopWebsiteFlyer.png" },
   { title: "Intro to Python, GitHub, VS Code Workshop", date: "2025-04-17T21:15", location: "FSU",
     blurb: "Installing and using Python, GitHub, and VS Code. For complete beginners.",
-    image: "images/placeholder.png" },
+    image: "images/placeholder.jpg" },
   { title: "Inaugural GBM", date: "2025-04-04T21:15", location: "FSU",
     blurb: "Our first General Body Meeting: what the club is and what's coming.",
     image: "images/gbm.png" },

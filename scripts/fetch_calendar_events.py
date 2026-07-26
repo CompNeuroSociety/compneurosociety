@@ -9,7 +9,7 @@ a hard-coded one (same day + similar title).
 
 Images: calendars have no image field. Put a tag like  #img:python  anywhere in
 the event's description in Google Calendar; it maps through IMG_MAP below to a
-file in images/. No tag (or unknown key) -> images/placeholder.png.
+file in images/. No tag (or unknown key) -> images/placeholder.jpg.
 
 Run locally or in CI (stdlib only):  python3 scripts/fetch_calendar_events.py
 """
@@ -49,7 +49,7 @@ IMG_MAP = {
     "pena": "images/PenaWorkshopWebsiteFlyer.png",
     "devon": "images/devonworkshop.jpg",
 }
-PLACEHOLDER = "images/placeholder.png"
+PLACEHOLDER = "images/placeholder.jpg"
 
 ALL_DAY_DEFAULT_TIME = "18:00"   # site needs a time; club events are evenings
 PAST_WINDOW_DAYS = 400           # keep up to ~1 academic year of history

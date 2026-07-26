@@ -34,7 +34,7 @@ function fmt(ev) {
   const days = Math.floor(diff / 864e5), hours = Math.floor((diff % 864e5) / 36e5);
   const h12 = ((dt.getHours() + 11) % 12) + 1, mins = String(dt.getMinutes()).padStart(2, '0');
   return { ...ev, dt, future,
-    image: ev.image || 'images/placeholder.png',
+    image: ev.image || 'images/placeholder.jpg',
     dateStr: MONTHS[dt.getMonth()] + ' ' + String(dt.getDate()).padStart(2, '0'),
     year: dt.getFullYear(),
     time: h12 + ':' + mins + (dt.getHours() >= 12 ? 'pm' : 'am'),
