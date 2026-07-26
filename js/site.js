@@ -69,7 +69,7 @@ if ($('home-events')) {
   }
   if (past[0]) {
     const e = past[0];
-    cards.push(`<div class="event-card past"><img src="${e.image}" alt="${esc(e.title)}">
+    cards.push(`<div class="event-card past"><img src="${e.image}" alt="${esc(e.title)}" loading="lazy" decoding="async">
       <div class="pad"><span class="tag dim">PAST - RECAP</span><h3 style="margin-top:8px">${esc(e.title)}</h3>
       <p class="small-meta">${e.dateStr.toLowerCase()} ${e.year} - ${esc(e.location)}</p>
       <a href="${D.LINKS.instagram}" target="_blank" style="font-size:12.5px;font-weight:700">Photos on Instagram</a></div></div>`);
@@ -90,7 +90,7 @@ if ($('event-timeline')) {
   $('event-timeline').innerHTML = [...dated].sort((a, b) => b.dt - a.dt).map(e => `
     <div class="timeline-row ${e.future ? '' : 'past'}">
       <div class="d" style="color:${e.future ? 'var(--teal)' : 'var(--faint)'}">${e.dateStr}<small>${e.year} - ${e.time}</small></div>
-      <img src="${e.image}" alt="${esc(e.title)}">
+      <img src="${e.image}" alt="${esc(e.title)}" loading="lazy" decoding="async">
       <div><h3>${esc(e.title)}</h3><p>${esc(e.blurb)}</p></div>
       <div class="side"><span class="tag ${e.example ? 'purple' : (e.future ? 'teal' : 'dim')}">${e.tag}</span>
         <span class="loc">${esc(e.location)}</span></div>
@@ -100,7 +100,7 @@ if ($('event-timeline')) {
 // --- People page ---
 function personCard(p, roleColor) {
   const links = (p.links || []).map(l => `<a href="${l.url}" target="_blank">${esc(l.label)}</a>`).join('');
-  return `<div class="person-card"><img src="${p.photo}" alt="${esc(p.name)}">
+  return `<div class="person-card"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy" decoding="async">
     <div class="pad"><h3>${esc(p.name)}</h3><div class="role" style="color:${roleColor}">${esc(p.role)}</div>
     <p>${esc(p.bio)}</p>${links ? `<div class="links">${links}</div>` : ''}</div></div>`;
 }
@@ -166,11 +166,118 @@ if ($('current-project')) {
       <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap">${apply}</div>`;
   }
 }
+// Past projects: clickable cards that open a detail view. Every section of the
+// detail view is optional - empty fields in PAST_PROJECTS are simply not shown.
 if ($('past-projects')) {
-  $('past-projects').innerHTML = D.PAST_PROJECTS.map(p => `
-    <div class="person-card"><img src="${p.image}" alt="${esc(p.name)}" style="height:200px;filter:grayscale(.35)">
-      <div class="pad"><span class="tag dim">COMPLETED</span>
-      <h3 style="margin:10px 0 6px">${esc(p.name)}</h3><p style="font-size:13px">${esc(p.summary)}</p></div></div>`).join('');
+  const PP = D.PAST_PROJECTS || [];
+  $('past-projects').innerHTML = PP.map((p, i) => `
+    <button class="project-card" type="button" data-project="${i}" aria-haspopup="dialog">
+      <img src="${p.image}" alt="${esc(p.name)}" loading="lazy" decoding="async">
+      <div class="pad"><span class="tag dim">${esc(p.term || 'COMPLETED')}</span>
+      <h3>${esc(p.name)}</h3><p>${esc(p.summary)}</p>
+      <span class="more">view details</span></div>
+    </button>`).join('');
+
+  const overlay = document.createElement('div');
+  overlay.className = 'pm-overlay';
+  overlay.innerHTML = '<div class="pm-sheet" role="dialog" aria-modal="true" aria-label="Project details"></div>';
+  document.body.appendChild(overlay);
+  const sheet = overlay.querySelector('.pm-sheet');
+  let lastFocus = null;
+
+  const bullets = (items) => (items || []).filter(Boolean).map(x => `<li>${esc(x)}</li>`).join('');
+  const closeProject = () => {
+    overlay.classList.remove('open');
+    document.body.classList.remove('pm-open');
+    if (lastFocus) lastFocus.focus();
+  };
+
+  function openProject(i) {
+    const p = PP[i];
+    if (!p) return;
+    lastFocus = document.activeElement;
+    const meta = [
+      p.paper ? `<div><b>Paper:</b> ${esc(p.paper)}</div>` : '',
+      p.funding ? `<div><b>Funding:</b> ${esc(p.funding)}</div>` : '',
+      p.mentors ? `<div><b>Mentors:</b> ${esc(p.mentors)}</div>` : '',
+      p.tools ? `<div><b>Tools:</b> ${esc(p.tools)}</div>` : '',
+      p.repo ? `<div><b>Code:</b> <a href="${p.repo}" target="_blank" rel="noopener">GitHub repository</a></div>` : '',
+    ].join('');
+    const mission = bullets(p.mission), outcome = bullets(p.outcome);
+    const members = (p.members || []).map(m => `<li><b>${esc(m.name)}</b>${m.major ? ' - ' + esc(m.major) : ''}${m.role ? ` <span style="color:var(--faint)">(${esc(m.role)})</span>` : ''}</li>`).join('');
+    const gallery = (p.gallery || []).map((src, n) => `<button class="lb-thumb" type="button" aria-label="View photo ${n + 1} larger"><img src="${src}" alt="${esc(p.name)} photo ${n + 1}" loading="lazy" decoding="async" onerror="this.closest('.lb-thumb').style.display='none'"></button>`).join('');
+    sheet.innerHTML = `
+      <div class="pm-head">
+        <div><span class="tag dim">${esc(p.term || 'COMPLETED')}</span>
+          <h3>${esc(p.name)}</h3>
+          ${p.subtitle ? `<div class="mono" style="font-size:12px;color:var(--faint)">${esc(p.subtitle)}</div>` : ''}</div>
+        <button class="pm-close" type="button" aria-label="Close">X</button>
+      </div>
+      ${meta ? `<div class="pm-meta">${meta}</div>` : ''}
+      ${mission ? `<h4>// mission</h4><ul>${mission}</ul>` : ''}
+      ${outcome ? `<h4>// outcome</h4><ul>${outcome}</ul>` : ''}
+      ${members ? `<h4>// team</h4><ul class="pm-members">${members}</ul>` : ''}
+      ${gallery ? `<h4>// photos</h4><div class="pm-gallery">${gallery}</div>` : ''}`;
+    overlay.classList.add('open');
+    document.body.classList.add('pm-open');
+    sheet.querySelector('.pm-close').focus();
+  }
+
+  // Fullscreen photo viewer for the project galleries
+  const lb = document.createElement('div');
+  lb.className = 'lb-overlay';
+  lb.innerHTML = '<button class="lb-close" type="button" aria-label="Close photo">X</button>'
+    + '<button class="lb-nav lb-prev" type="button" aria-label="Previous photo">&#8249;</button>'
+    + '<img alt="">'
+    + '<button class="lb-nav lb-next" type="button" aria-label="Next photo">&#8250;</button>'
+    + '<div class="lb-count"></div>';
+  document.body.appendChild(lb);
+  const lbImg = lb.querySelector('img'), lbCount = lb.querySelector('.lb-count');
+  let lbList = [], lbAt = 0;
+
+  function showPhoto(n) {
+    if (!lbList.length) return;
+    lbAt = (n + lbList.length) % lbList.length;
+    lbImg.src = lbList[lbAt];
+    lbCount.textContent = lbList.length > 1 ? (lbAt + 1) + ' / ' + lbList.length : '';
+    lb.querySelectorAll('.lb-nav').forEach(b => { b.style.display = lbList.length > 1 ? 'block' : 'none'; });
+  }
+  function openPhoto(src) {
+    // only photos that actually loaded (broken ones hide themselves)
+    lbList = Array.from(sheet.querySelectorAll('.pm-gallery .lb-thumb'))
+      .filter(b => b.style.display !== 'none')
+      .map(b => b.querySelector('img').getAttribute('src'));
+    showPhoto(Math.max(lbList.indexOf(src), 0));
+    lb.classList.add('open');
+    lb.querySelector('.lb-close').focus();
+  }
+  const closePhoto = () => lb.classList.remove('open');
+
+  $('past-projects').addEventListener('click', (e) => {
+    const card = e.target.closest('[data-project]');
+    if (card) openProject(Number(card.dataset.project));
+  });
+  sheet.addEventListener('click', (e) => {
+    const thumb = e.target.closest('.lb-thumb');
+    if (thumb) openPhoto(thumb.querySelector('img').getAttribute('src'));
+  });
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay || e.target.closest('.pm-close')) closeProject();
+  });
+  lb.addEventListener('click', (e) => {
+    if (e.target.closest('.lb-prev')) return showPhoto(lbAt - 1);
+    if (e.target.closest('.lb-next')) return showPhoto(lbAt + 1);
+    if (e.target === lb || e.target.closest('.lb-close')) closePhoto();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (lb.classList.contains('open')) {
+      if (e.key === 'Escape') closePhoto();
+      else if (e.key === 'ArrowLeft') showPhoto(lbAt - 1);
+      else if (e.key === 'ArrowRight') showPhoto(lbAt + 1);
+      return;
+    }
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeProject();
+  });
 }
 
 // --- Link hydration (any element with data-link="key") ---

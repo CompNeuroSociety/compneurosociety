@@ -131,11 +131,69 @@ export const APPLICATIONS = {
 
 export const CURRENT_PROJECT = null;
 
+// Past project teams, newest first. Each card on projects.html opens a detail
+// view built from the fields below. Every field is optional except name and
+// summary - anything left empty or [] is simply not shown, so it is safe to
+// push with sections unfinished.
+//
+// HOW TO FINISH THESE (the bullets below are facts only - no filler):
+//   members: add one entry per person, { name, major, role } - role optional
+//            e.g. { name: "Jane Doe", major: "Computer Science", role: "project lead" }
+//   mission: 1-3 short bullets - why this paper/competition, what members
+//            were meant to get out of it
+//   outcome: 1-3 short bullets - how far it got, what you would do differently
+//   gallery: add more image paths as you find photos
 export const PAST_PROJECTS = [
-  { name: "Pena Lab Replication -> ReScience", image: "images/projects/PenaPosterGroup.jpg",
-    summary: "Replicated a published computational neuroscience paper in a new tool, mentored by the Pena Lab, working toward a ReScience publication." },
-  { name: "Brain-to-Text Competition Team", image: "images/projects/brain-to-text-1.jpg",
-    summary: "Decoded neural recordings into text for the Brain-to-Text competition, using signal processing, machine learning, and LLMs." },
-  { name: "Computational Retina Model Team", image: "images/projects/retina-model-1.jpg",
-    summary: "Replicated a published retina model in NEURON, with a focus on visual processing and reproducibility." },
+  {
+    term: "Spring 2026",
+    name: "Drosophila Escape Response Replication",
+    subtitle: "Pena Lab project team",
+    image: "images/projects/PenaPosterGroup.jpg",
+    summary: "Ported a published NEURON model of the giant-fiber escape response in Drosophila. Funded by ORCA.",
+    paper: "Augustin et al. (2019), eNeuro - \"A Computational Model of the Escape Response Latency in the Giant Fiber System of Drosophila melanogaster\"",
+    funding: "Open Research Community Accellerator (ORCA) - Catalytic Awards Program Grant",
+    mentors: "Pena Lab, FAU Stiles-Nicholson Brain Institute",
+    tools: "NEURON, Python",
+    repo: "https://github.com/CompNeuroSociety-at-FSU/fork-escape-response",
+    mission: [
+      "Fork the published model into a shared repository so the whole team started from the same working code.",
+    ],
+    outcome: [
+      "Three members presented a poster at the Florida Consortium of the Neurobiology of Cognition Conference.",
+    ],
+    members: [ { name: "Jonathan Alcineus", role: "Presenting" }, { name: "Gillian Durta", role: "Presenting" }, { name: "Devyani Jain", role: "Presenting" }, { name: "Sebas Ruiz", role: "Project Lead" }, { name: "Max Boyington", role: "Technical Lead" }, { name: "Sebastian Davalos", role: "Workshop Coordinator" },
+    { name: "Mikhail Sautkin", role: "Member" }, { name: "Bianca Blevins", role: "Member" }, { name: "Cooper Wherely", role: "Member" }, { name: "Jordan Schwartz", role: "Member" }, { name: "Mrinal Raina", role: "Member" },
+    { name: "Michael Murgia", role: "Member" }, { name: "Liza Kovalenko", role: "Member" }, { name: "Phuong Nguyen", role: "Member" }
+     ],
+    gallery: ["images/projects/PenaPosterGroup.jpg", "images/projects/pena-work-session.jpg"],
+  },
+  {
+    term: "Fall 2025",
+    name: "Retina Model Replication",
+    image: "images/projects/retina-model-1.jpg",
+    summary: "Replicated a published model of gap junctions and rod Ih conductance in the retina.",
+    paper: "\"A Computational Study on the Role of Gap Junctions and Rod Ih Conductance in the Enhancement of the Dynamic Range of the Retina\"",
+    tools: "NEURON",
+    mission: [
+      "Replicate the published model and try to extend it"
+    ],
+    outcome: [
+      "Mildly successful, and a learning experience for both the members and the project leaders.",
+    ],
+    members: [{ name: "Andre Quintero", role: "Project Lead" }, { name: "Dion Cooper", role: "Project Associate" }, { name: "Sofia Sierra", role: "Project Member" }, { name: "Maggie Raymond", role: "Project Member" },],
+    gallery: ["images/projects/retina-model-1.jpg", "images/projects/retina-model-2.jpg", "images/projects/retina-model-3.jpg"],
+  },
+  {
+    term: "Fall 2025",
+    name: "Brain-to-Text Competition Team",
+    image: "images/projects/brain-to-text-1.jpg",
+    summary: "Entered the 2025 Brain-to-Text Kaggle competition, decoding neural recordings into text.",
+    tools: "Python, machine learning, LLMs",
+    mission: [],
+    outcome: [
+      "Mildly successful, and a learning experience for both the members and the project leaders.",
+    ],
+    members: [],
+    gallery: ["images/projects/brain-to-text-1.jpg", "images/projects/brain-to-text-2.jpg", "images/projects/brain-to-text-3.jpg"],
+  },
 ];

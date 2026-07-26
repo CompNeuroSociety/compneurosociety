@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+.venv/
+
+# Full-size photo backups made by scripts/optimize_images.py.
+# Keep them locally as an archive; they don't belong in the repo.
+images/_originals/

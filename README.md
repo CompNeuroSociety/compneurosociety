@@ -24,6 +24,7 @@ Static site for CompNeuroSociety at FSU. No build step, no framework: plain HTML
 | `js/site.js` | Renders site-data into pages, mobile menu, GA4 conversion events |
 | `js/calendar-events.js` | **Generated — do not edit.** Auto-synced from Google Calendar |
 | `scripts/fetch_calendar_events.py` | Generator for the above (stdlib-only Python) |
+| `scripts/optimize_images.py` | Resizes/recompresses `images/` in place — **run after adding photos** (see §7) |
 | `.github/workflows/refresh-events.yml` | Runs the sync every 6h + on demand |
 | `robots.txt`, `sitemap.xml` | Crawler config — **add new pages to the sitemap** |
 | `images/` | All images (member photos in `images/members/`) |
@@ -36,7 +37,7 @@ Static site for CompNeuroSociety at FSU. No build step, no framework: plain HTML
 
 **Add/edit people:** edit `LEADERSHIP`, `GRAD_COUNCIL` (currently commented out — uncomment to show the section), `MENTORS`, or `TEAM`. Put photos in `images/` first. Team-form responses can be converted to paste-ready card objects automatically — see `generateTeamCards()` in §5.
 
-**Projects:** set `CURRENT_PROJECT` to an object to feature an active team, or `null` to show the "forming soon" placeholder. `APPLICATIONS.open` (true/false) flips the apply button; `closedNote` is the message shown when closed. Past teams go in `PAST_PROJECTS`.
+**Projects:** set `CURRENT_PROJECT` to an object to feature an active team, or `null` to show the "forming soon" placeholder. `APPLICATIONS.open` (true/false) flips the apply button; `closedNote` is the message shown when closed. Past teams go in `PAST_PROJECTS`, newest first. Each entry renders as a **clickable card** on projects.html that opens a detail view; only `name`, `summary`, and `image` are required. Optional fields — `term`, `subtitle`, `paper`, `funding`, `mentors`, `tools`, `repo`, `mission[]`, `outcome[]`, `members[{name, major, role}]`, `gallery[]` — each render as their own section, and **anything empty or `[]` is skipped**, so it's safe to publish a project with sections still unwritten. Gallery images that don't exist yet hide themselves, so you can list a filename before adding the photo.
 
 **Links:** every form/social/external URL is a key in `LINKS`. HTML elements use `data-link="key"` and get hydrated by `site.js` — change the URL once in `LINKS` and every page updates. (Exception: the footer Contact link is hardcoded in each HTML file's footer — update all 8 if it ever changes.)
 
@@ -90,13 +91,42 @@ If automations misbehave: script editor → left sidebar → **Executions** show
 - **Duplicate-tracking warning — resolve this.** Every page loads **both** a direct GA4 tag (`gtag.js` for `G-2QT79J734H`) **and** Google Tag Manager (`GTM-KGLRCKXQ`). If that GTM container also has a GA4 configuration tag for the same property, page views and events are **counted twice**. Check GTM (tagmanager.google.com → the container → Tags): if its only tag is GA4 for `G-2QT79J734H`, remove the GTM `<script>`/`<noscript>` snippets from the eight pages' `<head>`/`<body>` and keep the direct `gtag.js` (which is what `site.js` events use). If GTM holds *other* tags you rely on, instead delete the direct `gtag.js` config and move GA4 into GTM. Either way, load GA4 **once**.
 - **Search Console:** the sitemap is at `https://compneurosociety.com/sitemap.xml` — submit it once under the club's Search Console property.
 
-## 7. New webmaster access checklist
+## 7. Photos — always run the optimizer
+
+Phone and camera photos are 3–13 MB each; nothing on this site is ever displayed larger than ~1600px. Before this was fixed, `people.html` shipped **25.7 MB** (one headshot was 13 MB on its own) — on a phone at the involvement fair, that page effectively doesn't load.
+
+**Whenever you add or replace anything in `images/`:**
+
+```bash
+pip install Pillow                              # first time only
+python3 scripts/optimize_images.py --dry-run    # see what it would do
+python3 scripts/optimize_images.py              # do it
+```
+
+It downscales, recompresses, strips EXIF, and keeps the same filenames and formats, so no HTML or JS references change. Full-size originals are copied to `images/_originals/` (git-ignored) the first time each file is touched, so it's safe to re-run and nothing is lost. Size limits live in the `RULES` list at the top of the script — roughly 2x the largest displayed size, per folder:
+
+| Path | Limit | Why |
+|---|---|---|
+| `images/logo.jpeg` | 400px | 40px in the nav, but also the `og:image` social preview |
+| `images/ORCA.png` | 400px | 180px on sponsors.html |
+| `images/projects/*` | 1600px | opened full-screen in the project photo viewer |
+| `images/members/*` | 600px | 190–240px tall cards |
+| everything else | 900px | headshots and event flyers |
+
+All JS-rendered images (people, events, projects, gallery thumbs) plus the ORCA logo carry `loading="lazy"` so they only download when scrolled into view. Layout shift is already handled — `warm-lab.css` fixes explicit dimensions on every image.
+
+**Still outstanding:** `brain_model.obj` is **6.7 MB** and loads on the homepage (the hero iframe is in the viewport, so `loading="lazy"` doesn't defer it). The optimizer doesn't touch 3D models. Options if you want the homepage faster: decimate the mesh, convert to a compressed format like Draco/glTF, or gate the viewer behind a tap on mobile.
+
+## 8. New webmaster access checklist
 
 GitHub repo admin (CompNeuroSociety org) · club Google account (compneurosociety@outlook.com — owns forms, spreadsheet, Apps Script, calendar) · club Outlook inbox (same address — receives alerts/digests) · GA4 property + Search Console · domain DNS (CNAME for compneurosociety.com) · Discord server admin · Instagram/LinkedIn credentials.
 
-## 8. Known issues / TODO
+## 9. Known issues / TODO
 
 - `about.html` links to `constitution.pdf`, which is **not in the repo** (404) — add the PDF or remove the panel.
 - Old Microsoft Forms are still open — close them in the club Microsoft account so responses don't split.
 - `GRAD_COUNCIL` is commented out in `site-data.js` (section auto-hides).
 - Nice-to-have: pre-render people/projects/events cards into static HTML at build time for non-Google crawlers.
+- `brain_model.obj` (6.7 MB) still loads on the homepage — see the note at the end of §7.
+- Accessibility: `--faint` (#5d707f) on the dark background is ~3.6:1 contrast, below WCAG AA for the small mono labels it's used on. Body copy also runs 12.5–14.5px; 16px reads better on phones.
+- No custom `404.html`, and `brain-viz.html` should carry `<meta name="robots" content="noindex">` (it's a thin iframe-only page).
