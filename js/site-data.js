@@ -30,6 +30,7 @@ export const LINKS = {
   instagram: "https://www.instagram.com/compneurosocietyfsu/",
   linkedin: "https://linkedin.com/company/compneurosociety-at-fsu",
 <<<<<<< HEAD
+<<<<<<< HEAD
   discord: "https://discord.gg/6ujAmEEChC",
 =======
 <<<<<<< HEAD
@@ -38,6 +39,9 @@ export const LINKS = {
   discord: "https://discord.gg/6ujAmEEChC",
 >>>>>>> 1f30397 (discord)
 >>>>>>> 784db07 (discord)
+=======
+  discord: "https://discord.gg/6ujAmEEChC",
+>>>>>>> c41766a (discord!)
   hq: "https://hq.fsu.edu/compneurosociety",
   calendar: "https://calendar.google.com/calendar/embed?src=compneurosociety%40gmail.com&ctz=America%2FNew_York",
   email: "compneurosociety@outlook.com",
