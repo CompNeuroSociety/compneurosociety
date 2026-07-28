@@ -29,7 +29,7 @@ export const LINKS = {
   contactForm: "https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform",
   instagram: "https://www.instagram.com/compneurosocietyfsu/",
   linkedin: "https://linkedin.com/company/compneurosociety-at-fsu",
-  discord: "https://discord.gg/jVtSsNzaA",
+  discord: "https://discord.gg/6ujAmEEChC",
   hq: "https://hq.fsu.edu/compneurosociety",
   calendar: "https://calendar.google.com/calendar/embed?src=compneurosociety%40gmail.com&ctz=America%2FNew_York",
   email: "compneurosociety@outlook.com",
