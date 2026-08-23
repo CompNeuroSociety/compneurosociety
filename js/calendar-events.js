@@ -21,6 +21,5 @@ export const CALENDAR_EVENTS = [
   {"title": "Python Basics for Neuro/DataSci Workshop: Part 1", "date": "2025-09-16T18:00", "location": "TBD", "blurb": "Collab event with Codeducation", "image": "images/placeholder.jpg"},
   {"title": "Projects Meeting", "date": "2025-09-16T18:00", "location": "TBA", "blurb": "", "image": "images/placeholder.jpg"},
   {"title": "CNS Projects Start", "date": "2025-09-08T18:00", "location": "TBA", "blurb": "", "image": "images/placeholder.jpg"},
-  {"title": "GBM #1 + Intro to Comp Neuro / Room PDB A204", "date": "2025-09-04T18:00", "location": "Psychology Department Building, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.jpg"},
-  {"title": "Tally Biotech Expo", "date": "2025-07-19T10:00", "location": "Challenger Learning Center of Tallahassee, 200 S Duval St, Tallahassee, FL 32301, USA", "blurb": "", "image": "images/placeholder.jpg"}
+  {"title": "GBM #1 + Intro to Comp Neuro / Room PDB A204", "date": "2025-09-04T18:00", "location": "Psychology Department Building, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.jpg"}
 ];
