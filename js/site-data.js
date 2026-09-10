@@ -70,7 +70,7 @@ export const EVENTS = [
 
 // --- PEOPLE ---
 export const LEADERSHIP = [
-  { name: "Sebastian Davalos", role: "Co-President", photo: "images/SebasDavalos.jpg",
+  { name: "Sebastian Davalos", role: "Co-President", photo: "images/SebasDavalos.JPG",
     bio: "I’m a Computer Engineering student at FSU interested in AI, software development, and computational neuroscience. I currently serve as Co-President of CompNeuroSociety and a Project Lead for ACM, where I enjoy building technical projects and helping other students get involved in research and technology. Outside of academics, I like working on personal coding projects, gaming, and drawing.",
     links: [{ label: "Website", url: "https://sebasad.com/" }, { label: "LinkedIn", url: "https://www.linkedin.com/in/sebastian-davalos/" }] },
     // { name: "Sofia Sierra", role: "Co-President", photo: "images/",
@@ -94,7 +94,7 @@ export const LEADERSHIP = [
   // { name: "Sia Kakkar", role: "Secretary", photo: "images/sia.png",
   //   bio: "I am a sophomore and enjoy doing neuroscience research, particularly on the cognitive effects of eating disorders. I also enjoy playing tennis and painting!",
   //   links: [{ label: "LinkedIn", url: "https://www.linkedin.com/in/sia-kakkar-a4b77427b/" }] },
-  { name: "Bianca Blevins", role: "Social Media Chair", photo: "images/BiancaBlevins.jpg",
+  { name: "Bianca Blevins", role: "Social Media Chair", photo: "images/BiancaBlevins.JPG",
     bio: "I’m a Computer Science student at FSU who loves tech, photography, and learning about anything that sparks my curiosity.",
     links: [{label: "Website", url: "https://biancablevins.dev/"}, { label: "LinkedIn", url: "https://www.linkedin.com/in/bianca-blevins/" }] },  
   { name: "Sebas Ruiz", role: "Founder + E-board Mentor", photo: "images/SebasRuiz.JPG",
