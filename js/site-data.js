@@ -71,7 +71,7 @@ export const EVENTS = [
 // --- PEOPLE ---
 export const LEADERSHIP = [
   { name: "Sebastian Davalos", role: "Co-President", photo: "images/SebasDavalos.JPG",
-    bio: "I’m a Computer Engineering student at FSU interested in AI, software development, and computational neuroscience. I currently serve as Co-President of CompNeuroSociety and a Project Lead for ACM, where I enjoy building technical projects and helping other students get involved in research and technology. Outside of academics, I like working on personal coding projects, gaming, and drawing.",
+    bio: "I’m a sophomore studying Computer Engineering and working with Dr. Zhengguang Lu on quantum-chip research. I’m especially interested in how computer vision and machine learning can help identify materials used in these devices. Outside of class, I enjoy thrifting, drawing, gaming, and playing billiards. Feel free to explore my portfolio or get in touch. I’m always open to learning new concepts and collaborating on projects.",
     links: [{ label: "Website", url: "https://sebasad.com/" }, { label: "LinkedIn", url: "https://www.linkedin.com/in/sebastian-davalos/" }] },
     // { name: "Sofia Sierra", role: "Co-President", photo: "images/",
     // bio: "...",
@@ -82,6 +82,9 @@ export const LEADERSHIP = [
     { name: "Jonathan Alcineus", role: "Workshop Lead", photo: "images/JonathanAlcineus.jpg",
     bio: "I am a postbac student at the FAMU-FSU College of Engineering where I am working on applying to masters programs in Electrical Engineering. My focus is on bioelectronics and brain-computer interfaces, specifically rehabilitative technology. Outside of classes, I am an avid sketch artist.",
     links: [{ label: "LinkedIn", url: "https://www.linkedin.com/in/jonathan-alcineus/" }] },
+    { name: "Gillian Durta", role: "Treasurer", photo: "images/GillianDurta.jpg",
+    bio: "Hello, my name is Gillian, the treasurer of the club. I became interested in computational neuroscience because I love studying how code and technology can be used to help people with psychological disorders and sensory issues live life easier. I have done projects mainly in Python, but am learning how to use R in my classes this semester.",
+    links: [{ label: "Website", url: " https://gillianswritingportfolio.weebly.com/" }, { label: "LinkedIn", url: "https://www.linkedin.com/in/gillian-durta-874013225/" }] },
   // { name: "Upi Shanker", role: "Vice-President + Website Coordinator", photo: "images/upi.jpg",
   //   bio: "I am a Freshman at FSU where I am a research assistant, data analytics intern, and front-end web developer. Outside of academics, I enjoy playing basketball and listening to music!",
   //   links: [{ label: "LinkedIn", url: "https://www.linkedin.com/in/upishanker/" }] },
