@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Unlisted page: nothing else on the site links here, it is not in the nav
+     and not in sitemap.xml. Keep the noindex line below so it stays that way. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Materials and shared opportunities for a co-hosted student workshop.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..900;1,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="css/warm-lab.css" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+<title>Workshop Materials</title>
+<style>
+  /* Scoped to this page so the shared stylesheet stays untouched. */
+  .ws-head { padding-top: 48px; }
+  .ws-metarow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .ws-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .ws-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .ws-org, .ws-card, .ws-opp { background: var(--panel); border: 1px solid var(--line);
+    border-left: 3px solid var(--accent, var(--line)); border-radius: 14px; padding: 18px 20px; }
+  .ws-teal   { --accent: var(--teal); }
+  .ws-purple { --accent: var(--purple); }
+  .ws-pink   { --accent: var(--pink); }
+  .ws-gold   { --accent: var(--gold); }
+  .ws-coral  { --accent: var(--coral); }
+  .ws-org-name { font-weight: 800; font-size: 15px; color: #fff; }
+  .ws-org p { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin: 8px 0 10px; }
+  .ws-org a { font-family: var(--mono); font-size: 11.5px; }
+  .ws-card-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .ws-by { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em;
+    color: var(--accent, var(--teal)); }
+  .ws-card h3, .ws-opp h3 { font-size: 16px; font-weight: 800; color: #fff; margin: 0 0 6px; line-height: 1.3; }
+  .ws-card p, .ws-opp p { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin: 0 0 12px; max-width: 62ch; }
+  .ws-open { display: inline-flex; font-family: var(--mono); font-size: 12px; font-weight: 600;
+    color: var(--bg) !important; background: var(--accent, var(--teal));
+    border-radius: 999px; padding: 8px 18px; }
+  .ws-open:hover { background: var(--coral-btn); color: #fff !important; }
+  .ws-soon { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  .ws-chip { font-family: var(--mono); font-size: 12px; color: var(--muted); cursor: pointer;
+    background: transparent; border: 1px solid #263241; border-radius: 999px; padding: 9px 16px; }
+  .ws-chip:hover { color: var(--accent, var(--teal)); border-color: var(--accent, var(--teal)); }
+  .ws-chip.dead { opacity: .3; cursor: not-allowed; }
+  .ws-chip.dead:hover { color: var(--muted); border-color: #263241; }
+  .ws-chip.active { color: var(--bg); background: var(--accent, var(--teal));
+    border-color: var(--accent, var(--teal)); font-weight: 600; }
+  .ws-filters { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0 0; }
+  .ws-chip.ws-tag { font-size: 11.5px; padding: 7px 14px; }
+  .ws-filterbar { border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px 20px;
+    background: var(--panel); }
+  .ws-filterbar .ws-lab { font-family: var(--mono); font-size: 11px; color: var(--faint);
+    letter-spacing: .06em; }
+  .ws-filterbar .ws-row + .ws-row { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .ws-count { font-family: var(--mono); font-size: 11.5px; color: var(--teal); margin-top: 16px; }
+  .ws-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .ws-pill { font-family: var(--mono); font-size: 10px; letter-spacing: .04em; cursor: pointer;
+    color: var(--faint); border: 1px solid #263241; border-radius: 999px; padding: 3px 9px; }
+  .ws-pill:hover { color: var(--accent, var(--teal)); border-color: var(--accent, var(--teal)); }
+  .ws-pill.on { color: var(--bg); background: var(--accent, var(--teal));
+    border-color: var(--accent, var(--teal)); font-weight: 600; }
+  /* Two-up and tight: these are short listings, not articles. */
+  .ws-opps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 12px; }
+  .ws-opp { display: flex; flex-direction: column; padding: 13px 15px; }
+  .ws-opp[hidden], .section[hidden] { display: none; }
+  .ws-opp .ws-card-top { gap: 6px; margin-bottom: 7px; }
+  .ws-opp h3 { font-size: 14.5px; margin: 0 0 3px; }
+  .ws-opp p { font-size: 12px; line-height: 1.5; margin: 0; max-width: none; }
+  .ws-opp-main { flex: 1; }
+  .ws-opp .ws-pills { margin-top: 9px; }
+  .ws-opp-side { margin-top: 10px; }
+  .ws-opp .ws-open { padding: 6px 15px; font-size: 11.5px; }
+  .ws-opp .tag, .ws-opp .ws-by { font-size: 9.5px; padding: 3px 8px; }
+  .ws-opp.is-closed { opacity: .55; }
+  .ws-prog { border-bottom: 1px solid var(--line); padding: 18px 2px; }
+  .ws-prog.is-closed { opacity: .5; }
+  .ws-prog-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .ws-host { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  .ws-prog h3 { font-size: 16px; font-weight: 800; color: #fff; margin: 0 0 5px; line-height: 1.3; }
+  .ws-prog p { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin: 0 0 10px; max-width: 78ch; }
+  .ws-prog-foot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .ws-elig { font-family: var(--mono); font-size: 11px; color: var(--teal);
+    border: 1px solid var(--line-teal); border-radius: 999px; padding: 4px 10px; }
+  .ws-prog-foot a { font-family: var(--mono); font-size: 11.5px; font-weight: 600; }
+  .ws-res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .ws-res { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 15px 17px; }
+  .ws-res a { font-family: var(--mono); font-size: 12.5px; font-weight: 600; }
+  .ws-res p { font-size: 12px; color: var(--muted); line-height: 1.55; margin: 7px 0 0; }
+  .ws-note { font-size: 12.5px; color: var(--faint); line-height: 1.7; max-width: 82ch; margin-top: 18px; }
+  .ws-empty { font-family: var(--mono); font-size: 12.5px; color: var(--faint);
+    border: 1px dashed #263241; border-radius: 14px; padding: 22px; text-align: center; }
+  .ws-sechead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap; margin-bottom: 14px; }
+  .ws-sechead h2 { font-size: 22px; font-weight: 900; color: #fff; margin: 0; }
+  @media (max-width: 960px) {
+    .ws-grid, .ws-cards, .ws-res-grid { grid-template-columns: 1fr; }
+    .ws-opps-grid { grid-template-columns: 1fr; }
+  }
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2QT79J734H"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-2QT79J734H');</script>
+</head>
+<body>
+
+<div class="container ws-head">
+  <p class="crumb" id="ws-kicker">// workshop</p>
+  <h1 class="display" id="ws-title">Workshop</h1>
+  <p class="lede" style="max-width:68ch;margin-top:14px" id="ws-blurb"></p>
+  <div class="ws-metarow" id="ws-meta"></div>
+  <div style="margin-top:22px" id="ws-register"></div>
+</div>
+
+<div class="container section" id="orgs">
+  <div class="ws-sechead"><h2>Co-hosted by</h2>
+    <span class="mono" style="font-size:12px;color:var(--faint)">// four orgs, one room</span></div>
+  <div class="ws-grid" id="ws-orgs"></div>
+</div>
+
+<div class="container section" id="materials-section" hidden>
+  <div class="ws-sechead"><h2>Materials</h2>
+    <span class="mono" style="font-size:12px;color:var(--faint)">// open these during the session</span></div>
+  <div class="ws-cards" id="ws-materials"></div>
+</div>
+
+<div class="container section" id="filters">
+  <div class="ws-filterbar">
+    <div class="ws-row">
+      <span class="ws-lab">// by org</span>
+      <div class="ws-filters" id="ws-filters"></div>
+    </div>
+    <div class="ws-row">
+      <span class="ws-lab">// by field</span>
+      <div class="ws-filters" id="ws-tagfilters"></div>
+    </div>
+    <div class="ws-row">
+      <span class="ws-lab">// by fit</span>
+      <div class="ws-filters" id="ws-fitfilters"></div>
+    </div>
+    <div class="ws-count" id="ws-count"></div>
+    <div class="mono" style="font-size:11px;color:var(--faint);margin-top:6px">// filters apply to the opportunities and programs below</div>
+  </div>
+</div>
+
+<div class="container section" id="opps-section">
+  <div class="ws-sechead"><h2>Shared opportunities</h2>
+    <span class="mono" style="font-size:12px;color:var(--faint)">// open to members of all four orgs</span></div>
+  <div class="ws-opps-grid" id="ws-opps"></div>
+  <div class="ws-empty" data-empty hidden>nothing here matches both filters</div>
+</div>
+
+<div class="container section" id="summer-programs" data-section-org="cns">
+  <div class="ws-sechead"><h2>Summer research programs</h2>
+    <span class="mono" style="font-size:12px;color:var(--faint)">// CompNeuroSociety + ACM - Summer 2027 cycle, soonest deadline first</span></div>
+  <p class="lede" style="max-width:74ch;font-size:14px;margin:0 0 6px">A shortened version of the CNS comp-neuro internship list, plus the summer research programs off ACM's list - they are the same kind of thing and share a deadline season. Apply to around 10, not 3 - acceptance rates at the named programs are 1-15%. Ask for letters by October.</p>
+  <div id="ws-programs"></div>
+  <div class="ws-empty" data-empty hidden>no program carries this tag - clear the tag filter to see the rest</div>
+  <p class="ws-note" id="ws-prognote"></p>
+
+  <div class="ws-sechead" style="margin-top:34px"><h2 style="font-size:18px">Portals and listings</h2>
+    <span class="mono" style="font-size:12px;color:var(--faint)">// make accounts in October</span></div>
+  <div class="ws-res-grid" id="ws-resources"></div>
+</div>
+
+<div class="container section" id="cs-internships" data-section-org="acm">
+  <div class="ws-sechead"><h2>CS internships &amp; programs</h2>
+    <span class="mono" style="font-size:12px;color:var(--faint)">// ACM - Summer 2027 cycle, soonest deadline first</span></div>
+  <p class="lede" style="max-width:74ch;font-size:14px;margin:0 0 6px">Industry, government, and open source, for CS majors at any year. The ones open right now are at the top; ACM's summer research programs are up with the rest of the research, above.</p>
+  <div id="ws-cs-programs"></div>
+  <p class="ws-note" id="ws-csnote"></p>
+
+  <div class="ws-sechead" style="margin-top:34px"><h2 style="font-size:18px">Trackers and portals</h2>
+    <span class="mono" style="font-size:12px;color:var(--faint)">// check these weekly in the fall</span></div>
+  <div class="ws-res-grid" id="ws-cs-resources"></div>
+</div>
+
+<div class="container section" id="bsa-programs" data-section-org="bsa">
+  <div class="ws-sechead"><h2>Business &amp; STEM opportunities</h2>
+    <span class="mono" style="font-size:12px;color:var(--faint)">// BSA - Summer 2027 cycle, soonest deadline first</span></div>
+  <p class="lede" style="max-width:74ch;font-size:14px;margin:0 0 6px">Where neuroscience meets business, policy, and industry - the commercial side of biotech, the business of drug companies, and science policy. BSA's research fellowship is up with the summer research programs; the org chips pull each org's listings out of every section on this page.</p>
+  <div id="ws-bsa-programs"></div>
+  <div class="ws-empty" data-empty hidden>no listing carries this tag - clear the tag filter to see the rest</div>
+  <p class="ws-note" id="ws-bsanote"></p>
+
+  <div class="ws-sechead" style="margin-top:34px"><h2 style="font-size:18px">Where to look next</h2>
+    <span class="mono" style="font-size:12px;color:var(--faint)">// the Dana network lists more than fits here</span></div>
+  <div class="ws-res-grid" id="ws-bsa-resources"></div>
+</div>
+
+<div class="container section" style="padding-bottom:56px">
+  <div class="panel band">
+    <div>
+      <div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:10px">// after today</div>
+      <div style="font-size:20px;font-weight:900;color:#fff">Keep this link - deadlines and new listings get updated here.</div>
+      <div class="mono" style="font-size:12px;color:var(--muted);margin-top:8px" id="ws-footnote"></div>
+    </div>
+    <div id="ws-register-foot"></div>
+  </div>
+</div>
+
+<script type="module" src="js/workshop.js"></script>
+</body>
+</html>
