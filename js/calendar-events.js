@@ -4,7 +4,7 @@
 export const CALENDAR_EVENTS = [
   {"title": "GBM 4", "date": "2026-12-03T18:30", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "A204", "image": "images/placeholder.jpg"},
   {"title": "GBM 3", "date": "2026-10-29T18:30", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "A204", "image": "images/placeholder.jpg"},
-  {"title": "GBM 2 - Why you should land a research internship!", "date": "2026-10-01T18:30", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "PDB A204", "image": "images/placeholder.jpg"},
+  {"title": "GBM 2 - Why you should land a research internship!", "date": "2026-10-01T18:30", "location": "(UPDATED LOCATION) Bellamy Room 0004", "blurb": "BEL 0004", "image": "images/placeholder.jpg"},
   {"title": "Workshop 3!", "date": "2026-09-23T18:30", "location": "Rogers Building, 117 N Woodward Ave, Tallahassee, FL 32304, USA", "blurb": "OSB 0108", "image": "images/placeholder.jpg"},
   {"title": "Involvement Fair!", "date": "2026-08-27T17:00", "location": "Donald L. Tucker Civic Center, 505 W Pensacola St, Tallahassee, FL 32301, USA", "blurb": "Come find us!", "image": "images/placeholder.jpg"},
   {"title": "Pena Lab Project Meeting 10 [Room PDB A204]", "date": "2026-04-13T18:00", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.jpg"},
