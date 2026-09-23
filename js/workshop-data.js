@@ -36,7 +36,7 @@ export const META = {
   title: "Cross-Org Workshop",
   kicker: "CompNeuroSociety x ACM x CELLS x Business & STEM Association",
   date: "2026-10-01T18:30",
-  location: "Psychology Dept - Room PDB A204",
+  location: "(UPDATED LOCATION) Bellamy Room 0004",
   blurb: "The opportunities our four orgs are sharing with each other's members, in one place. Filter by org or by what you are eligible for.",
   footNote: "Questions during the workshop? Flag down anyone with an org shirt on.",
   // The registration form. Drop `register` entirely and both buttons disappear
