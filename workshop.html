@@ -88,6 +88,10 @@
   .ws-res a { font-family: var(--mono); font-size: 12.5px; font-weight: 600; }
   .ws-res p { font-size: 12px; color: var(--muted); line-height: 1.55; margin: 7px 0 0; }
   .ws-note { font-size: 12.5px; color: var(--faint); line-height: 1.7; max-width: 82ch; margin-top: 18px; }
+  .ws-help { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+    margin-top: 22px; padding: 18px 20px; border-left: 3px solid var(--teal); }
+  .ws-help p { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 4px 0 0; max-width: 62ch; }
+  .ws-help[hidden] { display: none; }
   .ws-empty { font-family: var(--mono); font-size: 12.5px; color: var(--faint);
     border: 1px dashed #263241; border-radius: 14px; padding: 22px; text-align: center; }
   .ws-sechead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
@@ -156,6 +160,7 @@
   <div id="ws-programs"></div>
   <div class="ws-empty" data-empty hidden>no program carries this tag - clear the tag filter to see the rest</div>
   <p class="ws-note" id="ws-prognote"></p>
+  <div class="panel ws-help" id="ws-proghelp" hidden></div>
 
   <div class="ws-sechead" style="margin-top:34px"><h2 style="font-size:18px">Portals and listings</h2>
     <span class="mono" style="font-size:12px;color:var(--faint)">// make accounts in October</span></div>

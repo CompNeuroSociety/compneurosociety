@@ -283,6 +283,21 @@ renderPrograms($('ws-programs'), SUMMER_PROGRAMS, 'cns');
 renderResources($('ws-resources'), D.PROGRAM_RESOURCES);
 if ($('ws-prognote')) $('ws-prognote').textContent = D.PROGRAM_NOTE || '';
 
+// --- Application-help form for the comp-neuro / NeuroAI / comp-psychiatry
+// --- programs. Drops out if PROGRAM_HELP is missing or has no url. ---
+const help = D.PROGRAM_HELP || {};
+if ($('ws-proghelp')) {
+  if (help.url) {
+    $('ws-proghelp').innerHTML = `
+      <div>
+        <div class="mono" style="font-size:11px;color:var(--teal);margin-bottom:6px">// need a second pair of eyes?</div>
+        <p>${esc(help.blurb || '')}</p>
+      </div>
+      <a class="ws-open" href="${esc(help.url)}" target="_blank" rel="noopener">${esc(help.label || 'Request application help')}</a>`;
+  }
+  show($('ws-proghelp'), !!help.url);
+}
+
 renderPrograms($('ws-cs-programs'), CS_INTERNSHIPS, 'acm');
 renderResources($('ws-cs-resources'), D.CS_RESOURCES);
 if ($('ws-csnote')) $('ws-csnote').textContent = D.CS_NOTE || '';

@@ -22,6 +22,8 @@
 //             separate things.
 //  • MATERIALS   - optional, and currently not exported at all. See the note
 //             above OPPORTUNITIES if you want a handouts section back.
+//  • PROGRAM_HELP - the application-help form under the summer programs.
+//             Drop it (or blank its `url`) and the callout disappears.
 //
 //  The org and tag filters apply to the LISTINGS only (opportunities and
 //  summer programs). Every listing takes `tags: [...]`. Visitors filter by org
@@ -312,13 +314,6 @@ export const SUMMER_PROGRAMS = [
     tags: ["compneuro", "data", "research", "paid", "postbac"],
     url: "https://alleninstitute.org/careers/internships" },
 
-  { name: "SPICE - Summer Program in Computational Psychiatry Education", host: "Mount Sinai, New York NY",
-    focus: "Two weeks of lectures then six weeks on a mentored project, and the only computational psychiatry program of its kind. Mount Sinai describes it as built for high school students, while the course materials say high school AND undergraduate - so email the Center before you invest time in an application.",
-    deadline: "", when: "watch the page from late winter", estimated: false,
-    eligibility: "16+; local students preferred (in person)",
-    tags: ["compneuro", "bio", "research", "beginner"],
-    url: "https://www.neurocpu.org/spice" },
-
   { name: "DOE SULI", host: "17 national labs - Oak Ridge (neuromorphic), Sandia",
     focus: "Not computational neuroscience, but a strong quantitative credential that pays well.",
     deadline: "", when: "~early October and January, varies by term", estimated: false,
@@ -344,6 +339,14 @@ export const PROGRAM_RESOURCES = [
   { label: "comp-neuro mailing list", url: "https://lists.cnsorg.org/hyperkitty/list/comp-neuro@lists.cnsorg.org/",
     note: "Institutes post internships here directly, often before the web page updates." },
 ];
+
+// Application-help callout, printed under the summer-programs list. `label` is
+// the button text; `blurb` is the line beside it. Blank the url to hide it.
+export const PROGRAM_HELP = {
+  url: "https://forms.gle/oqdpn2mprWb9XTJMA",
+  label: "Request application help",
+  blurb: "Applying to a computational neuroscience or NeuroAI program? CNS members will look over your materials and help you plan the application. Fill out the form and we will reach out.",
+};
 
 // Shown under the summer-programs list.
 export const PROGRAM_NOTE = "Verify every deadline on the program's own page before applying - dates marked \"est.\" are last cycle's and will shift by a few days. Most of these require one academic year remaining after the summer; if you graduate in spring 2027, look at Kempner, Allen ASPIRE, Flatiron, and direct lab outreach.";
