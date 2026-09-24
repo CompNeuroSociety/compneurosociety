@@ -22,7 +22,7 @@
 //             separate things.
 //  • MATERIALS   - optional, and currently not exported at all. See the note
 //             above OPPORTUNITIES if you want a handouts section back.
-//  • PROGRAM_HELP - the application-help form under the summer programs.
+//  • PROGRAM_HELP - the application-help form above the summer programs.
 //             Drop it (or blank its `url`) and the callout disappears.
 //
 //  The org and tag filters apply to the LISTINGS only (opportunities and
@@ -340,7 +340,7 @@ export const PROGRAM_RESOURCES = [
     note: "Institutes post internships here directly, often before the web page updates." },
 ];
 
-// Application-help callout, printed under the summer-programs list. `label` is
+// Application-help callout, printed above the summer-programs list. `label` is
 // the button text; `blurb` is the line beside it. Blank the url to hide it.
 export const PROGRAM_HELP = {
   url: "https://forms.gle/oqdpn2mprWb9XTJMA",

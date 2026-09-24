@@ -189,6 +189,14 @@ function apply() {
   document.querySelectorAll('[data-tag-pill]').forEach(p => {
     p.classList.toggle('on', p.dataset.tagPill === activeTag);
   });
+  // Stripe each program list over its visible rows, so hidden ones don't
+  // leave two same-colored programs next to each other.
+  ['ws-programs', 'ws-cs-programs', 'ws-bsa-programs'].forEach(id => {
+    let i = 0;
+    $(id)?.querySelectorAll('.ws-prog').forEach(el => {
+      if (!el.hidden) el.classList.toggle('alt', i++ % 2 === 1);
+    });
+  });
   // Empty states sit directly after the list they describe.
   document.querySelectorAll('[data-empty]').forEach(el => {
     const list = el.previousElementSibling;

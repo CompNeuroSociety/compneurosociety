@@ -73,7 +73,12 @@
   .ws-opp .ws-open { padding: 6px 15px; font-size: 11.5px; }
   .ws-opp .tag, .ws-opp .ws-by { font-size: 9.5px; padding: 3px 8px; }
   .ws-opp.is-closed { opacity: .55; }
-  .ws-prog { border-bottom: 1px solid var(--line); padding: 18px 2px; }
+  /* Rows alternate between two tints so neighbouring programs read apart;
+     `alt` is set in workshop.js over the visible rows only, so the stripes
+     stay even while filters hide some. */
+  .ws-prog { border-left: 3px solid var(--teal); border-radius: 12px; padding: 16px 18px;
+    margin-top: 10px; background: var(--panel); }
+  .ws-prog.alt { border-left-color: var(--purple); background: var(--panel2); }
   .ws-prog.is-closed { opacity: .5; }
   .ws-prog-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
   .ws-host { font-family: var(--mono); font-size: 11px; color: var(--faint); }
@@ -89,8 +94,11 @@
   .ws-res p { font-size: 12px; color: var(--muted); line-height: 1.55; margin: 7px 0 0; }
   .ws-note { font-size: 12.5px; color: var(--faint); line-height: 1.7; max-width: 82ch; margin-top: 18px; }
   .ws-help { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
-    margin-top: 22px; padding: 18px 20px; border-left: 3px solid var(--teal); }
-  .ws-help p { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 4px 0 0; max-width: 62ch; }
+    margin: 18px 0 8px; padding: 20px 22px; background: rgba(109,185,201,.1);
+    border: 1px solid var(--teal); border-left: 5px solid var(--teal);
+    box-shadow: 0 0 28px rgba(109,185,201,.12); }
+  .ws-help p { font-size: 14px; color: var(--text); line-height: 1.6; margin: 4px 0 0; max-width: 62ch; }
+  .ws-help .ws-open { font-size: 13px; padding: 10px 22px; }
   .ws-help[hidden] { display: none; }
   .ws-empty { font-family: var(--mono); font-size: 12.5px; color: var(--faint);
     border: 1px dashed #263241; border-radius: 14px; padding: 22px; text-align: center; }
@@ -157,10 +165,10 @@
   <div class="ws-sechead"><h2>Summer research programs</h2>
     <span class="mono" style="font-size:12px;color:var(--faint)">// CompNeuroSociety + ACM - Summer 2027 cycle, soonest deadline first</span></div>
   <p class="lede" style="max-width:74ch;font-size:14px;margin:0 0 6px">A shortened version of the CNS comp-neuro internship list, plus the summer research programs off ACM's list - they are the same kind of thing and share a deadline season. Apply to around 10, not 3 - acceptance rates at the named programs are 1-15%. Ask for letters by October.</p>
+  <div class="panel ws-help" id="ws-proghelp" hidden></div>
   <div id="ws-programs"></div>
   <div class="ws-empty" data-empty hidden>no program carries this tag - clear the tag filter to see the rest</div>
   <p class="ws-note" id="ws-prognote"></p>
-  <div class="panel ws-help" id="ws-proghelp" hidden></div>
 
   <div class="ws-sechead" style="margin-top:34px"><h2 style="font-size:18px">Portals and listings</h2>
     <span class="mono" style="font-size:12px;color:var(--faint)">// make accounts in October</span></div>
