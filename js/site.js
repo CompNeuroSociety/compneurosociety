@@ -148,12 +148,15 @@ if ($('current-project')) {
             <span style="font-size:13px;line-height:1.55">${esc(c)}</span></div>`).join('')}
         </div>
         <div style="border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
-          <div><div class="mono" style="font-size:11px;color:var(--purple);margin-bottom:6px">// mentorship</div>
-            <div style="font-size:13px;line-height:1.6">${esc(P.mentors)}</div></div>
-          <div><div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:6px">// the paper</div>
-            <a class="mono" style="font-size:12px;word-break:break-all;line-height:1.6" href="${P.paperUrl}" target="_blank">eneuro.org -> ENEURO.0423-18.2019 (pdf)</a></div>
+          ${P.mentors ? `<div><div class="mono" style="font-size:11px;color:var(--purple);margin-bottom:6px">// mentorship</div>
+            <div style="font-size:13px;line-height:1.6">${esc(P.mentors)}</div></div>` : ''}
+          ${P.paperUrl ? `<div><div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:6px">// the paper</div>
+            <a class="mono" style="font-size:12px;word-break:break-all;line-height:1.6" href="${P.paperUrl}" target="_blank">${esc(P.paperLabel || P.paperUrl)}</a></div>` : ''}
+          ${P.hubUrl ? `<div><div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:6px">// participants</div>
+            <div style="font-size:13px;line-height:1.6">Workshop recordings, paper links, dates, and news are on the project hub.</div></div>` : ''}
         </div></div>
-      <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap">${apply}</div>`;
+      <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap">
+        ${P.hubUrl ? `<a class="btn teal" href="${P.hubUrl}">Open the project hub</a>` : ''}${apply}</div>`;
   } else {
     const apply = A.open
       ? `<a class="btn" href="${A.formUrl}" target="_blank">Apply for the next project team</a>`

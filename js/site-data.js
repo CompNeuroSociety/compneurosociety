@@ -147,7 +147,20 @@ export const APPLICATIONS = {
   formUrl: "https://docs.google.com/forms/d/e/1FAIpQLScRBfy8KiEscIm7tHRrBUQkJ1IZqItF0BFHA04Gez7lOR_j0w/viewform",
 };
 
-export const CURRENT_PROJECT = null;
+// `hubUrl` adds an "Open the project hub" button; `mentors` and `paperUrl`
+// (with `paperLabel` as the link text) are optional and hidden when empty.
+export const CURRENT_PROJECT = {
+  term: "Fall 2026",
+  name: "Figure Replication Mini-Project",
+  meeting: "workshop series - dates on the hub",
+  summary: "Work through our workshop series, pick a computational neuroscience paper, and replicate one of its figures by the end of the semester.",
+  cadence: [
+    "Attend the workshops, or watch the recordings on the hub",
+    "Pick a paper and the figure you will replicate",
+    "Rebuild the figure from the paper's methods, with help on Discord",
+  ],
+  hubUrl: "mini-project.html",
+};
 
 // Past project teams, newest first. Each card on projects.html opens a detail
 // view built from the fields below. Every field is optional except name and

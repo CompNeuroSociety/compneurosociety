@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Hub for this semester's CompNeuroSociety figure-replication mini-project: workshop recordings, paper links, upcoming dates, and news.">
+<meta name="author" content="Upi Shanker, Sebastian Ruiz">
+<link rel="canonical" href="https://compneurosociety.com/mini-project.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CompNeuroSociety at FSU">
+<meta property="og:title" content="Mini-Project Hub - CompNeuroSociety at FSU">
+<meta property="og:description" content="Workshop recordings, paper links, upcoming dates, and news for this semester's figure-replication mini-project.">
+<meta property="og:url" content="https://compneurosociety.com/mini-project.html">
+<meta property="og:image" content="https://compneurosociety.com/images/logo.jpeg">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..900;1,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="css/warm-lab.css" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+<style>
+  /* Scoped to this page so the shared stylesheet stays untouched. */
+  .mp-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+  .mp-links a { padding: 10px 20px; font-size: 12.5px; }
+  .mp-due { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
+  .mp-due:empty { display: none; }
+  .mp-sub { font-size: 11.5px; color: var(--faint); margin-top: 4px; }
+  .mp-sechead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap; margin-bottom: 14px; }
+  .mp-sechead h2 { font-size: 22px; font-weight: 900; color: #fff; margin: 0; }
+  .mp-pink { color: var(--pink); }
+  .mp-sechead > span { font-family: var(--mono); font-size: 12px; color: var(--faint); }
+  .mp-empty { font-family: var(--mono); font-size: 12.5px; color: var(--faint); line-height: 1.7;
+    border: 1px dashed #263241; border-radius: 14px; padding: 22px; text-align: center; }
+
+  .mp-next { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: center;
+    border-radius: 20px; padding: 26px 30px; }
+  .mp-next-date { font-size: 38px; font-weight: 900; color: var(--teal); margin-top: 12px; line-height: 1; }
+  .mp-next h3 { font-size: 22px; font-weight: 900; color: #fff; margin: 0 0 8px; line-height: 1.3; }
+  .mp-next-tba { grid-template-columns: 1fr; }
+  .mp-next p { font-size: 14px; color: var(--muted); line-height: 1.65; margin: 0; max-width: 62ch; }
+
+  .mp-cols { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+  .mp-row { display: grid; grid-template-columns: 78px minmax(0, 1fr) auto; gap: 18px; align-items: center;
+    padding: 14px 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
+  .mp-row + .mp-row { margin-top: 10px; }
+  .mp-row.is-next { border-color: var(--line-teal); }
+  .mp-d { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--faint); }
+  .mp-row.is-next .mp-d { color: var(--teal); }
+  .mp-d small { display: block; font-size: 11px; font-weight: 400; margin-top: 2px; }
+  .mp-main h3 { font-size: 15px; font-weight: 800; color: #fff; margin: 0; line-height: 1.35; }
+  .mp-main p { font-size: 12.5px; color: var(--muted); line-height: 1.55; margin: 4px 0 0; }
+  .mp-side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .mp-play { font-family: var(--mono); font-size: 12px; font-weight: 600; white-space: nowrap;
+    color: var(--bg) !important; background: var(--teal); border-radius: 999px; padding: 8px 16px; }
+  .mp-play:hover { background: var(--coral-btn); color: #fff !important; }
+  .mp-soon { font-family: var(--mono); font-size: 11px; color: var(--faint); white-space: nowrap; }
+  .mp-extra { display: flex; gap: 12px; font-family: var(--mono); font-size: 11.5px; margin-top: 8px; }
+  .mp-side .mp-extra { margin-top: 0; }
+
+  .mp-news { display: grid; grid-template-columns: 58px 1fr; gap: 14px; padding: 14px 0;
+    border-top: 1px solid var(--line); }
+  .mp-news:first-child { border-top: 0; padding-top: 0; }
+  .mp-news-d { font-size: 12px; color: var(--pink); padding-top: 2px; }
+  .mp-news h3 { font-size: 14.5px; font-weight: 800; color: #fff; margin: 0 0 4px; }
+  .mp-news p { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin: 0 0 6px; }
+  .mp-news a { font-size: 11.5px; }
+  .mp-newsbox { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; }
+
+  .mp-papers { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .mp-papers > .mp-empty { grid-column: 1 / -1; }
+  /* Cards alternate between two tints so neighbouring papers read apart. */
+  .mp-paper { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--teal);
+    border-radius: 14px; padding: 16px 18px; }
+  .mp-paper.alt { background: var(--panel2); border-left-color: var(--purple); }
+  .mp-paper-top { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .mp-paper-top:empty { display: none; }
+  .mp-paper h3 { font-size: 14.5px; font-weight: 800; line-height: 1.4; margin: 0; color: #fff; }
+  a.mp-paper { display: flex; flex-direction: column; color: inherit; cursor: pointer;
+    transition: border-color .15s, transform .15s; }
+  a.mp-paper:hover { border-color: var(--teal); transform: translateY(-2px); }
+  a.mp-paper.alt:hover { border-color: var(--purple); }
+  a.mp-paper:hover h3 { color: var(--teal); }
+  a.mp-paper.alt:hover h3 { color: var(--purple); }
+  /* margin-top:auto pins the button to the bottom so a row of cards lines up. */
+  .mp-open-row { margin-top: auto; padding-top: 14px; }
+  .mp-open { display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 600;
+    color: var(--bg); background: var(--teal); border-radius: 999px; padding: 7px 16px; }
+  .mp-paper.alt .mp-open { background: var(--purple); }
+  a.mp-paper:hover .mp-open { background: var(--coral-btn); color: #fff; }
+  .mp-note { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin: 10px 0 0; }
+  .mp-who { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+  @media (max-width: 960px) {
+    .container { padding: 0 16px; }
+    .mp-next { grid-template-columns: 1fr; gap: 14px; padding: 22px; }
+    .mp-cols { grid-template-columns: 1fr; }
+    .mp-row { grid-template-columns: 64px minmax(0, 1fr); }
+    .mp-side { grid-column: 2; align-items: flex-start; }
+  }
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2QT79J734H"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-2QT79J734H');</script>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-KGLRCKXQ');</script>
+<title>Mini-Project Hub - CompNeuroSociety at FSU</title>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KGLRCKXQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav class="nav-bar">
+  <a class="nav-brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo"><b>CompNeuroSociety</b><span class="nav-tag">cns@fsu</span></a>
+  <div class="nav-links">
+    <a href="about.html">About</a>
+    <a href="people.html">People</a>
+    <a href="events.html">Events</a>
+    <a href="projects.html" class="active">Projects</a>
+    <a href="sponsors.html">Sponsors</a>
+    <a href="chapters.html">Chapters</a>
+    <a class="btn-join" href="join.html">Join</a>
+  </div>
+  <button class="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-menu">
+  <div class="mm-head"><span class="mono" style="font-size:12.5px"><span style="color:var(--teal)">cns@fsu</span><span style="color:var(--faint)">:~$</span> menu</span><button class="mm-close" aria-label="Close menu">X</button></div>
+  <div class="mm-list">
+    <a href="about.html">about</a>
+    <a href="people.html">people</a>
+    <a href="events.html">events</a>
+    <a href="projects.html">projects</a>
+    <a href="sponsors.html">sponsors</a>
+    <a href="chapters.html">chapters</a>
+  </div>
+  <div class="mm-foot"><a class="btn teal" href="join.html">./join</a></div>
+</div>
+
+<div class="container" style="padding-top:52px">
+  <p class="crumb" id="mp-kicker">// projects</p>
+  <h1 class="display" id="mp-title">Mini-project</h1>
+  <p class="lede" style="max-width:70ch" id="mp-blurb"></p>
+  <div class="mp-due" id="mp-due"></div>
+  <div class="mp-links" id="mp-links"></div>
+</div>
+
+<div class="container section">
+  <div id="mp-next"></div>
+</div>
+
+<div class="container section">
+  <div class="mp-cols">
+    <div>
+      <div class="mp-sechead"><h2>Workshop series</h2><span>// recordings go up after each session</span></div>
+      <div id="mp-schedule"></div>
+    </div>
+    <div>
+      <div class="mp-sechead"><h2>News</h2><span>// newest first</span></div>
+      <div class="mp-newsbox" id="mp-news"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container section" style="padding-bottom:56px">
+  <div class="mp-sechead"><h2>Papers</h2><span>// pick one, replicate one figure</span></div>
+  <div class="mp-papers" id="mp-papers"></div>
+</div>
+
+<footer class="site-footer"><div class="inner">
+  <div class="gbm">See you at the next GBM</div>
+  <div class="links">
+    <a href="https://www.instagram.com/compneurosocietyfsu/" target="_blank">Instagram</a>
+    <a href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank">LinkedIn</a>
+    <a href="https://discord.gg/6ujAmEEChC" target="_blank">Discord</a>
+    <a href="chapters.html">Chapters</a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" style="color:var(--muted)">Contact</a>
+    <span class="copy">(c) 2026 CompNeuroSociety</span>
+  </div>
+</div></footer>
+<script type="module" src="js/site.js"></script>
+<script type="module" src="js/mini-project.js"></script>
+</body>
+</html>
