@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff">
 <meta name="description" content="This is the hub for this semester's CompNeuroSociety mini-project, with the workshop recordings, paper links, upcoming dates, and news in one place.">
 <meta name="author" content="Upi Shanker, Sebastian Ruiz">
 <link rel="canonical" href="https://compneurosociety.com/mini-project.html">
@@ -15,88 +17,100 @@
 <meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..900;1,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link href="css/warm-lab.css" rel="stylesheet">
+<script src="js/theme.js"></script>
 <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 <style>
-  /* Scoped to this page so the shared stylesheet stays untouched. */
-  .mp-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
-  .mp-links a { padding: 10px 20px; font-size: 12.5px; }
-  .mp-due { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
+  /* Scoped to this page so the shared stylesheet stays untouched. Colors are
+     all design-system tokens, so the page follows the light/dark theme. */
+  .mp-due { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 24px; }
   .mp-due:empty { display: none; }
-  .mp-sub { font-size: 11.5px; color: var(--faint); margin-top: 4px; }
-  .mp-sechead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
-    flex-wrap: wrap; margin-bottom: 14px; }
-  .mp-sechead h2 { font-size: 22px; font-weight: 900; color: #fff; margin: 0; }
+  .mp-links { margin-top: 32px; gap: 16px 28px; }
+  .mp-links .mono-link::after { content: '\2192'; margin-left: 6px; }
+  .mp-sub { font-family: var(--mono); font-size: 12px; color: var(--faint); margin-top: 4px; line-height: 1.5; }
   .mp-pink { color: var(--pink); }
-  .mp-sechead > span { font-family: var(--mono); font-size: 12px; color: var(--faint); }
-  .mp-empty { font-family: var(--mono); font-size: 12.5px; color: var(--faint); line-height: 1.7;
-    border: 1px dashed #263241; border-radius: 14px; padding: 22px; text-align: center; }
+  .mp-empty { font-family: var(--mono); font-size: 13px; color: var(--faint); line-height: 1.7;
+    border: 1px dashed var(--rule-dark); border-radius: 8px; padding: 22px; text-align: center; }
 
-  .mp-next { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: center;
-    border-radius: 20px; padding: 26px 30px; }
-  .mp-next-date { font-size: 38px; font-weight: 900; color: var(--teal); margin-top: 12px; line-height: 1; }
-  .mp-next h3 { font-size: 22px; font-weight: 900; color: #fff; margin: 0 0 8px; line-height: 1.3; }
-  .mp-next-tba { grid-template-columns: 1fr; }
-  .mp-next p { font-size: 14px; color: var(--muted); line-height: 1.65; margin: 0; max-width: 62ch; }
+  /* Next session: a glow card, like the current-project card on projects.html */
+  .mp-next { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 28px 40px; align-items: center;
+    padding: 32px 36px; }
+  .mp-next-date { font-family: var(--mono); font-size: 40px; font-weight: 600; color: var(--teal); margin-top: 16px;
+    line-height: 1; letter-spacing: -.02em; }
+  .mp-next h3 { font-size: 22px; font-weight: 700; color: var(--ink); margin: 0 0 8px; line-height: 1.3; letter-spacing: -.015em; }
+  .mp-next-tba { grid-template-columns: minmax(0, 1fr); }
+  .mp-next p { font-size: 16px; color: var(--muted); line-height: 1.65; margin: 0; max-width: 62ch; }
 
-  .mp-cols { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 28px; align-items: start; }
-  .mp-row { display: grid; grid-template-columns: 78px minmax(0, 1fr) auto; gap: 18px; align-items: center;
-    padding: 14px 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
-  .mp-row + .mp-row { margin-top: 10px; }
-  .mp-row.is-next { border-color: var(--line-teal); }
-  .mp-d { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--faint); }
+  /* Workshop rows: hairline rows, like the events timeline */
+  .mp-cols { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+  .mp-row { display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; gap: 16px 24px; align-items: center;
+    padding: 18px 0; border-top: 1px solid var(--line); }
+  .mp-row:last-child { border-bottom: 1px solid var(--line); }
+  .mp-d { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--faint); line-height: 1.2; }
   .mp-row.is-next .mp-d { color: var(--teal); }
-  .mp-d small { display: block; font-size: 11px; font-weight: 400; margin-top: 2px; }
-  .mp-main h3 { font-size: 15px; font-weight: 800; color: #fff; margin: 0; line-height: 1.35; }
-  .mp-main p { font-size: 12.5px; color: var(--muted); line-height: 1.55; margin: 4px 0 0; }
-  .mp-side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-  .mp-play { font-family: var(--mono); font-size: 12px; font-weight: 600; white-space: nowrap;
-    color: var(--bg) !important; background: var(--teal); border-radius: 999px; padding: 8px 16px; }
-  .mp-play:hover { background: var(--coral-btn); color: #fff !important; }
-  .mp-soon { font-family: var(--mono); font-size: 11px; color: var(--faint); white-space: nowrap; }
-  .mp-extra { display: flex; gap: 12px; font-family: var(--mono); font-size: 11.5px; margin-top: 8px; }
-  .mp-side .mp-extra { margin-top: 0; }
+  .mp-d small { display: block; font-size: 12px; font-weight: 400; margin-top: 4px; }
+  .mp-main h3 { font-size: 16px; font-weight: 700; color: var(--ink); margin: 0; line-height: 1.35; letter-spacing: -.01em; }
+  .mp-main p { font-size: 14px; color: var(--muted); line-height: 1.55; margin: 4px 0 0; }
+  .mp-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; max-width: 240px; }
+  .mp-play { display: inline-flex; align-items: center; font-family: var(--mono); font-size: 13px; font-weight: 600;
+    white-space: nowrap; color: var(--on-teal) !important; background: var(--teal); border-radius: 999px;
+    padding: 0 18px; min-height: 44px; transition: filter .15s; }
+  .mp-play:hover { filter: brightness(.94); }
+  :root[data-theme="dark"] .mp-play:hover { filter: brightness(.88); }
+  .mp-soon { font-family: var(--mono); font-size: 12px; color: var(--faint); white-space: nowrap; }
+  .mp-extra { display: flex; gap: 0 14px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; margin-top: 6px; }
+  .mp-extra a { display: inline-flex; align-items: center; min-height: 36px; }
+  .mp-side .mp-extra { margin-top: 0; justify-content: flex-end; }
 
-  .mp-news { display: grid; grid-template-columns: 58px 1fr; gap: 14px; padding: 14px 0;
+  /* News */
+  .mp-news { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 16px; padding: 16px 0;
     border-top: 1px solid var(--line); }
   .mp-news:first-child { border-top: 0; padding-top: 0; }
-  .mp-news-d { font-size: 12px; color: var(--pink); padding-top: 2px; }
-  .mp-news h3 { font-size: 14.5px; font-weight: 800; color: #fff; margin: 0 0 4px; }
-  .mp-news p { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin: 0 0 6px; }
-  .mp-news a { font-size: 11.5px; }
-  .mp-newsbox { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; }
+  .mp-news:last-child { padding-bottom: 0; }
+  .mp-news-d { font-size: 12px; color: var(--pink); padding-top: 3px; }
+  .mp-news h3 { font-size: 16px; font-weight: 700; color: var(--ink); margin: 0 0 4px; line-height: 1.35; letter-spacing: -.01em; }
+  .mp-news p { font-size: 14px; color: var(--muted); line-height: 1.6; margin: 0; }
+  .mp-news a { display: inline-flex; align-items: center; font-size: 12px; min-height: 36px; }
+  .mp-newsbox { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 22px 24px; }
 
-  .mp-papers { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  /* Papers: cards alternate between two tints so neighbouring papers read apart. */
+  .mp-papers { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
   .mp-papers > .mp-empty { grid-column: 1 / -1; }
-  /* Cards alternate between two tints so neighbouring papers read apart. */
-  .mp-paper { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--teal);
-    border-radius: 14px; padding: 16px 18px; }
+  .mp-paper { background: var(--bg); border: 1px solid var(--line); border-left: 3px solid var(--teal);
+    border-radius: 8px; padding: 20px 22px; }
   .mp-paper.alt { background: var(--panel2); border-left-color: var(--purple); }
-  .mp-paper-top { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .mp-paper-top { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
   .mp-paper-top:empty { display: none; }
-  .mp-paper h3 { font-size: 14.5px; font-weight: 800; line-height: 1.4; margin: 0; color: #fff; }
-  a.mp-paper { display: flex; flex-direction: column; color: inherit; cursor: pointer;
-    transition: border-color .15s, transform .15s; }
-  a.mp-paper:hover { border-color: var(--teal); transform: translateY(-2px); }
+  .mp-paper h3 { font-size: 16px; font-weight: 700; line-height: 1.4; margin: 0; color: var(--ink); letter-spacing: -.01em; }
+  a.mp-paper { display: flex; flex-direction: column; color: inherit; cursor: pointer; transition: border-color .15s; }
+  a.mp-paper:hover { color: inherit; border-color: var(--teal); }
   a.mp-paper.alt:hover { border-color: var(--purple); }
   a.mp-paper:hover h3 { color: var(--teal); }
   a.mp-paper.alt:hover h3 { color: var(--purple); }
   /* margin-top:auto pins the button to the bottom so a row of cards lines up. */
-  .mp-open-row { margin-top: auto; padding-top: 14px; }
-  .mp-open { display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 600;
-    color: var(--bg); background: var(--teal); border-radius: 999px; padding: 7px 16px; }
+  .mp-open-row { margin-top: auto; padding-top: 18px; }
+  .mp-open { display: inline-flex; align-items: center; font-family: var(--mono); font-size: 13px; font-weight: 600;
+    color: var(--on-teal); background: var(--teal); border-radius: 999px; padding: 0 18px; min-height: 44px;
+    transition: filter .15s; }
   .mp-paper.alt .mp-open { background: var(--purple); }
-  a.mp-paper:hover .mp-open { background: var(--coral-btn); color: #fff; }
-  .mp-note { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin: 10px 0 0; }
-  .mp-who { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  a.mp-paper:hover .mp-open { filter: brightness(.94); }
+  :root[data-theme="dark"] a.mp-paper:hover .mp-open { filter: brightness(.88); }
+  .mp-note { font-size: 14px; color: var(--muted); line-height: 1.6; margin: 10px 0 0; }
+  .mp-who { font-size: 13px; color: var(--muted); margin-top: 8px; }
 
+  /* Same breakpoint at which the shared .two-col collapses: the schedule needs the full column once the gutter shrinks */
+  @media (max-width: 1280px) {
+    .mp-cols { grid-template-columns: minmax(0, 1fr); gap: 72px; }
+  }
   @media (max-width: 960px) {
-    .container { padding: 0 16px; }
-    .mp-next { grid-template-columns: 1fr; gap: 14px; padding: 22px; }
-    .mp-cols { grid-template-columns: 1fr; }
-    .mp-row { grid-template-columns: 64px minmax(0, 1fr); }
+    .mp-next { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 24px 22px; }
+    .mp-cols { gap: 56px; }
+    .mp-row { grid-template-columns: 72px minmax(0, 1fr); gap: 12px 18px; }
     .mp-side { grid-column: 2; align-items: flex-start; }
+    .mp-side { max-width: none; }
+    .mp-side .mp-extra { justify-content: flex-start; }
+    .mp-extra a, .mp-news a { min-height: 44px; }
   }
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2QT79J734H"></script>
@@ -106,71 +120,80 @@
 </head>
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KGLRCKXQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<nav class="nav-bar">
-  <a class="nav-brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo"><b>CompNeuroSociety</b><span class="nav-tag">cns@fsu</span></a>
-  <div class="nav-links">
-    <a href="about.html">About</a>
-    <a href="people.html">People</a>
-    <a href="events.html">Events</a>
-    <a href="projects.html" class="active">Projects</a>
-    <a href="sponsors.html">Sponsors</a>
-    <a href="chapters.html">Chapters</a>
-    <a class="btn-join" href="join.html">Join</a>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Neuron field: real Allen Institute reconstructions behind the page; they fire as you scroll (js/neuron.js) -->
+<div class="field" id="neuron-field" aria-hidden="true">
+  <canvas id="neuron-canvas"></canvas>
+  <div class="field-meta">
+    <span class="field-phase" id="neuron-phase">resting potential · −70 mV</span>
+    <span id="neuron-status">Allen Cell Types · loading morphologies…</span>
+    <span id="neuron-list">mouse V1 reconstructions</span>
   </div>
-  <button class="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
-</nav>
-<div class="mobile-menu">
-  <div class="mm-head"><span class="mono" style="font-size:12.5px"><span style="color:var(--teal)">cns@fsu</span><span style="color:var(--faint)">:~$</span> menu</span><button class="mm-close" aria-label="Close menu">X</button></div>
-  <div class="mm-list">
-    <a href="about.html">about</a>
-    <a href="people.html">people</a>
-    <a href="events.html">events</a>
-    <a href="projects.html">projects</a>
-    <a href="sponsors.html">sponsors</a>
-    <a href="chapters.html">chapters</a>
-  </div>
-  <div class="mm-foot"><a class="btn teal" href="join.html">./join</a></div>
 </div>
 
-<div class="container" style="padding-top:52px">
-  <p class="crumb" id="mp-kicker">// projects</p>
-  <h1 class="display" id="mp-title">Mini-project</h1>
-  <p class="lede" style="max-width:70ch" id="mp-blurb"></p>
-  <div class="mp-due" id="mp-due"></div>
-  <div class="mp-links" id="mp-links"></div>
-</div>
-
-<div class="container section">
-  <div id="mp-next"></div>
-</div>
-
-<div class="container section">
-  <div class="mp-cols">
-    <div>
-      <div class="mp-sechead"><h2>Workshop series</h2><span>// recordings go up after each session</span></div>
-      <div id="mp-schedule"></div>
+<header class="site-head" id="site-head">
+  <nav class="nav wrap" aria-label="Primary">
+    <a class="brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo" width="34" height="34"><b>CompNeuroSociety</b><span class="brand-tag">cns@fsu</span></a>
+    <div class="nav-links">
+      <a href="about.html">About</a>
+      <a href="events.html">Events</a>
+      <a href="projects.html" class="active">Projects</a>
+      <a class="nav-join" href="join.html">Join</a>
+      <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch color theme"></button>
     </div>
-    <div>
-      <div class="mp-sechead"><h2>News</h2><span>// newest first</span></div>
-      <div class="mp-newsbox" id="mp-news"></div>
+  </nav>
+  <div class="strip"><div class="strip-inner wrap" id="next-up">
+    <span class="strip-label">NEXT UP</span><span class="strip-note">see what is coming up on the <a href="events.html">events page</a></span>
+  </div></div>
+</header>
+
+<main class="wrap" id="main">
+
+  <section class="page-head">
+    <p class="label" id="mp-kicker">01 — projects</p>
+    <h1 class="h1" id="mp-title">Mini-project</h1>
+    <p class="lede wide" id="mp-blurb"></p>
+    <div class="mp-due" id="mp-due"></div>
+    <div class="cta-row mp-links" id="mp-links"></div>
+  </section>
+
+  <section class="sec tight" aria-labelledby="next-label">
+    <p class="label" id="next-label">02 — next workshop</p>
+    <div id="mp-next"></div>
+  </section>
+
+  <section class="sec tight" aria-labelledby="series-label">
+    <div class="mp-cols">
+      <div>
+        <div class="sec-head"><p class="label" id="series-label">03 — workshop series</p><span class="label">recordings go up after each session</span></div>
+        <div id="mp-schedule"></div>
+      </div>
+      <div>
+        <div class="sec-head"><p class="label" id="news-label">04 — news</p><span class="label">newest first</span></div>
+        <div class="mp-newsbox" id="mp-news"></div>
+      </div>
     </div>
-  </div>
-</div>
+  </section>
 
-<div class="container section" style="padding-bottom:56px">
-  <div class="mp-sechead"><h2>Papers</h2><span>// pick one, replicate one figure</span></div>
-  <div class="mp-papers" id="mp-papers"></div>
-</div>
+  <section class="sec last" aria-labelledby="papers-label">
+    <div class="sec-head"><p class="label" id="papers-label">05 — papers</p><span class="label">pick one, replicate one figure</span></div>
+    <div class="mp-papers" id="mp-papers"></div>
+  </section>
 
-<footer class="site-footer"><div class="inner">
-  <div class="gbm">See you at the next GBM</div>
-  <div class="links">
-    <a href="https://www.instagram.com/compneurosocietyfsu/" target="_blank">Instagram</a>
-    <a href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank">LinkedIn</a>
-    <a href="https://discord.gg/6ujAmEEChC" target="_blank">Discord</a>
-    <a href="chapters.html">Chapters</a>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" style="color:var(--muted)">Contact</a>
-    <span class="copy">(c) 2026 CompNeuroSociety</span>
+</main>
+
+<footer class="footer"><div class="footer-inner wrap">
+  <div class="footer-gbm">See you at the next GBM</div>
+  <div class="footer-links">
+    <a data-link="instagram" href="https://www.instagram.com/compneurosocietyfsu/" target="_blank" rel="noopener">Instagram</a>
+    <a data-link="linkedin" href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank" rel="noopener">LinkedIn</a>
+    <a data-link="discord" href="https://discord.gg/sfm2RPd3gH" target="_blank" rel="noopener">Discord</a>
+    <a class="dim" href="people.html">People</a>
+    <a class="dim" href="sponsors.html">Sponsors</a>
+    <a class="dim" href="chapters.html">Chapters</a>
+    <a class="dim" data-link="contactForm" href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" rel="noopener">Contact</a>
+    <span class="footer-copy">(c) 2026 CompNeuroSociety</span>
   </div>
 </div></footer>
 <script type="module" src="js/site.js"></script>

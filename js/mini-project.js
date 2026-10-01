@@ -22,11 +22,11 @@ function countdown(dt) {
 }
 
 // --- Hero ---
-$('mp-kicker').textContent = '// projects / ' + META.term.toLowerCase();
-$('mp-title').innerHTML = esc(META.title).replace(/(\S+)$/, '<span class="grad">$1</span>');
+$('mp-kicker').textContent = '01 \u2014 projects \u00B7 ' + META.term.toLowerCase();
+$('mp-title').innerHTML = esc(META.title).replace(/(\S+)$/, '<span class="accent">$1</span>');
 $('mp-blurb').textContent = META.blurb;
 $('mp-links').innerHTML = Object.values(LINKS).filter(l => l && l.url).map((l, i) =>
-  `<a class="${i ? 'btn-ghost' : 'btn teal'}" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('');
+  `<a class="${i ? 'mono-link' : 'pill teal'}" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('');
 
 // --- Workshops ---
 const listed = WORKSHOPS.filter(w => !isNaN(new Date(w.date)));
@@ -57,14 +57,14 @@ const extra = (w) => [
 const nextHead = (title) => `<h3><span class="mp-pink">Next Workshop:</span> ${esc(title)}</h3>`;
 if (upcoming[0]) {
   const w = upcoming[0], t = when(w.dt);
-  $('mp-next').innerHTML = `<div class="panel panel-glow mp-next">
+  $('mp-next').innerHTML = `<div class="card glow mp-next">
     <div><span class="tag solid">STARTS ${countdown(w.dt).toUpperCase()}</span>
       <div class="mp-next-date">${t.dateStr}</div>
       <div class="mono mp-sub">${t.time}${w.location ? ' - ' + esc(w.location) : ''}</div></div>
     <div>${nextHead(w.title)}${w.blurb ? `<p>${esc(w.blurb)}</p>` : `<p>We post the details and any prep on <a href="${esc(LINKS.discord.url)}" target="_blank" rel="noopener">Discord</a> before the session.</p>`}
       ${extra(w) ? `<div class="mp-extra">${extra(w)}</div>` : ''}</div></div>`;
 } else {
-  $('mp-next').innerHTML = `<div class="panel mp-next mp-next-tba"><div>${nextHead('TBA')}
+  $('mp-next').innerHTML = `<div class="card mp-next mp-next-tba"><div>${nextHead('TBA')}
     <p>The date is not posted yet, but announcements go out on <a href="${esc(LINKS.discord.url)}" target="_blank" rel="noopener">Discord</a>.</p></div></div>`;
 }
 
