@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff">
 <meta name="description" content="Any student at any university can start a CompNeuroSociety chapter, and we will help with structure, curriculum, and mentors if you email compneurosociety@outlook.com.">
 <meta name="author" content="Upi Shanker, Sebastian Ruiz">
 <link rel="canonical" href="https://compneurosociety.com/chapters.html">
@@ -18,8 +20,9 @@
 <meta name="twitter:image" content="https://compneurosociety.com/images/logo.jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..900;1,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link href="css/warm-lab.css" rel="stylesheet">
+<script src="js/theme.js"></script>
 <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2QT79J734H"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-2QT79J734H');</script>
@@ -28,80 +31,94 @@
 </head>
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KGLRCKXQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<nav class="nav-bar">
-  <a class="nav-brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo"><b>CompNeuroSociety</b><span class="nav-tag">cns@fsu</span></a>
-  <div class="nav-links">
-    <a href="about.html">About</a>
-    <a href="people.html">People</a>
-    <a href="events.html">Events</a>
-    <a href="projects.html">Projects</a>
-    <a href="sponsors.html">Sponsors</a>
-    <a href="chapters.html" class="active">Chapters</a>
-    <a class="btn-join" href="join.html">Join</a>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Neuron field: real Allen Institute reconstructions behind the page; they fire as you scroll (js/neuron.js) -->
+<div class="field" id="neuron-field" aria-hidden="true">
+  <canvas id="neuron-canvas"></canvas>
+  <div class="field-meta">
+    <span class="field-phase" id="neuron-phase">resting potential · −70 mV</span>
+    <span id="neuron-status">Allen Cell Types · loading morphologies…</span>
+    <span id="neuron-list">mouse V1 reconstructions</span>
   </div>
-  <button class="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
-</nav>
-<div class="mobile-menu">
-  <div class="mm-head"><span class="mono" style="font-size:12.5px"><span style="color:var(--teal)">cns@fsu</span><span style="color:var(--faint)">:~$</span> menu</span><button class="mm-close" aria-label="Close menu">X</button></div>
-  <div class="mm-list">
-    <a href="about.html">about</a>
-    <a href="people.html">people</a>
-    <a href="events.html">events</a>
-    <a href="projects.html">projects</a>
-    <a href="sponsors.html">sponsors</a>
-    <a href="chapters.html">chapters</a>
-  </div>
-  <div class="mm-foot"><a class="btn teal" href="join.html">./join</a></div>
 </div>
 
-<div class="container" style="padding-top:52px">
-  <p class="crumb">// chapters</p>
-  <h1 class="display">Start a <span class="grad">chapter</span>.</h1>
-  <p class="lede" style="max-width:64ch">Any student at any university can start a CompNeuroSociety chapter, and you do not need any connection to FSU or FIU to do it, so just email us and we will help you set it up.</p>
-  <div class="cta-row" style="margin-top:24px">
-    <a class="btn teal mono" href="mailto:compneurosociety@outlook.com?subject=Starting%20a%20CompNeuroSociety%20chapter" style="font-weight:600;font-size:14px">compneurosociety@outlook.com</a>
-  </div>
-  <div class="chips" style="margin-top:22px">
-    <span class="chip">any campus</span><span class="chip">no fees</span><span class="chip">we help you launch</span>
-  </div>
-
-  <div class="panel" style="margin-top:36px;padding:26px 30px;border-radius:20px">
-    <div class="mono section-crumb" style="color:var(--teal)">// what we help with</div>
-    <div style="display:grid;gap:14px">
-      <div><div style="font-size:14.5px;font-weight:800;color:#fff">Structure</div>
-        <div style="font-size:13.5px;line-height:1.7;color:var(--muted)">We will show you how we organize board roles, membership, and meetings, and help with the paperwork side of registering a student org.</div></div>
-      <div><div style="font-size:14.5px;font-weight:800;color:#fff">Curriculum</div>
-        <div style="font-size:13.5px;line-height:1.7;color:var(--muted)">We share our workshop series and journal club formats, including what has worked for members with no coding experience.</div></div>
-      <div><div style="font-size:14.5px;font-weight:800;color:#fff">Mentors</div>
-        <div style="font-size:13.5px;line-height:1.7;color:var(--muted)">We can introduce you to faculty and graduate students in our network who advise project teams.</div></div>
-      <div><div style="font-size:14.5px;font-weight:800;color:#fff">Project teams</div>
-        <div style="font-size:13.5px;line-height:1.7;color:var(--muted)">We will explain how we pick papers to replicate and how we run a team over a semester, which you can see in <a href="projects.html" style="font-weight:700">our past projects</a>.</div></div>
+<header class="site-head" id="site-head">
+  <nav class="nav wrap" aria-label="Primary">
+    <a class="brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo" width="34" height="34"><b>CompNeuroSociety</b><span class="brand-tag">cns@fsu</span></a>
+    <div class="nav-links">
+      <a href="about.html">About</a>
+      <a href="events.html">Events</a>
+      <a href="projects.html">Projects</a>
+      <a class="nav-join" href="join.html">Join</a>
+      <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch color theme"></button>
     </div>
-  </div>
+  </nav>
+  <div class="strip"><div class="strip-inner wrap" id="next-up">
+    <span class="strip-label">NEXT UP</span><span class="strip-note">see what is coming up on the <a href="events.html">events page</a></span>
+  </div></div>
+</header>
 
-  <div class="section">
-    <div class="mono section-crumb" style="color:var(--gold)">// chapters so far</div>
-    <div class="panel band" style="border-radius:16px;border-color:#3a3126">
-      <div><div style="font-size:15px;font-weight:800;color:#fff">Florida International University</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:4px;max-width:70ch">This chapter is run by FIU students with mentors from our network, and it has the same workshops, journal clubs, and project teams that we run at FSU.</div></div>
-      <span class="tag gold">FIU</span>
+<main class="wrap" id="main">
+
+  <section class="page-head">
+    <p class="label">01 — chapters</p>
+    <h1 class="h1">Start a <span class="accent">chapter</span>.</h1>
+    <p class="lede wide">Any student at any university can start a CompNeuroSociety chapter, and you do not need any connection to FSU or FIU to do it, so just email us and we will help you set it up.</p>
+    <div class="cta-row" style="margin-top:4px">
+      <a class="pill teal mono" href="mailto:compneurosociety@outlook.com?subject=Starting%20a%20CompNeuroSociety%20chapter">compneurosociety@outlook.com</a>
+      <div class="chips"><span class="chip">any campus</span><span class="chip">no fees</span><span class="chip">we help you launch</span></div>
     </div>
-  </div>
-</div>
-<div style="border-top:1px solid var(--line);margin-top:48px"><div class="container band" style="padding-top:40px;padding-bottom:0">
-  <div><div style="font-size:24px;font-weight:900;color:#fff">Open your own chapter.</div>
-    <div style="font-size:13.5px;color:var(--muted);margin-top:6px">Email us if you want to start a chapter at your university.</div></div>
-  <a class="btn teal mono" href="mailto:compneurosociety@outlook.com?subject=Opening%20a%20CompNeuroSociety%20chapter" style="font-weight:600;font-size:14px">compneurosociety@outlook.com</a>
-</div></div>
-<footer class="site-footer"><div class="inner">
-  <div class="gbm">See you at the next GBM</div>
-  <div class="links">
-    <a href="https://www.instagram.com/compneurosocietyfsu/" target="_blank">Instagram</a>
-    <a href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank">LinkedIn</a>
-    <a href="https://discord.gg/6ujAmEEChC" target="_blank">Discord</a>
-    <a href="chapters.html">Chapters</a>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" style="color:var(--muted)">Contact</a>
-    <span class="copy">(c) 2026 CompNeuroSociety</span>
+  </section>
+
+  <section class="sec tight" aria-labelledby="help-label">
+    <p class="label c-teal" id="help-label">02 — what we help with</p>
+    <div class="card">
+      <div class="grid2">
+        <div><h3>Structure</h3><p>We will show you how we organize board roles, membership, and meetings, and help with the paperwork side of registering a student org.</p></div>
+        <div><h3>Curriculum</h3><p>We share our workshop series and journal club formats, including what has worked for members with no coding experience.</p></div>
+        <div><h3>Mentors</h3><p>We can introduce you to faculty and graduate students in our network who advise project teams.</p></div>
+        <div><h3>Project teams</h3><p>We will explain how we pick papers to replicate and how we run a team over a semester, which you can see in <a href="projects.html" style="font-weight:600">our past projects</a>.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec tight" aria-labelledby="sofar-label">
+    <p class="label c-gold" id="sofar-label">03 — chapters so far</p>
+    <div class="table">
+      <div class="table-row">
+        <div><div class="name">Florida State University</div><div class="meta">Tallahassee · founded 2025</div></div>
+        <div class="desc">The founding chapter. Workshops, journal clubs, and project teams run by FSU undergraduates with faculty mentors.</div>
+        <span class="tag teal">FSU</span>
+      </div>
+      <div class="table-row">
+        <div><div class="name">Florida International University</div><div class="meta">Miami</div></div>
+        <div class="desc">This chapter is run by FIU students with mentors from our network, and it has the same workshops, journal clubs, and project teams that we run at FSU.</div>
+        <span class="tag gold">FIU</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec last">
+    <div class="band">
+      <div><div class="headline">Open your own chapter.</div><div class="sub">Email us if you want to start a chapter at your university.</div></div>
+      <a class="pill teal mono" href="mailto:compneurosociety@outlook.com?subject=Opening%20a%20CompNeuroSociety%20chapter">compneurosociety@outlook.com</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer"><div class="footer-inner wrap">
+  <div class="footer-gbm">See you at the next GBM</div>
+  <div class="footer-links">
+    <a data-link="instagram" href="https://www.instagram.com/compneurosocietyfsu/" target="_blank" rel="noopener">Instagram</a>
+    <a data-link="linkedin" href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank" rel="noopener">LinkedIn</a>
+    <a data-link="discord" href="https://discord.gg/sfm2RPd3gH" target="_blank" rel="noopener">Discord</a>
+    <a class="dim" href="people.html">People</a>
+    <a class="dim" href="sponsors.html">Sponsors</a>
+    <a class="dim" href="chapters.html">Chapters</a>
+    <a class="dim" data-link="contactForm" href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" rel="noopener">Contact</a>
+    <span class="footer-copy">(c) 2026 CompNeuroSociety</span>
   </div>
 </div></footer>
 <script type="module" src="js/site.js"></script>

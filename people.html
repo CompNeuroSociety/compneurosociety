@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff">
 <meta name="description" content="Meet the FSU students who run CompNeuroSociety and the faculty mentors from FSU's Varela Lab and FAU's Pena Lab who guide our research projects.">
 <meta name="author" content="Upi Shanker, Sebastian Ruiz">
 <link rel="canonical" href="https://compneurosociety.com/people.html">
@@ -18,8 +20,9 @@
 <meta name="twitter:image" content="https://compneurosociety.com/images/logo.jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..900;1,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link href="css/warm-lab.css" rel="stylesheet">
+<script src="js/theme.js"></script>
 <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2QT79J734H"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-2QT79J734H');</script>
@@ -28,70 +31,85 @@
 </head>
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KGLRCKXQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<nav class="nav-bar">
-  <a class="nav-brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo"><b>CompNeuroSociety</b><span class="nav-tag">cns@fsu</span></a>
-  <div class="nav-links">
-    <a href="about.html">About</a>
-    <a href="people.html" class="active">People</a>
-    <a href="events.html">Events</a>
-    <a href="projects.html">Projects</a>
-    <a href="sponsors.html">Sponsors</a>
-    <a href="chapters.html">Chapters</a>
-    <a class="btn-join" href="join.html">Join</a>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Neuron field: real Allen Institute reconstructions behind the page; they fire as you scroll (js/neuron.js) -->
+<div class="field" id="neuron-field" aria-hidden="true">
+  <canvas id="neuron-canvas"></canvas>
+  <div class="field-meta">
+    <span class="field-phase" id="neuron-phase">resting potential · −70 mV</span>
+    <span id="neuron-status">Allen Cell Types · loading morphologies…</span>
+    <span id="neuron-list">mouse V1 reconstructions</span>
   </div>
-  <button class="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
-</nav>
-<div class="mobile-menu">
-  <div class="mm-head"><span class="mono" style="font-size:12.5px"><span style="color:var(--teal)">cns@fsu</span><span style="color:var(--faint)">:~$</span> menu</span><button class="mm-close" aria-label="Close menu">X</button></div>
-  <div class="mm-list">
-    <a href="about.html">about</a>
-    <a href="people.html">people</a>
-    <a href="events.html">events</a>
-    <a href="projects.html">projects</a>
-    <a href="sponsors.html">sponsors</a>
-    <a href="chapters.html">chapters</a>
-  </div>
-  <div class="mm-foot"><a class="btn teal" href="join.html">./join</a></div>
 </div>
 
-<div class="container" style="padding-top:52px">
-  <p class="crumb">// people</p>
-  <h1 class="display">Who <span class="grad">we are</span>.</h1>
-  <div class="jump-chips">
-    <a href="#leadership">leadership</a><a href="#gradcouncil">grad council</a><a href="#mentors">mentors</a><a href="#team">the team</a>
-  </div>
-  <p class="lede" style="max-width:70ch">CompNeuroSociety is led by FSU undergraduates, and our research projects are guided by faculty mentors from the Varela Lab at FSU and the Pena Lab at FAU.</p>
-  <div id="leadership" class="section">
-    <div class="mono section-crumb" style="color:var(--teal)">// leadership: the executive board</div>
-    <div class="people-grid" id="grid-leadership"></div>
-  </div>
-  <div id="gradcouncil" class="section">
-    <div class="mono section-crumb" style="color:var(--purple)">// grad council: guidance, mentorship &amp; lab connections (~2-4 hrs/month)</div>
-    <div class="people-grid" id="grid-gradcouncil"></div>
-  </div>
-  <div id="mentors" class="section">
-    <div class="mono section-crumb" style="color:var(--teal)">// mentors: faculty &amp; researchers who guide our undergraduate research projects</div>
-    <div class="people-grid" id="grid-mentors"></div>
-  </div>
-  <div id="team" class="section">
-    <div class="mono section-crumb" style="color:var(--pink)">// the team: students from every major</div>
-    <div class="people-grid four" id="grid-team"></div>
-    <div class="panel band" style="margin-top:24px;border-radius:16px">
-      <div><div style="font-size:16px;font-weight:800;color:#fff">Want your card here?</div>
-        <div style="font-size:12.5px;color:var(--muted);margin-top:4px">Fill out the team form and we will add you to this page.</div></div>
-      <a class="btn" data-link="teamForm" href="#" target="_blank" style="padding:12px 24px;font-size:13.5px">Team form</a>
+<header class="site-head" id="site-head">
+  <nav class="nav wrap" aria-label="Primary">
+    <a class="brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo" width="34" height="34"><b>CompNeuroSociety</b><span class="brand-tag">cns@fsu</span></a>
+    <div class="nav-links">
+      <a href="about.html" class="active">About</a>
+      <a href="events.html">Events</a>
+      <a href="projects.html">Projects</a>
+      <a class="nav-join" href="join.html">Join</a>
+      <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch color theme"></button>
     </div>
-  </div>
-</div>
-<footer class="site-footer"><div class="inner">
-  <div class="gbm">See you at the next GBM</div>
-  <div class="links">
-    <a href="https://www.instagram.com/compneurosocietyfsu/" target="_blank">Instagram</a>
-    <a href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank">LinkedIn</a>
-    <a href="https://discord.gg/6ujAmEEChC" target="_blank">Discord</a>
-    <a href="chapters.html">Chapters</a>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" style="color:var(--muted)">Contact</a>
-    <span class="copy">(c) 2026 CompNeuroSociety</span>
+  </nav>
+  <div class="strip"><div class="strip-inner wrap" id="next-up">
+    <span class="strip-label">NEXT UP</span><span class="strip-note">see what is coming up on the <a href="events.html">events page</a></span>
+  </div></div>
+</header>
+
+<main class="wrap" id="main">
+
+  <section class="page-head">
+    <p class="label"><a href="about.html">about</a> / people</p>
+    <h1 class="h1">Who <span class="accent">we are</span>.</h1>
+    <p class="lede wide">CompNeuroSociety is led by FSU undergraduates, and our research projects are guided by faculty mentors from the Varela Lab at FSU and the Pena Lab at FAU.</p>
+    <nav class="tabs" aria-label="On this page">
+      <a href="#leadership">leadership</a>
+      <a href="#gradcouncil">grad council</a>
+      <a href="#mentors">mentors</a>
+      <a href="#team">the team</a>
+    </nav>
+  </section>
+
+  <section class="sec tight anchor" id="leadership" aria-labelledby="lead-label">
+    <p class="label c-teal" id="lead-label">leadership — the executive board</p>
+    <div class="people-grid" id="grid-leadership"></div>
+  </section>
+
+  <section class="sec tight anchor" id="gradcouncil" aria-labelledby="gc-label">
+    <p class="label c-purple" id="gc-label">grad council — guidance, mentorship &amp; lab connections (~2–4 hrs/month)</p>
+    <div class="people-grid" id="grid-gradcouncil"></div>
+  </section>
+
+  <section class="sec tight anchor" id="mentors" aria-labelledby="mentors-label">
+    <p class="label c-teal" id="mentors-label">mentors — faculty &amp; researchers who guide our undergraduate research projects</p>
+    <div class="people-grid" id="grid-mentors"></div>
+  </section>
+
+  <section class="sec last anchor" id="team" aria-labelledby="team-label">
+    <p class="label c-pink" id="team-label">the team — students from every major</p>
+    <div class="people-grid four" id="grid-team"></div>
+    <div class="band" style="margin-top:64px">
+      <div><div class="headline">Want your card here?</div><div class="sub">Fill out the team form and we will add you to this page.</div></div>
+      <a class="pill pink md" data-link="teamForm" href="https://docs.google.com/forms/d/e/1FAIpQLSfd-vkrRiNgYRNY7rwi8tR3r-pd48KYgRtGMRNDFoUBXBLprQ/viewform" target="_blank" rel="noopener">Team form</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer"><div class="footer-inner wrap">
+  <div class="footer-gbm">See you at the next GBM</div>
+  <div class="footer-links">
+    <a data-link="instagram" href="https://www.instagram.com/compneurosocietyfsu/" target="_blank" rel="noopener">Instagram</a>
+    <a data-link="linkedin" href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank" rel="noopener">LinkedIn</a>
+    <a data-link="discord" href="https://discord.gg/sfm2RPd3gH" target="_blank" rel="noopener">Discord</a>
+    <a class="dim" href="people.html">People</a>
+    <a class="dim" href="sponsors.html">Sponsors</a>
+    <a class="dim" href="chapters.html">Chapters</a>
+    <a class="dim" data-link="contactForm" href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" rel="noopener">Contact</a>
+    <span class="footer-copy">(c) 2026 CompNeuroSociety</span>
   </div>
 </div></footer>
 <script type="module" src="js/site.js"></script>

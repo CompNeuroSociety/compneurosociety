@@ -2,17 +2,28 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="robots" content="noindex">
 <style>
+  /* color-scheme must match the parent page's, or browsers paint a transparent iframe with an opaque white backdrop */
+  :root{color-scheme:light}
+  :root[data-theme="dark"]{color-scheme:dark}
   html,body{margin:0;height:100%;background:transparent;overflow:hidden}
   canvas{display:block}
-  #err{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font:11px "IBM Plex Mono",monospace;color:#6db9c9;text-align:center}
+  #err{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font:12px "IBM Plex Mono",monospace;color:#1a6f82;text-align:center}
+  :root[data-theme="dark"] #err{color:#6db9c9}
 </style>
 <script type="importmap">
-{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+{"imports":{"three":"./js/vendor/three.module.min.js","three/addons/":"./js/vendor/addons/"}}
 </script>
 </head>
 <body>
 <canvas id="canvas"></canvas>
+<script>
+// Follow the parent page's light/dark theme (js/theme.js posts {type:'cns-theme'}); same-origin, so read it directly too.
+(function(){var r=document.documentElement;function set(t){if(t)r.setAttribute('data-theme',t);}
+try{set(window.parent&&window.parent.document.documentElement.getAttribute('data-theme'));}catch(e){}
+window.addEventListener('message',function(e){if(e.data&&e.data.type==='cns-theme')set(e.data.theme);});})();
+</script>
 <div id="err">3D brain unavailable</div>
 <script type="module">
 // Adapted from the site's script_subsurface.js - same model, shader, camera and
