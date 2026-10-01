@@ -161,7 +161,10 @@ if ($('home-events')) {
 =======
     cards.push(`<div class="event-card" style="grid-column:span 2;border-style:dashed;display:flex;align-items:center;justify-content:center;text-align:center">
       <span class="mono" style="font-size:12.5px;color:var(--faint);line-height:1.8">no upcoming events are posted yet,<br>but updates go out on <a href="${D.LINKS.discord}" target="_blank">Discord</a></span></div>`);
+<<<<<<< HEAD
 >>>>>>> 52bd95d (rewrite)
+=======
+>>>>>>> 99e21a6 (rewrite)
   }
   if (past[0]) {
     const e = past[0];
@@ -351,7 +354,10 @@ if ($('current-project')) {
             <a class="mono" style="font-size:12px;word-break:break-all;line-height:1.6" href="${P.paperUrl}" target="_blank">${esc(P.paperLabel || P.paperUrl)}</a></div>` : ''}
           ${P.hubUrl ? `<div><div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:6px">// participants</div>
             <div style="font-size:13px;line-height:1.6">All of the workshop recordings, paper links, dates, and news for participants are on the project hub.</div></div>` : ''}
+<<<<<<< HEAD
 >>>>>>> 52bd95d (rewrite)
+=======
+>>>>>>> 99e21a6 (rewrite)
         </div></div>
       <div class="cta-row" style="margin-top:28px;gap:16px 24px">
         ${P.hubUrl ? `<a class="pill md" href="${attr(P.hubUrl)}">Open the project hub</a>` : ''}${applyBtn}</div>`;

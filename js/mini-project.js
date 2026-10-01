@@ -68,7 +68,10 @@ if (upcoming[0]) {
   $('mp-next').innerHTML = `<div class="card mp-next mp-next-tba"><div>${nextHead('TBA')}
 =======
   $('mp-next').innerHTML = `<div class="panel mp-next mp-next-tba"><div>${nextHead('TBA')}
+<<<<<<< HEAD
 >>>>>>> 52bd95d (rewrite)
+=======
+>>>>>>> 99e21a6 (rewrite)
     <p>The date is not posted yet, but announcements go out on <a href="${esc(LINKS.discord.url)}" target="_blank" rel="noopener">Discord</a>.</p></div></div>`;
 }
 
