@@ -64,7 +64,11 @@ if (upcoming[0]) {
     <div>${nextHead(w.title)}${w.blurb ? `<p>${esc(w.blurb)}</p>` : `<p>We post the details and any prep on <a href="${esc(LINKS.discord.url)}" target="_blank" rel="noopener">Discord</a> before the session.</p>`}
       ${extra(w) ? `<div class="mp-extra">${extra(w)}</div>` : ''}</div></div>`;
 } else {
+<<<<<<< HEAD
   $('mp-next').innerHTML = `<div class="card mp-next mp-next-tba"><div>${nextHead('TBA')}
+=======
+  $('mp-next').innerHTML = `<div class="panel mp-next mp-next-tba"><div>${nextHead('TBA')}
+>>>>>>> 52bd95d (rewrite)
     <p>The date is not posted yet, but announcements go out on <a href="${esc(LINKS.discord.url)}" target="_blank" rel="noopener">Discord</a>.</p></div></div>`;
 }
 
