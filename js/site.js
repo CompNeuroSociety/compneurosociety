@@ -155,16 +155,8 @@ if ($('home-events')) {
     </div>`);
   }
   if (!upcoming.length) {
-<<<<<<< HEAD
     rows.push(`<div class="ev-empty">no upcoming events are posted yet, but updates go out first on
       <a href="${attr(D.LINKS.discord)}" target="_blank" rel="noopener">Discord</a>.</div>`);
-=======
-    cards.push(`<div class="event-card" style="grid-column:span 2;border-style:dashed;display:flex;align-items:center;justify-content:center;text-align:center">
-      <span class="mono" style="font-size:12.5px;color:var(--faint);line-height:1.8">no upcoming events are posted yet,<br>but updates go out on <a href="${D.LINKS.discord}" target="_blank">Discord</a></span></div>`);
-<<<<<<< HEAD
->>>>>>> 52bd95d (rewrite)
-=======
->>>>>>> 99e21a6 (rewrite)
   }
   if (past[0]) {
     const e = past[0];
@@ -295,21 +287,12 @@ if ($('grid-gradcouncil')) {
   }
 }
 if ($('grid-mentors')) {
-<<<<<<< HEAD
   $('grid-mentors').innerHTML = (D.MENTORS || []).map(p => personCard(p, 'teal')).join('') +
     `<div class="card dashed open-seat">
       <div class="label" style="margin:0">// open seat</div>
       <h3>Mentor a project team</h3>
       <p>For anyone with experience in computational neuroscience or a related field. It takes about 2\u20134 hours a month.</p>
       <a class="mono-link sm teal" href="${attr(D.LINKS.mentorForm)}" target="_blank" rel="noopener">become a mentor \u2192</a></div>`;
-=======
-  $('grid-mentors').innerHTML = (D.MENTORS || []).map(p => personCard(p, 'var(--teal)')).join('') +
-    `<div style="border:1px dashed #263241;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;gap:10px">
-      <div class="mono" style="font-size:11px;color:var(--faint)">// open seat</div>
-      <h3 style="font-size:16px;font-weight:800;color:#fff;margin:0">Mentor a project team</h3>
-      <p style="font-size:12.5px;line-height:1.6;color:var(--muted);margin:0">This is for anyone with experience in computational neuroscience or a related field, and it takes about 2-4 hours a month.</p>
-      <a class="btn-ghost" style="width:fit-content;padding:10px 18px;font-size:12px" href="${D.LINKS.mentorForm}" target="_blank">Become a mentor</a></div>`;
->>>>>>> 52bd95d (rewrite)
 }
 if ($('grid-team')) $('grid-team').innerHTML = (D.TEAM || []).map(p => personCard(p, 'pink')).join('');
 
@@ -322,14 +305,6 @@ if ($('current-project')) {
     : `<span class="pill md disabled" aria-disabled="true">Applications closed</span>
        <span class="small mono" style="font-size:13px">${esc(A.closedNote || '')}</span>`;
   if (P) {
-<<<<<<< HEAD
-=======
-    const apply = A.open
-      ? `<a class="btn" href="${A.formUrl}" target="_blank">Apply to join this team</a>
-         <span style="font-size:12px;color:var(--muted)">Meetings have already started, so apply soon.</span>`
-      : `<span class="btn-ghost" style="color:var(--faint) !important">Applications closed</span>
-         <span class="mono" style="font-size:12px;color:var(--faint)">${esc(A.closedNote)}</span>`;
->>>>>>> 52bd95d (rewrite)
     $('current-project').innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
         <span class="eyebrow">${esc(P.term).toUpperCase()} \u00B7 ACTIVE</span>
@@ -341,39 +316,19 @@ if ($('current-project')) {
           <div class="label c-teal">// weekly cadence</div>
           ${(P.cadence || []).map(c => `<div class="line"><span class="mono">&gt;</span><span>${esc(c)}</span></div>`).join('')}
         </div>
-<<<<<<< HEAD
         <div class="proj-box" style="display:flex;flex-direction:column;gap:16px">
           ${P.mentors ? `<div><div class="label c-purple" style="margin-bottom:6px">// mentorship</div><div class="txt">${esc(P.mentors)}</div></div>` : ''}
           ${P.paperUrl ? `<div><div class="label c-pink" style="margin-bottom:6px">// the paper</div><a class="mono txt" style="font-size:13px" href="${attr(P.paperUrl)}" target="_blank" rel="noopener">${esc(P.paperLabel || P.paperUrl)}</a></div>` : ''}
           ${P.hubUrl ? `<div><div class="label c-pink" style="margin-bottom:6px">// participants</div><div class="txt">All of the workshop recordings, paper links, dates, and news for participants are on the project hub.</div></div>` : ''}
-=======
-        <div style="border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
-          ${P.mentors ? `<div><div class="mono" style="font-size:11px;color:var(--purple);margin-bottom:6px">// mentorship</div>
-            <div style="font-size:13px;line-height:1.6">${esc(P.mentors)}</div></div>` : ''}
-          ${P.paperUrl ? `<div><div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:6px">// the paper</div>
-            <a class="mono" style="font-size:12px;word-break:break-all;line-height:1.6" href="${P.paperUrl}" target="_blank">${esc(P.paperLabel || P.paperUrl)}</a></div>` : ''}
-          ${P.hubUrl ? `<div><div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:6px">// participants</div>
-            <div style="font-size:13px;line-height:1.6">All of the workshop recordings, paper links, dates, and news for participants are on the project hub.</div></div>` : ''}
-<<<<<<< HEAD
->>>>>>> 52bd95d (rewrite)
-=======
->>>>>>> 99e21a6 (rewrite)
         </div></div>
       <div class="cta-row" style="margin-top:28px;gap:16px 24px">
         ${P.hubUrl ? `<a class="pill md" href="${attr(P.hubUrl)}">Open the project hub</a>` : ''}${applyBtn}</div>`;
   } else {
     $('current-project').innerHTML = `
-<<<<<<< HEAD
       <span class="eyebrow dim">NO ACTIVE PROJECT</span>
       <h2 class="h2" style="font-size:clamp(28px,3vw,40px);margin:18px 0 12px">Next project team forming soon</h2>
       <p class="body-copy" style="max-width:70ch">We are between project cycles right now, so take a look at our past projects below, or apply now and we will contact you when the next team starts.</p>
       <div class="cta-row" style="margin-top:28px;gap:16px 24px">${applyBtn}</div>`;
-=======
-      <span class="tag dim">NO ACTIVE PROJECT</span>
-      <h2 style="font-size:28px;font-weight:900;color:#fff;margin:16px 0 8px">Next project team forming soon</h2>
-      <p style="font-size:14.5px;line-height:1.7;color:var(--muted);max-width:78ch;margin:0">We are between project cycles right now, so take a look at our past projects below, or apply now and we will contact you when the next team starts.</p>
-      <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap">${apply}</div>`;
->>>>>>> 52bd95d (rewrite)
   }
 }
 // Past projects: clickable cards that open a detail view. Every section of the
