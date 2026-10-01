@@ -65,7 +65,7 @@ if ($('home-events')) {
   }
   if (!upcoming.length) {
     cards.push(`<div class="event-card" style="grid-column:span 2;border-style:dashed;display:flex;align-items:center;justify-content:center;text-align:center">
-      <span class="mono" style="font-size:12.5px;color:var(--faint);line-height:1.8">no upcoming events posted yet -<br>updates go out on <a href="${D.LINKS.discord}" target="_blank">Discord</a></span></div>`);
+      <span class="mono" style="font-size:12.5px;color:var(--faint);line-height:1.8">no upcoming events are posted yet,<br>but updates go out on <a href="${D.LINKS.discord}" target="_blank">Discord</a></span></div>`);
   }
   if (past[0]) {
     const e = past[0];
@@ -120,7 +120,7 @@ if ($('grid-mentors')) {
     `<div style="border:1px dashed #263241;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;gap:10px">
       <div class="mono" style="font-size:11px;color:var(--faint)">// open seat</div>
       <h3 style="font-size:16px;font-weight:800;color:#fff;margin:0">Mentor a project team</h3>
-      <p style="font-size:12.5px;line-height:1.6;color:var(--muted);margin:0">For anyone with experience in computational neuroscience or a related field. About 2-4 hours a month.</p>
+      <p style="font-size:12.5px;line-height:1.6;color:var(--muted);margin:0">This is for anyone with experience in computational neuroscience or a related field, and it takes about 2-4 hours a month.</p>
       <a class="btn-ghost" style="width:fit-content;padding:10px 18px;font-size:12px" href="${D.LINKS.mentorForm}" target="_blank">Become a mentor</a></div>`;
 }
 if ($('grid-team')) $('grid-team').innerHTML = (D.TEAM || []).map(p => personCard(p, 'var(--pink)')).join('');
@@ -131,7 +131,7 @@ if ($('current-project')) {
   if (P) {
     const apply = A.open
       ? `<a class="btn" href="${A.formUrl}" target="_blank">Apply to join this team</a>
-         <span style="font-size:12px;color:var(--muted)">Meetings have started - apply soon.</span>`
+         <span style="font-size:12px;color:var(--muted)">Meetings have already started, so apply soon.</span>`
       : `<span class="btn-ghost" style="color:var(--faint) !important">Applications closed</span>
          <span class="mono" style="font-size:12px;color:var(--faint)">${esc(A.closedNote)}</span>`;
     $('current-project').innerHTML = `
@@ -153,7 +153,7 @@ if ($('current-project')) {
           ${P.paperUrl ? `<div><div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:6px">// the paper</div>
             <a class="mono" style="font-size:12px;word-break:break-all;line-height:1.6" href="${P.paperUrl}" target="_blank">${esc(P.paperLabel || P.paperUrl)}</a></div>` : ''}
           ${P.hubUrl ? `<div><div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:6px">// participants</div>
-            <div style="font-size:13px;line-height:1.6">Workshop recordings, paper links, dates, and news are on the project hub.</div></div>` : ''}
+            <div style="font-size:13px;line-height:1.6">All of the workshop recordings, paper links, dates, and news for participants are on the project hub.</div></div>` : ''}
         </div></div>
       <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap">
         ${P.hubUrl ? `<a class="btn teal" href="${P.hubUrl}">Open the project hub</a>` : ''}${apply}</div>`;
@@ -165,7 +165,7 @@ if ($('current-project')) {
     $('current-project').innerHTML = `
       <span class="tag dim">NO ACTIVE PROJECT</span>
       <h2 style="font-size:28px;font-weight:900;color:#fff;margin:16px 0 8px">Next project team forming soon</h2>
-      <p style="font-size:14.5px;line-height:1.7;color:var(--muted);max-width:78ch;margin:0">We're between project cycles. See past projects below, or apply now and we'll contact you when the next team starts.</p>
+      <p style="font-size:14.5px;line-height:1.7;color:var(--muted);max-width:78ch;margin:0">We are between project cycles right now, so take a look at our past projects below, or apply now and we will contact you when the next team starts.</p>
       <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap">${apply}</div>`;
   }
 }
