@@ -60,7 +60,7 @@ The toggle cycles auto → light → dark → auto. All colors are tokens at the
 
 ### 2b. The neurons behind the page
 
-Every page draws a field of five real neuron reconstructions from the Allen Cell Types database (`neuron/*.swc`, credited bottom-left) behind the content; scrolling sends an action potential through each cell. It is `js/neuron.js` + the vendored three.js, loaded only on screens wider than 900px (phones never download it), rendered at ≤30fps, paused in background tabs, and the idle rotation is off under `prefers-reduced-motion`. Behind the text column the canvas is dimmed by a CSS mask so copy stays readable. To add or swap a cell see `neuron/README.md`; to move one, edit `LAYOUT` at the top of `js/neuron.js`.
+Every page draws five real neuron reconstructions from the Allen Cell Types database (`neuron/*.swc`, credited in the footer of every page, next to the live readout of which cell is firing) behind the content, wired into a chain: scrolling pushes one action potential through the first cell (dendrites → soma → axon), across a synapse into the next cell, and so on to the last. Each cell is turned automatically so its axon points at the next one, and the synapse is drawn from the axon terminal to the nearest dendrite tip. It is `js/neuron.js` + the vendored three.js, loaded only on screens wider than 900px (phones never download it), rendered at ≤30fps, paused in background tabs, and the idle rotation is off under `prefers-reduced-motion`. Behind the text column the canvas is dimmed by a CSS mask so copy stays readable. To add or swap a cell see `neuron/README.md`; the chain order is the order of `NEURONS` at the top of `js/neuron.js`, and `LAYOUT` sets where each one sits.
 
 ## 3. Event auto-sync (GitHub Action)
 

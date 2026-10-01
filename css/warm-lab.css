@@ -36,9 +36,8 @@
   --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --sans: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
   /* layout */
-  --gutter: 300px;         /* neuron gutter width = content padding-left */
-  --pad-l: 300px;
   --pad-x: 48px;
+  --pad-l: var(--pad-x);   /* kept as a separate hook for the legacy .container rule */
   --max: 1400px;
   /* aliases kept for the two legacy pages (mini-project.html, workshop.html) */
   --text: var(--ink);
@@ -97,22 +96,23 @@ p { text-wrap: pretty; }
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
 
-/* Content column: everything sits right of the neuron gutter. */
+/* Content column (the neuron chain is drawn behind it, see .field). */
 .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad-x) 0 var(--pad-l); }
 main.wrap { position: relative; z-index: 1; }
 
 /* --- Neuron field (fixed, full viewport, behind the content; js/neuron.js draws into it) ---- */
 .field { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 .field canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block;
-  /* full strength left of the content column, dimmed behind it so text stays readable */
+  /* full strength in the margins, dimmed behind the content column so text stays readable */
   -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(var(--field-edge, var(--pad-l)) - 70px),
-    rgba(0,0,0,.34) calc(var(--field-edge, var(--pad-l)) + 90px), rgba(0,0,0,.34) 100%);
+    rgba(0,0,0,.45) calc(var(--field-edge, var(--pad-l)) + 90px), rgba(0,0,0,.45) 100%);
   mask-image: linear-gradient(90deg, #000 0, #000 calc(var(--field-edge, var(--pad-l)) - 70px),
-    rgba(0,0,0,.34) calc(var(--field-edge, var(--pad-l)) + 90px), rgba(0,0,0,.34) 100%); }
-.field-meta { position: absolute; left: 28px; bottom: 22px; max-width: calc(var(--pad-l) - 44px);
-  display: flex; flex-direction: column; gap: 4px; font-family: var(--mono); font-size: 11px; line-height: 1.5; color: var(--faint); }
-.field-phase { color: var(--gold-text); font-weight: 600; }
+    rgba(0,0,0,.45) calc(var(--field-edge, var(--pad-l)) + 90px), rgba(0,0,0,.45) 100%); }
 .field.is-off canvas { visibility: hidden; }
+/* live readout + Allen credit for the chain, in the footer */
+.footer-meta { flex-basis: 100%; margin: 4px 0 0; font-family: var(--mono); font-size: 11px; line-height: 1.7; color: var(--faint); }
+.footer-meta .sep { margin: 0 6px; }
+.field-phase { color: var(--gold-text); font-weight: 600; }
 .gutter-only { }    /* text that only makes sense while the field is visible */
 
 /* --- Header: nav + "Next up" strip (both sticky) -------------------------------- */
@@ -139,8 +139,10 @@ main.wrap { position: relative; z-index: 1; }
 .theme-ico { font-size: 15px; line-height: 1; }
 
 .strip { border-top: 1px solid var(--line); background: var(--bg); }
-.strip-inner { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; min-height: 46px;
+.strip-inner { display: flex; align-items: center; gap: 20px; flex-wrap: nowrap; min-height: 46px;
   padding-top: 11px; padding-bottom: 11px; }
+.strip-title { flex: 0 1 auto; }
+.strip-label, .strip-date, .strip-link, .strip-go { flex: none; white-space: nowrap; }
 .strip-label { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--teal); font-weight: 600; }
 .strip-date { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--ink); }
 .strip-title { font-size: 15px; color: var(--ink); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -158,9 +160,8 @@ main.wrap { position: relative; z-index: 1; }
 .label { font-family: var(--mono); font-size: 13px; color: var(--faint); margin: 0 0 28px; letter-spacing: .02em; }
 .label a { color: var(--faint); }
 .label a:hover { color: var(--coral); }
-/* 64px cap (the handoff says 72px) so "computational" fits the 524px hero column in Montserrat 800
-   instead of breaking mid-word; hyphens only kick in if a fallback font is wider. */
-.h1 { font-size: clamp(40px, 4.4vw, 64px); font-weight: 800; line-height: 1; color: var(--ink);
+/* hyphens only kick in if a fallback font is wider than Montserrat */
+.h1 { font-size: clamp(40px, 4.8vw, 72px); font-weight: 800; line-height: 1; color: var(--ink);
   letter-spacing: -.035em; margin: 0; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; text-wrap: balance; }
 .h1 .accent { color: var(--teal); }
 .h2 { font-size: clamp(32px, 3.6vw, 48px); font-weight: 800; color: var(--ink); letter-spacing: -.03em;
@@ -476,7 +477,7 @@ a.card:hover, .link-card:hover { color: inherit; border-color: var(--rule-dark);
 
 /* --- Responsive ------------------------------------------------------------------------------ */
 @media (max-width: 1280px) {
-  :root { --gutter: 200px; --pad-l: 200px; --pad-x: 32px; }
+  :root { --pad-x: 32px; }
   .wide-only { display: none; } .narrow-only { display: inline; }
   .hero-grid, .two-col { grid-template-columns: minmax(0, 1fr); gap: 40px; }
   .stage { height: 360px; }
@@ -485,8 +486,8 @@ a.card:hover, .link-card:hover { color: inherit; border-color: var(--rule-dark);
   .feature-img { height: 320px; }
 }
 @media (max-width: 900px) {
-  :root { --pad-l: 24px; --pad-x: 24px; }
-  .field { display: none; }
+  :root { --pad-x: 24px; }
+  .field, .footer-meta { display: none; }
   .gutter-only { display: none; }
   .sec { padding: 32px 0 80px; }
   .sec.hero { padding: 56px 0 72px; }
@@ -513,7 +514,7 @@ a.card:hover, .link-card:hover { color: inherit; border-color: var(--rule-dark);
   .logo-card { padding: 28px 32px; }
   .nav { padding-top: 12px; padding-bottom: 8px; gap: 4px 20px; }
   .nav-links { gap: 20px; }
-  .strip-inner { gap: 10px 20px; }
+  .strip-inner { gap: 10px 20px; flex-wrap: wrap; }
   .strip-title { white-space: normal; }
 }
 @media (max-width: 600px) {
