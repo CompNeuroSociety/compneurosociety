@@ -38,7 +38,7 @@ const hits = (o, t) => LISTINGS.filter(x =>
 // that is a substring of another ("ml" inside "umbrella").
 const tagAttr = (tags) => ' ' + (tags || []).join(' ') + ' ';
 const tagPills = (tags) => (tags || [])
-  .map(t => `<span class="ws-pill" data-tag-pill="${esc(t)}">${esc(tagLabel[t] || t)}</span>`).join('');
+  .map(t => `<button type="button" class="ws-pill" data-tag-pill="${esc(t)}">${esc(tagLabel[t] || t)}</button>`).join('');
 
 // A deadline is either a real date, free text ("not yet announced"), or absent.
 const due = (v) => {
@@ -60,8 +60,8 @@ const byDeadline = (a, b) => (a.closed - b.closed) ||
 const dateStr = (d) => MONTHS[d.getMonth()] + ' ' + String(d.getDate()).padStart(2, '0') + ' ' + d.getFullYear();
 
 // --- Header ---
-if ($('ws-kicker')) $('ws-kicker').textContent = '// ' + (META.kicker || 'workshop');
-if ($('ws-title')) $('ws-title').innerHTML = esc(META.title || 'Workshop').replace(/(\S+)\s*$/, '<span class="grad">$1</span>');
+if ($('ws-kicker')) $('ws-kicker').textContent = META.kicker || 'workshop';
+if ($('ws-title')) $('ws-title').innerHTML = esc(META.title || 'Workshop').replace(/(\S+)\s*$/, '<span class="accent">$1</span>');
 if ($('ws-blurb')) $('ws-blurb').textContent = META.blurb || '';
 if ($('ws-meta')) {
   const d = new Date(META.date);
@@ -70,7 +70,7 @@ if ($('ws-meta')) {
     (((d.getHours() + 11) % 12) + 1) + ':' + String(d.getMinutes()).padStart(2, '0') +
     (d.getHours() >= 12 ? 'pm' : 'am');
   $('ws-meta').innerHTML = [when, META.location].filter(Boolean)
-    .map(s => `<span class="chan">${esc(s)}</span>`).join('');
+    .map(s => `<span class="chip">${esc(s)}</span>`).join('');
 }
 if ($('ws-footnote')) $('ws-footnote').textContent = META.footNote || '';
 
@@ -81,10 +81,10 @@ if (reg.url) {
   const label = esc(reg.label || 'Register');
   const btn = (cls) => `<a class="${cls}" href="${esc(reg.url)}" target="_blank" rel="noopener">${label}</a>`;
   if ($('ws-register')) {
-    $('ws-register').innerHTML = btn('btn') +
-      (reg.note ? `<p class="mono" style="font-size:12px;color:var(--muted);margin:10px 0 0">${esc(reg.note)}</p>` : '');
+    $('ws-register').innerHTML = btn('pill pink') +
+      (reg.note ? `<p class="ws-regnote">${esc(reg.note)}</p>` : '');
   }
-  if ($('ws-register-foot')) $('ws-register-foot').innerHTML = btn('btn teal');
+  if ($('ws-register-foot')) $('ws-register-foot').innerHTML = btn('pill teal');
 } else {
   show($('ws-register'), false);
   show($('ws-register-foot'), false);
@@ -298,7 +298,7 @@ if ($('ws-proghelp')) {
   if (help.url) {
     $('ws-proghelp').innerHTML = `
       <div>
-        <div class="mono" style="font-size:11px;color:var(--teal);margin-bottom:6px">// need a second pair of eyes?</div>
+        <div class="eyebrow" style="margin-bottom:8px">need a second pair of eyes?</div>
         <p>${esc(help.blurb || '')}</p>
       </div>
       <a class="ws-open" href="${esc(help.url)}" target="_blank" rel="noopener">${esc(help.label || 'Request application help')}</a>`;
