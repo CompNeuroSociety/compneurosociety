@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff">
 <meta name="description" content="CompNeuroSociety is FSU's computational neuroscience student organization, where students in every major learn through free workshops, journal clubs, and research projects.">
 <meta name="author" content="Upi Shanker, Sebastian Ruiz">
 <link rel="canonical" href="https://compneurosociety.com/">
@@ -18,8 +20,9 @@
 <meta name="twitter:image" content="https://compneurosociety.com/images/logo.jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..900;1,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link href="css/warm-lab.css" rel="stylesheet">
+<script src="js/theme.js"></script>
 <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 <script type="application/ld+json">
 {
@@ -33,7 +36,7 @@
   "sameAs": [
     "https://www.instagram.com/compneurosocietyfsu/",
     "https://linkedin.com/company/compneurosociety-at-fsu",
-    "https://discord.gg/6ujAmEEChC"
+    "https://discord.gg/sfm2RPd3gH"
   ]
 }
 </script>
@@ -44,78 +47,101 @@
 </head>
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KGLRCKXQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<nav class="nav-bar">
-  <a class="nav-brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo"><b>CompNeuroSociety</b><span class="nav-tag">cns@fsu</span></a>
-  <div class="nav-links">
-    <a href="about.html">About</a>
-    <a href="people.html">People</a>
-    <a href="events.html">Events</a>
-    <a href="projects.html">Projects</a>
-    <a href="sponsors.html">Sponsors</a>
-    <a href="chapters.html">Chapters</a>
-    <a class="btn-join" href="join.html">Join</a>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Neuron field: real Allen Institute reconstructions behind the page; they fire as you scroll (js/neuron.js) -->
+<div class="field" id="neuron-field" aria-hidden="true">
+  <canvas id="neuron-canvas"></canvas>
+  <div class="field-meta">
+    <span class="field-phase" id="neuron-phase">resting potential · −70 mV</span>
+    <span id="neuron-status">Allen Cell Types · loading morphologies…</span>
+    <span id="neuron-list">mouse V1 reconstructions</span>
   </div>
-  <button class="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
-</nav>
-<div class="mobile-menu">
-  <div class="mm-head"><span class="mono" style="font-size:12.5px"><span style="color:var(--teal)">cns@fsu</span><span style="color:var(--faint)">:~$</span> menu</span><button class="mm-close" aria-label="Close menu">X</button></div>
-  <div class="mm-list">
-    <a href="about.html">about</a>
-    <a href="people.html">people</a>
-    <a href="events.html">events</a>
-    <a href="projects.html">projects</a>
-    <a href="sponsors.html">sponsors</a>
-    <a href="chapters.html">chapters</a>
-  </div>
-  <div class="mm-foot"><a class="btn teal" href="join.html">./join</a></div>
 </div>
 
-<div class="container">
-  <div class="hero-grid">
+<header class="site-head" id="site-head">
+  <nav class="nav wrap" aria-label="Primary">
+    <a class="brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo" width="34" height="34"><b>CompNeuroSociety</b><span class="brand-tag">cns@fsu</span></a>
+    <div class="nav-links">
+      <a href="about.html">About</a>
+      <a href="events.html">Events</a>
+      <a href="projects.html">Projects</a>
+      <a class="nav-join" href="join.html">Join</a>
+      <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch color theme"></button>
+    </div>
+  </nav>
+  <div class="strip"><div class="strip-inner wrap" id="next-up">
+    <span class="strip-label">NEXT UP</span><span class="strip-note">see what is coming up on the <a href="events.html">events page</a></span>
+  </div></div>
+</header>
+
+<main class="wrap" id="main">
+
+  <section class="sec hero hero-grid" aria-labelledby="hero-title">
     <div>
-      <p class="crumb">// fsu's computational neuroscience society</p>
-      <h1>Hands-on <span class="grad-text">computational neuroscience</span>.</h1>
-      <p class="lede">We are a student-run club at FSU, and we host workshops, journal clubs, and research projects so that students from any major can learn computational neuroscience by actually doing it. The brain on the right is an interactive model that shows EEG (a recording of the brain's electrical activity from the scalp), so feel free to drag it around.</p>
-      <div class="cta-row" style="margin-top:24px">
-        <a class="btn" href="join.html">Join for free</a>
-        <a class="btn-ghost" href="projects.html">browse research projects</a>
-      </div>
-      <div class="chips" style="margin-top:22px">
-        <span class="chip">every major</span><span class="chip">no experience needed</span><span class="chip">undergrad + grad</span>
+      <p class="label">01 — fsu's computational neuroscience society</p>
+      <h1 class="h1" id="hero-title">Hands-on computational <span class="accent">neuroscience</span>.</h1>
+      <p class="lede">A student-run club at FSU. Workshops, journal clubs, and research projects so students from any major learn by doing. The brain <span class="wide-only">on the right</span><span class="narrow-only">below</span> is a live EEG model — drag it around. <span class="gutter-only">The neurons behind this page fire as you scroll.</span></p>
+      <div class="cta-row">
+        <a class="pill" href="join.html">Join for free</a>
+        <a class="mono-link" id="hero-next" href="events.html">next event →</a>
       </div>
     </div>
     <div class="stage">
-      <div class="stage-head"><span class="mono">brain_model.glb - eeg -> 32 point lights</span><span class="mono" style="color:var(--teal)">drag to rotate</span></div>
-      <div class="stage-body"><iframe src="brain-viz.html" title="Interactive 3D EEG brain" loading="lazy"></iframe></div>
-      <div class="stage-foot">
-        <span style="display:flex;gap:6px"><span class="chan">fp1</span><span class="chan">fz</span><span class="chan">cz</span><span class="chan pink">pz</span><span class="mono" style="color:var(--faint);padding:3px 2px;font-size:10.5px">+28 ch</span></span>
-        <span class="mono">19 fps</span>
-      </div>
+      <div class="stage-row top"><span>brain_model.glb · 32 ch</span><span class="teal">drag to rotate</span></div>
+      <iframe src="brain-viz.html" title="Interactive 3D EEG brain" data-theme-sync></iframe>
+      <div class="stage-row bottom"><span class="chans"><span>fp1</span><span>fz</span><span>cz</span><span class="pink">pz</span><span style="color:var(--faint)">+28</span></span><span>19 fps</span></div>
     </div>
-  </div>
-</div>
-<div class="ticker"><div class="ticker-inner">
-  <span>workshops * journal clubs * research projects * gbms * workshops * journal clubs * research projects * gbms *&nbsp;</span>
-  <span>workshops * journal clubs * research projects * gbms * workshops * journal clubs * research projects * gbms *&nbsp;</span>
-</div></div>
-<div class="container"><div class="stats-grid">
-  <div class="stat"><b style="color:var(--teal)">4</b><p>ways to get involved: workshops, journal clubs, guest speakers, and research projects</p></div>
-  <div class="stat"><b style="color:var(--purple)">0</b><p>prerequisites, because every workshop series starts from zero</p></div>
-  <div class="stat"><b style="color:var(--pink)">2025</b><p>the year we were founded, and we are still run by FSU undergraduates and open to every major</p></div>
-</div></div>
-<div style="border-top:1px solid var(--line)"><div class="container" style="padding-top:36px">
-  <div class="events-head"><h2>What's on</h2><a href="events.html" style="font-size:13px;font-weight:700">Full workshop calendar</a></div>
-  <div class="events-grid" id="home-events"></div>
-</div></div>
-<footer class="site-footer"><div class="inner">
-  <div class="gbm">See you at the next GBM</div>
-  <div class="links">
-    <a href="https://www.instagram.com/compneurosocietyfsu/" target="_blank">Instagram</a>
-    <a href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank">LinkedIn</a>
-    <a href="https://discord.gg/6ujAmEEChC" target="_blank">Discord</a>
-    <a href="chapters.html">Chapters</a>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" style="color:var(--muted)">Contact</a>
-    <span class="copy">(c) 2026 CompNeuroSociety</span>
+  </section>
+
+  <section class="sec" aria-labelledby="events-label">
+    <div class="sec-head"><p class="label" id="events-label">02 — what's on</p><a class="arrow-link" href="events.html">full calendar →</a></div>
+    <div id="home-events">
+      <div class="ev-empty">Loading the calendar… if this does not change, the full list is on the <a href="events.html">events page</a>.</div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="how-label">
+    <p class="label" id="how-label">03 — how a semester works</p>
+    <h2 class="h2" style="margin-bottom:56px;max-width:22ch">Start anywhere. Nothing is a prerequisite.</h2>
+    <div class="steps">
+      <div><div class="step-num c-teal">01</div><h3>Workshops</h3><p>Python, data, and ML series that start from zero. Come to one or come to all.</p></div>
+      <div><div class="step-num c-purple">02</div><h3>Journal clubs + speakers</h3><p>One paper a month, read together, plus researchers and founders in neurotech.</p></div>
+      <div><div class="step-num c-pink">03</div><h3>Project teams</h3><p>Replicate a published model with a faculty mentor over a semester, then present it.</p></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="project-label">
+    <p class="label" id="project-label">04 — this semester's project</p>
+    <div class="two-col" id="home-project">
+      <div class="feature"><p>Our current and past project teams are listed on the <a href="projects.html">projects page</a>.</p></div>
+    </div>
+  </section>
+
+  <section class="sec last" aria-labelledby="people-label">
+    <p class="label" id="people-label">05 — who runs it</p>
+    <div class="people-row">
+      <div class="who">
+        <div class="avatars" id="home-avatars"></div>
+        <div><div class="headline">Run by FSU undergraduates, mentored by faculty.</div><a class="arrow-link" href="people.html">meet the people →</a></div>
+      </div>
+      <a class="pill pink" href="join.html">Join for free</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer"><div class="footer-inner wrap">
+  <div class="footer-gbm">See you at the next GBM</div>
+  <div class="footer-links">
+    <a data-link="instagram" href="https://www.instagram.com/compneurosocietyfsu/" target="_blank" rel="noopener">Instagram</a>
+    <a data-link="linkedin" href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank" rel="noopener">LinkedIn</a>
+    <a data-link="discord" href="https://discord.gg/sfm2RPd3gH" target="_blank" rel="noopener">Discord</a>
+    <a class="dim" href="people.html">People</a>
+    <a class="dim" href="sponsors.html">Sponsors</a>
+    <a class="dim" href="chapters.html">Chapters</a>
+    <a class="dim" data-link="contactForm" href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" rel="noopener">Contact</a>
+    <span class="footer-copy">(c) 2026 CompNeuroSociety</span>
   </div>
 </div></footer>
 <script type="module" src="js/site.js"></script>
