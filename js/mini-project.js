@@ -61,11 +61,11 @@ if (upcoming[0]) {
     <div><span class="tag solid">STARTS ${countdown(w.dt).toUpperCase()}</span>
       <div class="mp-next-date">${t.dateStr}</div>
       <div class="mono mp-sub">${t.time}${w.location ? ' - ' + esc(w.location) : ''}</div></div>
-    <div>${nextHead(w.title)}${w.blurb ? `<p>${esc(w.blurb)}</p>` : `<p>Details and any prep go out on <a href="${esc(LINKS.discord.url)}" target="_blank" rel="noopener">Discord</a> before the session.</p>`}
+    <div>${nextHead(w.title)}${w.blurb ? `<p>${esc(w.blurb)}</p>` : `<p>We post the details and any prep on <a href="${esc(LINKS.discord.url)}" target="_blank" rel="noopener">Discord</a> before the session.</p>`}
       ${extra(w) ? `<div class="mp-extra">${extra(w)}</div>` : ''}</div></div>`;
 } else {
   $('mp-next').innerHTML = `<div class="panel mp-next mp-next-tba"><div>${nextHead('TBA')}
-    <p>The date is not posted yet - announcements go out on <a href="${esc(LINKS.discord.url)}" target="_blank" rel="noopener">Discord</a>.</p></div></div>`;
+    <p>The date is not posted yet, but announcements go out on <a href="${esc(LINKS.discord.url)}" target="_blank" rel="noopener">Discord</a>.</p></div></div>`;
 }
 
 const row = (w, isPast) => {
@@ -106,13 +106,13 @@ $('mp-papers').innerHTML = PAPERS.length ? PAPERS.map((p, i) => {
       ${p.figure ? `<span class="tag gold">${esc(p.figure)}</span>` : ''}
       ${p.status ? `<span class="tag ${STATUS[p.status] || 'dim'}">${esc(p.status).toUpperCase()}</span>` : ''}</div>
     <h3>${esc(p.title)}</h3>
-    <div class="mono mp-sub">${[p.authors, p.year, p.venue].filter(Boolean).map(esc).join(' - ')}</div>
+    <div class="mono mp-sub">${[[p.authors, p.year].filter(Boolean).join(' '), p.venue].filter(Boolean).map(esc).join(', ')}</div>
     ${p.note ? `<p class="mp-note">${esc(p.note)}</p>` : ''}
     ${p.who ? `<div class="mp-who">${esc(p.who)}</div>` : ''}
     ${p.url ? `<div class="mp-open-row"><span class="mp-open">Open paper &#8599;</span></div>` : ''}
   </${tag}>`;
 }).join('')
-  : empty('no papers posted yet - once you pick one, send it in and it will show up here');
+  : empty('no papers are posted yet, but once you pick one and send it in it will show up here');
 
 // --- News ---
 $('mp-news').innerHTML = NEWS.length ? NEWS.map(n => {

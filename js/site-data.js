@@ -41,30 +41,30 @@ export const LINKS = {
 // --- replace them with real events and delete the `example: true` line.
 export const EVENTS = [
   { title: "Fall Involvement Fair", date: "2026-08-27T17:00", location: "Tucker Civic Center",
-    blurb: "Come find our table and hear what we have planned for the fall." },
+    blurb: "Come find our table so we can tell you about everything we have planned for the fall." },
   { title: "Python Basics 4 Neuro/DataSci - Part 1", date: "2025-09-15T18:00", location: "TBA",
-    blurb: "Beginner Python with Codeducation: data types, loops, functions, and plotting.",
+    blurb: "A beginner Python workshop with Codeducation that covers data types, loops, functions, and plotting.",
     image: "images/python_coded.jpg" },
   { title: "Intro to ML/AI 4 NeuroSci", date: "2025-10-20T19:00", location: "WJB 2029",
-    blurb: "Machine learning basics and how they show up in neuroscience. No coding experience needed.",
+    blurb: "An introduction to machine learning basics and how they show up in neuroscience, and you do not need any coding experience for it.",
     image: "images/mlworkshop.jpg" },
   { title: "A Conversation with Devon White, CEO of FIELD", date: "2025-10-09T17:45", location: "Virtual",
     blurb: "A conversation with Devon White about neurotech, brain data, and where the industry is going.",
     image: "images/devonworkshop.jpg" },
   { title: "Python Basics 4 Neuro/DataSci - Part 2", date: "2025-09-18T18:00", location: "PDB A204",
-    blurb: "Python with Codeducation: LFPs, spike-train plots, and summary statistics on neural data.",
+    blurb: "The second part of our Python series with Codeducation, where we work with LFPs (local field potentials, the summed electrical activity recorded near an electrode), spike-train plots, and summary statistics on neural data.",
     image: "images/python_coded.jpg" },
   { title: "Python Basics 4 Neuro/DataSci - Part 1", date: "2025-09-16T18:00", location: "Thagard 211",
-    blurb: "Beginner Python with Codeducation: data types, loops, functions, and basic plotting.",
+    blurb: "The first part of our Python series with Codeducation, which is made for beginners and covers data types, loops, functions, and basic plotting.",
     image: "images/python_coded.jpg" },
   { title: "Workshop on Computational Neuroscience", date: "2025-06-27T14:00", location: "PDB A204",
-    blurb: "Multi-level brain modeling with Dr. Rodrigo Pena of the FAU Stiles-Nicholson Brain Institute.",
+    blurb: "A workshop with Dr. Rodrigo Pena of the FAU Stiles-Nicholson Brain Institute on multi-level brain modeling (modeling the brain at every scale, from ion channels up to whole networks).",
     image: "images/PenaWorkshopWebsiteFlyer.png" },
   { title: "Intro to Python, GitHub, VS Code Workshop", date: "2025-04-17T21:15", location: "FSU",
-    blurb: "Installing and using Python, GitHub, and VS Code. For complete beginners.",
+    blurb: "A workshop for complete beginners on how to install and use Python, GitHub, and VS Code.",
     image: "images/placeholder.jpg" },
   { title: "Inaugural GBM", date: "2025-04-04T21:15", location: "FSU",
-    blurb: "Our first General Body Meeting: what the club is and what's coming.",
+    blurb: "Our very first General Body Meeting, where we introduced the club and what we had coming up.",
     image: "images/gbm.png" },
 ];
 
@@ -143,7 +143,7 @@ export const TEAM = [
 // --- PROJECTS ---
 export const APPLICATIONS = {
   open: true,
-  closedNote: "Applications reopen Mid-December",
+  closedNote: "Applications reopen in mid-December",
   formUrl: "https://docs.google.com/forms/d/e/1FAIpQLScRBfy8KiEscIm7tHRrBUQkJ1IZqItF0BFHA04Gez7lOR_j0w/viewform",
 };
 
@@ -152,12 +152,12 @@ export const APPLICATIONS = {
 export const CURRENT_PROJECT = {
   term: "Fall 2026",
   name: "Figure Replication Mini-Project",
-  meeting: "workshop series - dates on the hub",
-  summary: "Work through our workshop series, pick a computational neuroscience paper, and replicate one of its figures by the end of the semester.",
+  meeting: "workshop series, dates on the hub",
+  summary: "For this semester our project is a mini-project: we run a workshop series, and each student replicates one figure from a computational neuroscience paper of their choosing before the semester ends.",
   cadence: [
-    "Attend the workshops, or watch the recordings on the hub",
-    "Pick a paper and the figure you will replicate",
-    "Rebuild the figure from the paper's methods, with help on Discord",
+    "Attend the workshops, or watch the recordings on the hub if you miss one",
+    "Pick a paper and the specific figure you want to replicate",
+    "Rebuild that figure from the paper's methods, and ask for help on Discord when you get stuck",
   ],
   hubUrl: "mini-project.html",
 };
@@ -180,17 +180,17 @@ export const PAST_PROJECTS = [
     name: "Drosophila Escape Response Replication",
     subtitle: "Pena Lab project team",
     image: "images/projects/PenaPosterGroup.jpg",
-    summary: "Ported a published NEURON model of the giant-fiber escape response in Drosophila. Funded by ORCA.",
-    paper: "Augustin et al. (2019), eNeuro - \"A Computational Model of the Escape Response Latency in the Giant Fiber System of Drosophila melanogaster\"",
-    funding: "Open Research Community Accellerator (ORCA) - Catalytic Awards Program Grant",
+    summary: "We ported a published NEURON model of the giant-fiber escape response in Drosophila (fruit flies), and the project was funded by ORCA.",
+    paper: "\"A Computational Model of the Escape Response Latency in the Giant Fiber System of Drosophila melanogaster\" (Augustin et al. 2019), eNeuro",
+    funding: "Open Research Community Accelerator (ORCA), Catalytic Awards Program Grant",
     mentors: "Pena Lab, FAU Stiles-Nicholson Brain Institute",
-    tools: "NEURON, Python",
+    tools: "NEURON (a simulator for modeling neurons and networks), Python",
     repo: "https://github.com/CompNeuroSociety-at-FSU/fork-escape-response",
     mission: [
-      "Fork the published model into a shared repository so the whole team started from the same working code.",
+      "We forked the published model into a shared repository so that the whole team started from the same working code.",
     ],
     outcome: [
-      "Three members presented a poster at the Florida Consortium of the Neurobiology of Cognition Conference.",
+      "Three of our members presented a poster at the Florida Consortium of the Neurobiology of Cognition Conference.",
     ],
     members: [ { name: "Jonathan Alcineus", role: "Presenting" }, { name: "Gillian Durta", role: "Presenting" }, { name: "Devyani Jain", role: "Presenting" }, { name: "Sebas Ruiz", role: "Project Lead" }, { name: "Max Boyington", role: "Technical Lead" }, { name: "Sebastian Davalos", role: "Workshop Coordinator" },
     { name: "Mikhail Sautkin", role: "Member" }, { name: "Bianca Blevins", role: "Member" }, { name: "Cooper Wherely", role: "Member" }, { name: "Jordan Schwartz", role: "Member" }, { name: "Mrinal Raina", role: "Member" },
@@ -202,14 +202,14 @@ export const PAST_PROJECTS = [
     term: "Fall 2025",
     name: "Retina Model Replication",
     image: "images/projects/retina-model-1.jpg",
-    summary: "Replicated a published model of gap junctions and rod Ih conductance in the retina.",
+    summary: "We replicated a published model of gap junctions (direct electrical connections between neurons) and rod Ih conductance in the retina.",
     paper: "\"A Computational Study on the Role of Gap Junctions and Rod Ih Conductance in the Enhancement of the Dynamic Range of the Retina\"",
     tools: "NEURON",
     mission: [
-      "Replicate the published model and try to extend it"
+      "We set out to replicate the published model and then try to extend it."
     ],
     outcome: [
-      "Mildly successful, and a learning experience for both the members and the project leaders.",
+      "The project was only mildly successful, but it was a learning experience for both the members and the project leaders.",
     ],
     members: [{ name: "Andre Quintero", role: "Project Lead" }, { name: "Dion Cooper", role: "Project Associate" }, { name: "Sofia Sierra", role: "Project Member" }, { name: "Maggie Raymond", role: "Project Member" },],
     gallery: ["images/projects/retina-model-1.jpg", "images/projects/retina-model-2.jpg", "images/projects/retina-model-3.jpg"],
@@ -218,11 +218,11 @@ export const PAST_PROJECTS = [
     term: "Fall 2025",
     name: "Brain-to-Text Competition Team",
     image: "images/projects/brain-to-text-1.jpg",
-    summary: "Entered the 2025 Brain-to-Text Kaggle competition, decoding neural recordings into text.",
+    summary: "We entered the 2025 Brain-to-Text Kaggle competition, where the goal is to decode neural recordings into text.",
     tools: "Python, machine learning, LLMs",
     mission: [],
     outcome: [
-      "Mildly successful, and a learning experience for both the members and the project leaders.",
+      "The project was only mildly successful, but it was a learning experience for both the members and the project leaders.",
     ],
     members: [],
     gallery: ["images/projects/brain-to-text-1.jpg", "images/projects/brain-to-text-2.jpg", "images/projects/brain-to-text-3.jpg"],

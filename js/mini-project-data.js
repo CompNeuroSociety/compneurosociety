@@ -28,7 +28,7 @@
 export const META = {
   term: "Fall 2026",
   title: "Figure Replication Mini-Project",
-  blurb: "Learn the tools in the workshop series, pick a computational neuroscience paper, and reproduce one of its figures from scratch. Everything you need for the semester is here: the workshop recordings, the papers, the dates, and announcements.",
+  blurb: "For this semester our project is a mini-project, where we run a workshop series and you replicate one figure from a paper of your choosing. This page has everything you need for it: the workshop recordings, the papers, the upcoming dates, and announcements.",
   // Calendar events with "workshop" in the title on or after this date count
   // as part of this semester's series.
   termStart: "2026-08-15",
@@ -71,7 +71,7 @@ export const WORKSHOPS = [
     recording: "https://drive.google.com/file/d/1F61DxIEkzZ7b7RE6JOuLhbidcnP1-YK-/view",
     slides: "https://drive.google.com/file/d/1cGAiMhCRz7QeUckW67lgEzmuliMH8g6i/view" },
   { date: "2026-10-05T18:30", title: "Workshop 4 - Writing Functions and Plotting in Python",
-    location: "TBD", blurb: "Writing reusable Python functions, then plotting them with NumPy and Matplotlib - the tools you will rebuild your figure with.",
+    location: "PDB A204", blurb: "We will cover how to write reusable Python functions and then plot them with NumPy and Matplotlib, which are the tools you will use to rebuild your figure.",
     recording: "",
     // slides: "https://drive.google.com/file/d/1FUkphrnDCo4oQTcULJamjVDWPEZLKBdH/view",
     // links: [
@@ -94,29 +94,29 @@ export const PAPERS = [
     title: "A computational model of altered neuronal activity in altered gravity",
     authors: "Gontier et al.", year: 2024, venue: "bioRxiv",
     url: "https://www.biorxiv.org/content/10.1101/2024.07.30.605832v2.full#sec-8",
-    note: "Focuses on the electrical activity of neurons and the time constant, nothing chemical. The equations they use are shown explicitly in the paper." },
+    note: "This paper focuses on the electrical activity of neurons and the time constant, not on anything chemical, and the equations they use are explicitly shown in the paper." },
 
   { label: "Option 2",
     title: "Computational Model for Synthesizing Auditory Brainstem Responses to Assess Neuronal Alterations in Aging and Autistic Animal Models",
     authors: "Li et al.", year: 2026, venue: "Journal of the Association for Research in Otolaryngology",
     url: "https://link.springer.com/article/10.1007/s10162-026-01060-0",
-    note: "Adds the auditory components for mice, with sound measured in decibels. No chemical side, just electrical signals. Built with Brian2 (and cochlea)." },
+    note: "This paper adds the auditory components for mice and has sound measured in decibels, with no chemical side and just electrical signals, and it uses Brian2 (a Python simulator for spiking neural networks) along with cochlea." },
 
   { label: "Option 3",
     title: "Spinal circuit mechanisms constrain therapeutic windows for ALS intervention: A computational modeling study",
     authors: "Strohmer et al.", year: 2026, venue: "Neurobiology of Disease",
     url: "https://www.sciencedirect.com/science/article/pii/S096999612500470X#d1e3627",
-    note: "Models groups of neurons and their total activity, but starts to bring in the chemical impact of neuron degeneration - a bit more difficult to model." },
+    note: "This paper includes groups of neurons and their total activity, however it starts to introduce the chemical impacts of the degeneration of the neurons, which makes it a bit more difficult to model." },
 
   { label: "Option 4",
     title: "A Computational Model of Major Depression: the Role of Glutamate Dysfunction on Cingulo-Frontal Network Dynamics",
     authors: "Ramirez-Mahaluf et al.", year: 2015, venue: "Cerebral Cortex",
     url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC5939208/",
-    note: "Uses Hodgkin-Huxley neurons, but the chemical side of modeling depression is harder and needs more differential equations to include it." },
+    note: "This paper uses Hodgkin-Huxley neurons (the classic equations for how a neuron fires), however the chemical aspects of modeling depression are a bit more difficult and require more differential equations to include the chemical part." },
 ];
 
 // date - "YYYY-MM-DD"; link is optional ({ label, url })
 export const NEWS = [
   { date: "2026-09-25", title: "Project hub is live",
-    body: "Workshop recordings, paper links, and upcoming dates for the mini-project will all be posted here. Bookmark it." },
+    body: "We will post all of the workshop recordings, paper links, and upcoming dates for the mini-project here, so it is worth bookmarking this page." },
 ];
