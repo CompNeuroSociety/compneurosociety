@@ -4,6 +4,7 @@
 export const CALENDAR_EVENTS = [
   {"title": "GBM 4", "date": "2026-12-03T18:30", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "A204", "image": "images/placeholder.jpg"},
   {"title": "GBM 3", "date": "2026-10-29T18:30", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "A204", "image": "images/placeholder.jpg"},
+<<<<<<< HEAD
   {"title": "Workshop 4 - Python Basics: Functions and Plotting", "date": "2026-10-05T18:30", "location": "TBD", "blurb": "", "image": "images/placeholder.jpg"},
   {"title": "Collab Workshop - Why you should land a research internship!", "date": "2026-10-01T18:30", "location": "Bellamy Building, Bellamy Bldg Room 0004, Tallahassee, FL 32304, USA", "blurb": "BEL 0004", "image": "images/FlierCollab.png"},
   {"title": "Workshop 3!", "date": "2026-09-23T18:30", "location": "Rogers Building, 117 N Woodward Ave, Tallahassee, FL 32304, USA", "blurb": "OSB 0108", "image": "images/placeholder.jpg"},
