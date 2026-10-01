@@ -1,7 +1,7 @@
 # Neuron morphologies
 
-Allen Institute Cell Types reconstructions, drawn by `js/neuron.js` as the field of neurons
-behind every page (they fire as you scroll). All five are mouse primary visual cortex cells
+Allen Institute Cell Types reconstructions, drawn by `js/neuron.js` behind every page and wired
+into a chain (scrolling pushes one action potential from cell to cell, in the order below). All five are mouse primary visual cortex cells
 from the same set `AllenInstitute/bmtk` ships in `examples/bio_components/morphologies/`:
 
 | File | Cre line | Specimen |
@@ -12,12 +12,13 @@ from the same set `AllenInstitute/bmtk` ships in `examples/bio_components/morpho
 | `Pvalb_470522102_m.swc` | Pvalb-IRES-Cre | 470522102 |
 | `Pvalb_469628681_m.swc` | Pvalb-IRES-Cre | 469628681 |
 
-Allen Institute terms of use apply (https://alleninstitute.org/terms-of-use/); the label at
-the bottom-left of every page credits the source and lists the specimen ids.
+Allen Institute terms of use apply (https://alleninstitute.org/terms-of-use/); the footer of
+every page credits the source and lists the specimen ids in chain order.
 
 Format: SWC, one node per line `id type x y z radius parent` (type 1 soma, 2 axon, 3 basal
 dendrite, 4 apical dendrite).
 
 **Adding a cell:** on https://celltypes.brain-map.org open a specimen with a reconstruction,
 download its morphology (SWC), put the file here, and add a row to `NEURONS` at the top of
-`js/neuron.js` (and, if you want it in a new spot, a slot in `LAYOUT`).
+`js/neuron.js` (its position in that list is its place in the chain) plus a slot in `LAYOUT`
+for where it sits on screen. The yaw is solved automatically so its axon points at the next cell.
