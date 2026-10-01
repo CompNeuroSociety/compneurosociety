@@ -42,8 +42,12 @@ const LAYOUT = [
 const GAP = 0.035;              // share of the scroll range each synapse takes
 const FIT = { left: 0.015, right: 0.985, top: 0.03, bottom: 0.97 };   // viewport box the chain is fitted into
 const PULSE_W = 0.07;           // width of the travelling pulse, in a cell's local progress
-const SWAY = 0.05, DRIFT = 0.04;   // idle sway (rad) and shared vertical parallax (of viewport height)
-const MAX_DPR = 1.5, IDLE_FPS = 30;
+const DRIFT = 0.04;             // shared vertical parallax of the chain, as a fraction of the viewport height
+const MAX_DPR = 1;              // render at 1 device pixel per CSS pixel: the tubes sit at ~45% behind content anyway
+// The reconstructions are sampled every ~1.2 um; interior nodes are merged until each
+// tube is at least MIN_SEG um long (branch points and tips are always kept), which
+// cuts the ~10,700 tubes to ~2,000 with no visible change at page scale.
+const MIN_SEG = 6, TUBE_SIDES = 5;
 
 const PHASES = [
   [0.05, 'resting potential · −70 mV'],
@@ -85,6 +89,18 @@ function parse(txt) {
     const par = map.get(n.parent);
     if (par) { par.kids++; const dx = n.x - par.x, dy = n.y - par.y, dz = n.z - par.z; n.dist = par.dist + Math.sqrt(dx * dx + dy * dy + dz * dz); }
   }
+  // Decimate: keep the soma, every branch point and tip, and interior nodes only once
+  // MIN_SEG um of cable has accumulated since the last kept node; dropped nodes hand
+  // their children to that kept ancestor (parents precede children in the file).
+  const keptAnc = new Map();
+  for (const n of list) {
+    const par = map.get(n.parent);
+    if (!par || n.type === 1) { n.keep = true; keptAnc.set(n.id, n.id); continue; }
+    const anc = keptAnc.get(par.id);
+    n.keep = n.kids !== 1 || (n.dist - map.get(anc).dist) >= MIN_SEG;
+    keptAnc.set(n.id, n.keep ? n.id : anc);
+    if (n.keep) n.parent = anc;
+  }
   return { list, map, soma };
 }
 
@@ -101,9 +117,9 @@ export async function mountNeuron({ canvas, phaseEl, statusEl, listEl, mainEl })
   renderer.setClearColor(0x000000, 0);
 
   const scene = new THREE.Scene();
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xcfd8de, 1.4));
+  // Two lights and Lambert shading: the tubes are thin and sit behind content, so PBR buys nothing.
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xcfd8de, 1.6));
   const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(2, 3, 4); scene.add(key);
-  const fill = new THREE.DirectionalLight(0xffffff, .6); fill.position.set(-3, -1, -2); scene.add(fill);
 
   // Orthographic camera looking straight at the z=0 plane: the viewport is
   // visibleW x visibleH world units, so screen fractions map straight to world
@@ -124,15 +140,15 @@ export async function mountNeuron({ canvas, phaseEl, statusEl, listEl, mainEl })
   }
   readTheme();
 
-  const tubeGeo = new THREE.CylinderGeometry(1, 1, 1, 7, 1, true);
-  const mat = new THREE.MeshStandardMaterial({ roughness: .55, metalness: 0 });
-  const somaMat = new THREE.MeshStandardMaterial({ roughness: .5 });
+  const tubeGeo = new THREE.CylinderGeometry(1, 1, 1, TUBE_SIDES, 1, true);
+  const mat = new THREE.MeshLambertMaterial();
+  const somaMat = new THREE.MeshLambertMaterial();
   const slots = [];                       // slots[i] = cell i of NEURONS once it has loaded
   let chain = [], links = [], points = 0;
 
   function buildCell(parsed, i) {
     const { list, map, soma } = parsed;
-    const segs = list.filter(n => n.parent > 0 && map.has(n.parent) && n.type !== 1);
+    const segs = list.filter(n => n.keep && n.parent > 0 && map.has(n.parent) && n.type !== 1);
     let maxD = 0, maxA = 0;
     for (const n of segs) { if (n.type === 2) maxA = Math.max(maxA, n.dist); else maxD = Math.max(maxD, n.dist); }
     // Firing schedule inside the cell: distal dendrites first (synaptic input) -> soma at .46 -> axon outward.
@@ -290,8 +306,8 @@ export async function mountNeuron({ canvas, phaseEl, statusEl, listEl, mainEl })
     for (const l of links) { scene.remove(l.bouton, l.spark); l.bouton.material.dispose(); l.spark.material.dispose(); }
     links = [];
     for (let k = 0; k + 1 < chain.length; k++) {
-      const bouton = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), new THREE.MeshStandardMaterial({ roughness: .5 }));
-      const spark = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), new THREE.MeshStandardMaterial({ roughness: .3, transparent: true, opacity: .85 }));
+      const bouton = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 10), new THREE.MeshLambertMaterial());
+      const spark = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 10), new THREE.MeshLambertMaterial({ transparent: true, opacity: .85 }));
       spark.visible = false;
       scene.add(bouton, spark);
       links.push({ from: chain[k], to: chain[k + 1], bouton, spark, lastG: null });
@@ -304,6 +320,7 @@ export async function mountNeuron({ canvas, phaseEl, statusEl, listEl, mainEl })
     const p = progress();
     chain.forEach((cell, k) => { if (cell.lastQ < 0) paintCell(cell, clamp01((p - startOf(k)) / W)); });
     dirty = true;
+    requestRender();
   }
 
   // The content column starts right of the "gutter"; behind it the canvas is dimmed by a CSS mask
@@ -314,7 +331,7 @@ export async function mountNeuron({ canvas, phaseEl, statusEl, listEl, mainEl })
     canvas.style.setProperty('--field-edge', Math.round(r.left + pl) + 'px');
   }
 
-  let dirty = true, dead = false, raf = 0, lastP = -1, lastLabel = '', lastFrame = 0;
+  let dirty = true, dead = false, lastP = -1, lastLabel = '';
   function resize() {
     const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
     renderer.setSize(w, h, false);
@@ -375,39 +392,38 @@ export async function mountNeuron({ canvas, phaseEl, statusEl, listEl, mainEl })
     const max = se.scrollHeight - se.clientHeight;
     return max > 0 ? clamp01(se.scrollTop / max) : 0;
   }
-  const reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-
-  function frame(now) {
+  // Render on demand: one frame whenever the scroll position, viewport, theme or chain
+  // changes, and nothing at all while the page sits still.
+  let raf = 0;
+  function render() {
+    raf = 0;
     if (dead) return;
-    raf = requestAnimationFrame(frame);
     const p = progress();
-    const changed = p !== lastP || dirty;
-    if (!changed && (reducedMotion || now - lastFrame < 1000 / IDLE_FPS)) return;
-    lastFrame = now; lastP = p;
     chain.forEach((cell, k) => {
       const q = clamp01((p - startOf(k)) / W);
       if (q !== cell.lastQ || dirty) paintCell(cell, q);
-      const sway = reducedMotion ? 0 : SWAY * Math.sin(now * 0.0004 + k * 1.7);
-      cell.outer.rotation.set(cell.slot.tilt[0], cell.yaw + sway, cell.slot.tilt[1], 'ZXY');
     });
     driftY = (p - 0.5) * DRIFT * visibleH;
-    chainCells();                       // keeps the ends joined while the cells sway
+    chainCells();
     updateLinks(p);
     if (phaseEl) { const t = labelFor(p); if (t !== lastLabel) { phaseEl.textContent = t; lastLabel = t; } }
     renderer.render(scene, camera);
-    dirty = false;
+    lastP = p; dirty = false;
   }
-  function start() { if (!raf && !dead) raf = requestAnimationFrame(frame); }
+  function requestRender() { if (!raf && !dead && !document.hidden) raf = requestAnimationFrame(render); }
   function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
 
   resize();
-  window.addEventListener('resize', resize);
+  const onResize = () => { resize(); requestRender(); };
+  const onScroll = () => requestRender();
+  window.addEventListener('resize', onResize);
+  window.addEventListener('scroll', onScroll, { passive: true });
   const ro = ('ResizeObserver' in window && mainEl) ? new ResizeObserver(syncEdge) : null;
   if (ro) ro.observe(mainEl);
-  const mo = new MutationObserver(() => { readTheme(); dirty = true; });
+  const mo = new MutationObserver(() => { readTheme(); dirty = true; requestRender(); });
   mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else { dirty = true; start(); } });
-  start();
+  const onVisibility = () => { if (document.hidden) stop(); else { dirty = true; requestRender(); } };
+  document.addEventListener('visibilitychange', onVisibility);
 
   // Load every morphology in parallel; the chain is (re)assembled as each one arrives.
   const loaded = new Set();
@@ -418,7 +434,7 @@ export async function mountNeuron({ canvas, phaseEl, statusEl, listEl, mainEl })
       buildCell(parsed, i);
       loaded.add(i);
       assemble();
-      if (statusEl) statusEl.textContent = `Allen Cell Types · ${chain.length} cell${chain.length === 1 ? '' : 's'} · ${points.toLocaleString()} points`;
+      if (statusEl) statusEl.textContent = `Allen Cell Types · ${chain.length} cell${chain.length === 1 ? '' : 's'} · ${points.toLocaleString()} points \u00B7 ${chain.reduce((t, c) => t + c.segs.length, 0).toLocaleString()} tubes`;
       if (listEl) listEl.textContent = 'signal path ' + NEURONS.filter((n, k) => loaded.has(k)).map(n => `${n.line} ${n.id}`).join(' → ');
     } catch (e) { /* that cell stays out of the chain; the others still link up */ }
   }));
@@ -427,7 +443,9 @@ export async function mountNeuron({ canvas, phaseEl, statusEl, listEl, mainEl })
   return function destroy() {
     dead = true; stop();
     if (ro) ro.disconnect(); mo.disconnect();
-    window.removeEventListener('resize', resize);
+    window.removeEventListener('resize', onResize);
+    window.removeEventListener('scroll', onScroll);
+    document.removeEventListener('visibilitychange', onVisibility);
     renderer.dispose(); tubeGeo.dispose(); mat.dispose();
   };
 }
