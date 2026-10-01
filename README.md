@@ -10,18 +10,23 @@ Static site for CompNeuroSociety at FSU. No build step, no framework: plain HTML
 
 | Path | What it is |
 |---|---|
-| `index.html` | Home — hero, 3D EEG brain (iframe), stats, auto-updating event cards |
-| `about.html` | Mission, what is comp-neuro, constitution panel, FSU×FIU panel |
-| `people.html` | Leadership, grad council, mentors, team (rendered from site-data) |
-| `events.html` | Spotlight + full timeline (auto-merged with Google Calendar) |
+| `index.html` | Home — hero + 3D EEG brain (iframe), what's on, how a semester works, this semester's project, who runs it |
+| `about.html` | Mission, what is comp-neuro, FAQ accordion, constitution, links to People / Sponsors / Chapters |
+| `people.html` | Leadership, grad council, mentors, team (rendered from site-data; reached from About + footer) |
+| `events.html` | Up-next spotlight + filter chips + full timeline (auto-merged with Google Calendar) |
 | `projects.html` | Current + past project teams |
-| `join.html` | 3-step join flow (form → FSU HQ → Discord) |
-| `sponsors.html` | Sponsors + become-a-sponsor CTA |
-| `chapters.html` | FSU×FIU chapter partnership + start-a-chapter CTA |
-| `brain-viz.html` | The 3D brain iframe (three.js; loads `brain_model.obj` + `white.jpg`) |
-| `css/warm-lab.css` | Entire design system (design tokens at the top) |
+| `mini-project.html` | This semester's project hub (`js/mini-project.js` + `js/mini-project-data.js`) |
+| `join.html` | 3-step join flow (form → FSU HQ → Discord) + "then show up" (next event) |
+| `sponsors.html` | Sponsors + become-a-sponsor CTA (reached from About + footer) |
+| `chapters.html` | FSU×FIU chapters + start-a-chapter CTA (reached from About + footer) |
+| `brain-viz.html` | The 3D brain iframe (three.js; loads `brain_model.glb` + `white.jpg`) |
+| `css/warm-lab.css` | Entire design system — the 2026 "Air" look (light + dark tokens at the top) |
 | `js/site-data.js` | ★ All content + links. Edit this. Instructions in its header comment |
-| `js/site.js` | Renders site-data into pages, mobile menu, GA4 conversion events |
+| `js/site.js` | Renders site-data into pages (next-up strip, home, events, people, projects, join), GA4 conversion events, loads the neuron field |
+| `js/theme.js` | Light/dark theme by the visitor's clock + the toggle in the nav (see §2a) |
+| `js/neuron.js` | The field of Allen Institute neurons behind every page (see §2b) |
+| `js/vendor/` | three.js r160 + the addons the brain and neurons need (vendored, no CDN) |
+| `neuron/` | The neuron reconstructions (SWC) + where they came from |
 | `js/calendar-events.js` | **Generated — do not edit.** Auto-synced from Google Calendar |
 | `scripts/fetch_calendar_events.py` | Generator for the above (stdlib-only Python) |
 | `scripts/optimize_images.py` | Resizes/recompresses `images/` in place — **run after adding photos** (see §7) |
@@ -29,11 +34,11 @@ Static site for CompNeuroSociety at FSU. No build step, no framework: plain HTML
 | `robots.txt`, `sitemap.xml` | Crawler config — **add new pages to the sitemap** |
 | `images/` | All images (member photos in `images/members/`) |
 
-`README-REDESIGN.md` is a historical note from the 2025 redesign; this file supersedes it.
+`README-REDESIGN.md` is a historical note from the 2025 (dark "Warm Lab") redesign; this file supersedes it. The current look is the 2026 "Air" redesign: white by default with an automatic dark theme, Montserrat + IBM Plex Mono, hairline rules, a persistent "Next up" strip, and a field of real neurons behind every page.
 
 ## 2. Routine updates (all in `js/site-data.js`)
 
-**Add an event:** add an object to the top of `EVENTS` (`title`, `date` as `"YYYY-MM-DDTHH:MM"`, `location`, `blurb`, optional `image`). Home + events pages sort, count down, and archive automatically. Events also flow in from the club's public Google Calendar every 6 hours (see §3) — entries here win over calendar duplicates on the same day, so use this list for curated blurbs/photos.
+**Add an event:** add an object to the top of `EVENTS` (`title`, `date` as `"YYYY-MM-DDTHH:MM"`, `location`, `blurb`, optional `image`). Home + events pages sort, count down, and archive automatically, and the **"Next up" strip under the nav on every page** always names the soonest upcoming event, with an "add to calendar" link that downloads an `.ics` file (works with Google, Outlook and Apple Calendar) and a "remind me on Discord" link (`LINKS.discord`). Two optional fields: `kind` (`workshop` / `journal` / `speaker` / `gbm` / `project` / `social`) pins which filter chip an event shows under on the events page — otherwise it is guessed from the title — and `durationMinutes` sets the length written into the `.ics` (default 60). Events also flow in from the club's public Google Calendar every 6 hours (see §3) — entries here win over calendar duplicates on the same day, so use this list for curated blurbs/photos.
 
 **Add/edit people:** edit `LEADERSHIP`, `GRAD_COUNCIL` (currently commented out — uncomment to show the section), `MENTORS`, or `TEAM`. Put photos in `images/` first. Team-form responses can be converted to paste-ready card objects automatically — see `generateTeamCards()` in §5.
 
@@ -42,6 +47,20 @@ Static site for CompNeuroSociety at FSU. No build step, no framework: plain HTML
 **Links:** every form/social/external URL is a key in `LINKS`. HTML elements use `data-link="key"` and get hydrated by `site.js` — change the URL once in `LINKS` and every page updates. (Exception: the footer Contact link is hardcoded in each HTML file's footer — update all 8 if it ever changes.)
 
 **Deploy:** commit → push to the default branch → GitHub Pages rebuilds (usually <1 min).
+
+### 2a. Light / dark theme
+
+The site is white by default. `js/theme.js` (a tiny blocking script in every page's `<head>`, so there is no flash) switches the `data-theme` attribute on `<html>`:
+
+- An explicit choice from the ☀/☾ toggle in the nav wins. It is stored in `localStorage` under `cns-theme` (`light` or `dark`); nothing is sent anywhere.
+- Otherwise **auto**: dark from 7pm to 7am by the visitor's own clock (`new Date().getHours()`, i.e. their device's local time zone — no geolocation and no permission prompt). Auto re-checks every minute and when the tab comes back into view, so a page left open flips at 7pm. Change the hours at the top of `js/theme.js` (`DARK_FROM`, `DARK_UNTIL`).
+- If storage or the clock can't be read, or JavaScript is off, the site stays white.
+
+The toggle cycles auto → light → dark → auto. All colors are tokens at the top of `css/warm-lab.css` (`:root` = light, `:root[data-theme="dark"]` = dark); every text color passes WCAG AA on its background in both themes, so keep new colors in that list. The brain iframe follows the parent's theme (`data-theme-sync` on the iframe).
+
+### 2b. The neurons behind the page
+
+Every page draws a field of five real neuron reconstructions from the Allen Cell Types database (`neuron/*.swc`, credited bottom-left) behind the content; scrolling sends an action potential through each cell. It is `js/neuron.js` + the vendored three.js, loaded only on screens wider than 900px (phones never download it), rendered at ≤30fps, paused in background tabs, and the idle rotation is off under `prefers-reduced-motion`. Behind the text column the canvas is dimmed by a CSS mask so copy stays readable. To add or swap a cell see `neuron/README.md`; to move one, edit `LAYOUT` at the top of `js/neuron.js`.
 
 ## 3. Event auto-sync (GitHub Action)
 
@@ -86,7 +105,8 @@ If automations misbehave: script editor → left sidebar → **Executions** show
 ## 6. SEO & analytics
 
 - **Every page's `<head>`** carries a unique `<title>`, `<meta name="description">`, canonical URL, and Open Graph/Twitter tags. When adding a page, copy the head block from `chapters.html` and edit all of these — then **add the page to `sitemap.xml`**.
-- **Keep important text in static HTML.** People/events/projects cards are JS-rendered (fine for Google, invisible to some crawlers/scrapers) — that's why each page has a static intro paragraph. Don't remove those.
+- **Keep important text in static HTML.** People/events/projects cards, the next-up strip and the home event rows are JS-rendered (fine for Google, invisible to some crawlers/scrapers) — that's why each page has a static intro paragraph. Don't remove those.
+- **Nav:** only About / Events / Projects / Join are in the nav (the 2026 redesign). People, Sponsors and Chapters are linked from the About page and the footer of every page; keep it that way rather than growing the nav again.
 - **Analytics (GA4 `G-2QT79J734H`).** `site.js` sends well-named GA4 events on the actions that matter (both `data-link` CTAs and plain links): `generate_lead` (any form opened — `form` param says which: membership/team_profile/project_application/mentor_interest/lead_event/contact), `join_group` (Discord), `outbound_click` (Instagram/LinkedIn/FSU HQ), `select_content` (Google Calendar), `contact` (mailto). **In GA4 → Admin → Events, toggle `generate_lead` and `join_group` to "Mark as key event"** — those are your signup/community conversions. Optionally register `form`, `target`, and `cta_id` as custom dimensions (Admin → Custom definitions) to segment by which form/link. Also confirm **Enhanced Measurement** is ON (Admin → Data streams → the web stream) — it auto-tracks scrolls, outbound clicks, and site search with no code.
 - **Duplicate-tracking warning — resolve this.** Every page loads **both** a direct GA4 tag (`gtag.js` for `G-2QT79J734H`) **and** Google Tag Manager (`GTM-KGLRCKXQ`). If that GTM container also has a GA4 configuration tag for the same property, page views and events are **counted twice**. Check GTM (tagmanager.google.com → the container → Tags): if its only tag is GA4 for `G-2QT79J734H`, remove the GTM `<script>`/`<noscript>` snippets from the eight pages' `<head>`/`<body>` and keep the direct `gtag.js` (which is what `site.js` events use). If GTM holds *other* tags you rely on, instead delete the direct `gtag.js` config and move GA4 into GTM. Either way, load GA4 **once**.
 - **Search Console:** the sitemap is at `https://compneurosociety.com/sitemap.xml` — submit it once under the club's Search Console property.
@@ -115,7 +135,7 @@ It downscales, recompresses, strips EXIF, and keeps the same filenames and forma
 
 All JS-rendered images (people, events, projects, gallery thumbs) plus the ORCA logo carry `loading="lazy"` so they only download when scrolled into view. Layout shift is already handled — `warm-lab.css` fixes explicit dimensions on every image.
 
-**Still outstanding:** `brain_model.obj` is **6.7 MB** and loads on the homepage (the hero iframe is in the viewport, so `loading="lazy"` doesn't defer it). The optimizer doesn't touch 3D models. Options if you want the homepage faster: decimate the mesh, convert to a compressed format like Draco/glTF, or gate the viewer behind a tap on mobile.
+**Still outstanding:** `brain_model.glb` is **1.7 MB** and loads on the homepage (the hero iframe is in the viewport, so `loading="lazy"` doesn't defer it). The optimizer doesn't touch 3D models. Options if you want the homepage faster: decimate the mesh, Draco-compress the glTF, or gate the viewer behind a tap on mobile. (The three largest headshots were run through the optimizer in Oct 2026 — 4.5 MB, 5.7 MB and 1.1 MB files are now under 150 KB each — because the home page now shows them as avatars.)
 
 ## 8. New webmaster access checklist
 
@@ -123,10 +143,10 @@ GitHub repo admin (CompNeuroSociety org) · club Google account (compneurosociet
 
 ## 9. Known issues / TODO
 
-- `about.html` links to `constitution.pdf`, which is **not in the repo** (404) — add the PDF or remove the panel.
+- `about.html` links to `constitution.pdf` (the "Constitution" tab from the redesign wireframes), which is **not in the repo** (404) — add the PDF, or delete the `#constitution` section in `about.html` and the tab link above it.
 - Old Microsoft Forms are still open — close them in the club Microsoft account so responses don't split.
 - `GRAD_COUNCIL` is commented out in `site-data.js` (section auto-hides).
 - Nice-to-have: pre-render people/projects/events cards into static HTML at build time for non-Google crawlers.
-- `brain_model.obj` (6.7 MB) still loads on the homepage — see the note at the end of §7.
-- Accessibility: `--faint` (#5d707f) on the dark background is ~3.6:1 contrast, below WCAG AA for the small mono labels it's used on. Body copy also runs 12.5–14.5px; 16px reads better on phones.
-- No custom `404.html`, and `brain-viz.html` should carry `<meta name="robots" content="noindex">` (it's a thin iframe-only page).
+- `brain_model.glb` (1.7 MB) still loads on the homepage — see the note at the end of §7.
+- No custom `404.html`.
+- The footer's Discord link and the JSON-LD on the home page now use `LINKS.discord` (`discord.gg/sfm2RPd3gH`); the old hard-coded footers pointed at a different invite (`6ujAmEEChC`). If that older invite is the one you want, change `LINKS.discord` once.

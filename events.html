@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff">
 <meta name="description" content="See our upcoming computational neuroscience workshops, journal clubs, guest speakers, and GBMs at Florida State University, open to every major and skill level.">
 <meta name="author" content="Upi Shanker, Sebastian Ruiz">
 <link rel="canonical" href="https://compneurosociety.com/events.html">
@@ -18,8 +20,9 @@
 <meta name="twitter:image" content="https://compneurosociety.com/images/logo.jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..900;1,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link href="css/warm-lab.css" rel="stylesheet">
+<script src="js/theme.js"></script>
 <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2QT79J734H"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-2QT79J734H');</script>
@@ -28,63 +31,81 @@
 </head>
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KGLRCKXQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<nav class="nav-bar">
-  <a class="nav-brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo"><b>CompNeuroSociety</b><span class="nav-tag">cns@fsu</span></a>
-  <div class="nav-links">
-    <a href="about.html">About</a>
-    <a href="people.html">People</a>
-    <a href="events.html" class="active">Events</a>
-    <a href="projects.html">Projects</a>
-    <a href="sponsors.html">Sponsors</a>
-    <a href="chapters.html">Chapters</a>
-    <a class="btn-join" href="join.html">Join</a>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Neuron field: real Allen Institute reconstructions behind the page; they fire as you scroll (js/neuron.js) -->
+<div class="field" id="neuron-field" aria-hidden="true">
+  <canvas id="neuron-canvas"></canvas>
+  <div class="field-meta">
+    <span class="field-phase" id="neuron-phase">resting potential · −70 mV</span>
+    <span id="neuron-status">Allen Cell Types · loading morphologies…</span>
+    <span id="neuron-list">mouse V1 reconstructions</span>
   </div>
-  <button class="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
-</nav>
-<div class="mobile-menu">
-  <div class="mm-head"><span class="mono" style="font-size:12.5px"><span style="color:var(--teal)">cns@fsu</span><span style="color:var(--faint)">:~$</span> menu</span><button class="mm-close" aria-label="Close menu">X</button></div>
-  <div class="mm-list">
-    <a href="about.html">about</a>
-    <a href="people.html">people</a>
-    <a href="events.html">events</a>
-    <a href="projects.html">projects</a>
-    <a href="sponsors.html">sponsors</a>
-    <a href="chapters.html">chapters</a>
-  </div>
-  <div class="mm-foot"><a class="btn teal" href="join.html">./join</a></div>
 </div>
 
-<div class="container" style="padding-top:52px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap">
-  <div><p class="crumb">// events</p><h1 class="display">What's <span class="grad">on</span>.</h1></div>
-  <a class="btn-ghost" data-link="calendar" href="#" target="_blank">google calendar</a>
-</div>
-<div class="container" style="padding-top:16px"><p class="lede" style="max-width:70ch">We host free computational neuroscience workshops, journal clubs, guest speakers, and general body meetings (GBMs) at Florida State University, and they are open to all majors and skill levels.</p></div>
-<div class="container" style="padding-top:32px" id="event-spotlight"></div>
-<div class="container" style="padding-top:36px">
-  <div class="mono" style="font-size:12px;color:var(--faint);margin-bottom:6px">// timeline, newest first</div>
-  <div id="event-timeline"></div>
-</div>
-<div class="container" style="padding-top:36px">
-  <div class="panel band">
-    <div>
-      <div class="mono" style="font-size:11px;color:var(--pink);margin-bottom:10px">// lead an event</div>
-      <div style="font-size:20px;font-weight:900;color:#fff">Run a workshop, journal club, or project.</div>
-      <div class="chips" style="margin-top:14px">
-        <span class="chip">public speaking + leadership experience</span><span class="chip">learn by teaching</span><span class="chip">LinkedIn student spotlight</span>
-      </div>
+<header class="site-head" id="site-head">
+  <nav class="nav wrap" aria-label="Primary">
+    <a class="brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo" width="34" height="34"><b>CompNeuroSociety</b><span class="brand-tag">cns@fsu</span></a>
+    <div class="nav-links">
+      <a href="about.html">About</a>
+      <a href="events.html" class="active">Events</a>
+      <a href="projects.html">Projects</a>
+      <a class="nav-join" href="join.html">Join</a>
+      <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch color theme"></button>
     </div>
-    <a class="btn" data-link="leadEventForm" href="#" target="_blank">Lead an event</a>
-  </div>
-</div>
-<footer class="site-footer"><div class="inner">
-  <div class="gbm">See you at the next GBM</div>
-  <div class="links">
-    <a href="https://www.instagram.com/compneurosocietyfsu/" target="_blank">Instagram</a>
-    <a href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank">LinkedIn</a>
-    <a href="https://discord.gg/6ujAmEEChC" target="_blank">Discord</a>
-    <a href="chapters.html">Chapters</a>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" style="color:var(--muted)">Contact</a>
-    <span class="copy">(c) 2026 CompNeuroSociety</span>
+  </nav>
+  <div class="strip"><div class="strip-inner wrap" id="next-up">
+    <span class="strip-label">NEXT UP</span><span class="strip-note">see what is coming up on the <a href="events.html">events page</a></span>
+  </div></div>
+</header>
+
+<main class="wrap" id="main">
+
+  <section class="page-head">
+    <div class="sec-head" style="align-items:flex-end;margin-bottom:0">
+      <div><p class="label">01 — events</p><h1 class="h1">What's <span class="accent">on</span>.</h1></div>
+      <a class="mono-link" data-link="calendar" href="https://calendar.google.com/calendar/embed?src=compneurosociety%40gmail.com&ctz=America%2FNew_York" target="_blank" rel="noopener">subscribe · google calendar →</a>
+    </div>
+    <p class="lede wide">We host free computational neuroscience workshops, journal clubs, guest speakers, and general body meetings (GBMs) at Florida State University, and they are open to all majors and skill levels.</p>
+  </section>
+
+  <section class="sec tight" aria-labelledby="next-label">
+    <p class="label" id="next-label">02 — up next</p>
+    <div id="event-spotlight"></div>
+  </section>
+
+  <section class="sec tight" aria-labelledby="all-label">
+    <div class="sec-head"><p class="label" id="all-label">03 — all events</p><span class="label">upcoming first, then past</span></div>
+    <div class="filters" id="event-filters" role="group" aria-label="Filter events"></div>
+    <div id="event-timeline" style="margin-top:28px">
+      <div class="ev-empty">Loading the calendar… the club's events also live on <a data-link="calendar" href="https://calendar.google.com/calendar/embed?src=compneurosociety%40gmail.com&ctz=America%2FNew_York" target="_blank" rel="noopener">Google Calendar</a>.</div>
+    </div>
+  </section>
+
+  <section class="sec last">
+    <div class="band">
+      <div>
+        <p class="label c-pink">04 — lead an event</p>
+        <div class="headline">Run a workshop, journal club, or project.</div>
+        <div class="chips" style="margin-top:16px"><span class="chip">public speaking + leadership experience</span><span class="chip">learn by teaching</span><span class="chip">LinkedIn student spotlight</span></div>
+      </div>
+      <a class="pill pink" data-link="leadEventForm" href="https://docs.google.com/forms/d/e/1FAIpQLSfA6zFAnmT1cDZghn1a9XTLhUvKN5pWfXS3K3inVgz028DkCQ/viewform" target="_blank" rel="noopener">Lead an event</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer"><div class="footer-inner wrap">
+  <div class="footer-gbm">See you at the next GBM</div>
+  <div class="footer-links">
+    <a data-link="instagram" href="https://www.instagram.com/compneurosocietyfsu/" target="_blank" rel="noopener">Instagram</a>
+    <a data-link="linkedin" href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank" rel="noopener">LinkedIn</a>
+    <a data-link="discord" href="https://discord.gg/sfm2RPd3gH" target="_blank" rel="noopener">Discord</a>
+    <a class="dim" href="people.html">People</a>
+    <a class="dim" href="sponsors.html">Sponsors</a>
+    <a class="dim" href="chapters.html">Chapters</a>
+    <a class="dim" data-link="contactForm" href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" rel="noopener">Contact</a>
+    <span class="footer-copy">(c) 2026 CompNeuroSociety</span>
   </div>
 </div></footer>
 <script type="module" src="js/site.js"></script>
