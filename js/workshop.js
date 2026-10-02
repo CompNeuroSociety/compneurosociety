@@ -301,7 +301,7 @@ if ($('ws-proghelp')) {
         <div class="eyebrow" style="margin-bottom:8px">need a second pair of eyes?</div>
         <p>${esc(help.blurb || '')}</p>
       </div>
-      <a class="ws-open" href="${esc(help.url)}" target="_blank" rel="noopener">${esc(help.label || 'Request application help')}</a>`;
+      <a class="ws-open ws-pink" href="${esc(help.url)}" target="_blank" rel="noopener">${esc(help.label || 'Request application help')}</a>`;
   }
   show($('ws-proghelp'), !!help.url);
 }
