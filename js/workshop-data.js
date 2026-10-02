@@ -45,9 +45,9 @@ export const META = {
   // rather than the page breaking. `note` is the line under the hero button -
   // leave it empty for no line.
   register: {
-    url: "https://docs.google.com/forms/d/e/1FAIpQLSdtJo7xqrPv9jJAi4KhEWNQpSOP5gpNXGuiJRWf5Epp0z6ojw/viewform?usp=dialog",
-    label: "Register for the workshop",
-    note: "Sign up so we know how many people to expect.",
+    url: "https://drive.google.com/file/d/15H5K_VlNULX8MygHFasA27bcwelL-kld/view?usp=sharing",
+    label: "View slides",
+    note: "",
   },
 };
 
