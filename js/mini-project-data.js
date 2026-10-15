@@ -78,6 +78,10 @@ export const WORKSHOPS = [
     //   { label: "practice notebook", url: "https://colab.research.google.com/drive/1uIVVhZCYui8xxNhTdhdxdRd-JzgEwwlI" },
     // ] 
     },
+    { date: "2026-10-21T18:30", title: "Workshop 5 - Structure and Function of a Neuron in Brian2", location: "PDB A206 - Psych Library",
+    // recording: "",
+    // slides: "" 
+    },
 ];
 
 // title    - paper title
