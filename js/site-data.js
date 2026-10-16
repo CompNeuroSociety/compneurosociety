@@ -40,7 +40,10 @@ export const LINKS = {
 // --- EVENTS (newest first). The two "example" entries are placeholders -
 // --- replace them with real events and delete the `example: true` line.
 export const EVENTS = [
-  {title: "Workshop 5 - Structure and Function of a Neuron Using Brian2", date: "2026-10-21T18:00", location:"PDB A206"},
+  {title: "Workshop 8 - Brian 2: A Complete Guide", date: "2026-11-09T18:30", location:"PDB A206"},
+  {title: "Workshop 7 - Action Potentials, Current, and Voltage in Neurons + Brian 2", date: "2026-11-02T18:30", location:"PDB A206"},
+  {title: "Workshop 6 - Using the Terminal, Pandas, Google Colab and Import File Management", date: "2026-10-28T18:30", location:"PDB A206"},
+  {title: "Workshop 5 - Structure and Function of a Neuron Using Brian 2", date: "2026-10-21T18:30", location:"PDB A206"},
   { title: "Fall Involvement Fair", date: "2026-08-27T17:00", location: "Tucker Civic Center",
     blurb: "Come find our table so we can tell you about everything we have planned for the fall." },
   { title: "Python Basics 4 Neuro/DataSci - Part 1", date: "2025-09-15T18:00", location: "TBA",
