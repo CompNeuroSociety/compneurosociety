@@ -5,3 +5,6 @@ __pycache__/
 # Full-size photo backups made by scripts/optimize_images.py.
 # Keep them locally as an archive; they don't belong in the repo.
 images/_originals/
+
+# Personal presenter notes stay local.
+GBM-3-Teaching-Notes.docx
