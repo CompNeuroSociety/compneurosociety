@@ -3,7 +3,8 @@
 // hard-coded EVENTS in site-data.js by js/site.js (hard-coded wins).
 export const CALENDAR_EVENTS = [
   {"title": "GBM 4", "date": "2026-12-03T18:30", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "A204", "image": "images/placeholder.jpg"},
-  {"title": "Workshop 4 - Python Basics: Functions and Plotting", "date": "2026-10-05T18:30", "location": "TBD", "blurb": "", "image": "images/placeholder.jpg"},
+  {"title": "Workshop 5: Import and File Management", "date": "2026-10-28T18:30", "location": "TBA", "blurb": "", "image": "images/placeholder.jpg"},
+  {"title": "Workshop 4 - Python Basics: Functions and Plotting", "date": "2026-10-05T18:30", "location": "PDB A204", "blurb": "", "image": "images/placeholder.jpg"},
   {"title": "Collab Workshop - Why you should land a research internship!", "date": "2026-10-01T18:30", "location": "Bellamy Building, Bellamy Bldg Room 0004, Tallahassee, FL 32304, USA", "blurb": "BEL 0004", "image": "images/placeholder.jpg"},
   {"title": "Workshop 3!", "date": "2026-09-23T18:30", "location": "Rogers Building, 117 N Woodward Ave, Tallahassee, FL 32304, USA", "blurb": "OSB 0108", "image": "images/placeholder.jpg"},
   {"title": "Involvement Fair!", "date": "2026-08-27T17:00", "location": "Donald L. Tucker Civic Center, 505 W Pensacola St, Tallahassee, FL 32301, USA", "blurb": "Come find us!", "image": "images/placeholder.jpg"},
@@ -20,10 +21,5 @@ export const CALENDAR_EVENTS = [
   {"title": "[CNS] - Projects Start Window", "date": "2026-02-02T18:00", "location": "TBA", "blurb": "", "image": "images/placeholder.jpg"},
   {"title": "End of Semester GBM / Project Presentations", "date": "2025-11-20T18:00", "location": "Time TBD Location TBD", "blurb": "", "image": "images/placeholder.jpg"},
   {"title": "Social/Fundraiser", "date": "2025-10-24T18:00", "location": "Time TBD - Location TBD", "blurb": "", "image": "images/placeholder.jpg"},
-  {"title": "ML/AI 4 NeuroSci", "date": "2025-10-20T18:00", "location": "TBD", "blurb": "Collaboration with ThinkAI", "image": "images/placeholder.jpg"},
-  {"title": "Python Basics for Neuro/DataSci Workshop: Part 2", "date": "2025-09-18T18:00", "location": "TBD", "blurb": "Collab event with Codeducation", "image": "images/placeholder.jpg"},
-  {"title": "Python Basics for Neuro/DataSci Workshop: Part 1", "date": "2025-09-16T18:00", "location": "TBD", "blurb": "Collab event with Codeducation", "image": "images/placeholder.jpg"},
-  {"title": "Projects Meeting", "date": "2025-09-16T18:00", "location": "TBA", "blurb": "", "image": "images/placeholder.jpg"},
-  {"title": "CNS Projects Start", "date": "2025-09-08T18:00", "location": "TBA", "blurb": "", "image": "images/placeholder.jpg"},
-  {"title": "GBM #1 + Intro to Comp Neuro / Room PDB A204", "date": "2025-09-04T18:00", "location": "Psychology Department Building, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "", "image": "images/placeholder.jpg"}
+  {"title": "ML/AI 4 NeuroSci", "date": "2025-10-20T18:00", "location": "TBD", "blurb": "Collaboration with ThinkAI", "image": "images/placeholder.jpg"}
 ];
