@@ -8,12 +8,21 @@
 <meta name="description" content="Lab Match (preview): answer about 20 questions and see what kind of researcher you are, which FSU neuroscience labs fit you right now, and why.">
 <meta name="author" content="Upi Shanker, Sebastian Ruiz">
 <meta name="robots" content="noindex">
-<!-- Where the page finds /api/status and /api/score-text. Empty = same origin (python serve.py).
-     export_site.py --api <Worker URL> fills this in for the deployed page. -->
+<link rel="canonical" href="https://compneurosociety.com/match.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CompNeuroSociety at FSU">
+<meta property="og:title" content="Lab Match (preview) - CompNeuroSociety at FSU">
+<meta property="og:description" content="Compare FSU research labs with your interests and current skills.">
+<meta property="og:url" content="https://compneurosociety.com/match.html">
+<meta property="og:image" content="https://compneurosociety.com/images/logo.jpeg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lab Match (preview) - CompNeuroSociety at FSU">
+<meta name="twitter:description" content="Compare FSU research labs with your interests and current skills.">
+<meta name="twitter:image" content="https://compneurosociety.com/images/logo.jpeg">
+<!-- Written-answer scoring uses a separate API; structured matching runs in the browser. -->
 <meta name="lm-api-base" content="https://labmatch-api.compneurosociety.workers.dev/">
-<!-- GitHub Pages can't send security headers, so the policy lives here. export_site.py adds the Worker's
-     origin to connect-src. Style ATTRIBUTES are allowed (chart swatches set them); style sheets, scripts,
-     fonts and network calls are limited to this site, Google Fonts and cdnjs (pdf.js, only for a PDF). -->
+<!-- Keep connect-src in sync with lm-api-base. Style attributes are used by the charts.
+     Analytics are deliberately omitted from this survey page. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' https://compneurosociety.com data: blob:; connect-src 'self' https://labmatch-api.compneurosociety.workers.dev; worker-src 'self' blob: https://cdnjs.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'none'">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,11 +34,13 @@
 <link href="css/match-types.css" rel="stylesheet">
 <script src="js/theme.js"></script>
 <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-<title>Lab Match (preview) | CompNeuroSociety</title>
+<title>Lab Match (preview) - CompNeuroSociety at FSU</title>
 <script type="module" src="js/match/app.js"></script>
 </head>
 <body data-lm-state="loading">
 <a class="skip" href="#main">Skip to content</a>
+
+<div class="field" id="neuron-field" aria-hidden="true"><canvas id="neuron-canvas"></canvas></div>
 
 <header class="site-head" id="site-head">
   <nav class="nav wrap" aria-label="Primary">
@@ -37,14 +48,13 @@
     <div class="nav-links">
       <a href="about.html">About</a>
       <a href="events.html">Events</a>
-      <a href="projects.html">Projects</a>
-      <a class="active" href="match.html" aria-current="page">Lab match</a>
+      <a href="projects.html" class="active">Projects</a>
       <a class="nav-join" href="join.html">Join</a>
       <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch color theme"></button>
     </div>
   </nav>
-  <div class="strip"><div class="strip-inner wrap" id="lm-strip">
-    <span class="strip-label">PREVIEW</span><span class="strip-note" id="lm-strip-note">Local build · loading the lab data…</span>
+  <div class="strip"><div class="strip-inner wrap" id="next-up">
+    <span class="strip-label">NEXT UP</span><span class="strip-note">see what is coming up on the <a href="events.html">events page</a></span>
   </div></div>
 </header>
 
@@ -54,6 +64,7 @@
     <p class="label">lab match · preview</p>
     <h1 class="h1" id="lm-title">Find a lab that fits <span class="accent">how you think</span>.</h1>
     <p class="lede">About 20 questions, 6 minutes. You'll see what kind of researcher you are, which FSU labs fit you right now, and why.</p>
+    <p class="small" id="lm-model-note" role="status">Preview · loading the lab data…</p>
   </section>
 
   <section class="lm-section lm-survey-section" id="lm-survey-section" tabindex="-1" aria-label="Questions">
@@ -106,12 +117,15 @@
     <a data-link="instagram" href="https://www.instagram.com/compneurosocietyfsu/" target="_blank" rel="noopener">Instagram</a>
     <a data-link="linkedin" href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank" rel="noopener">LinkedIn</a>
     <a data-link="discord" href="https://discord.gg/sfm2RPd3gH" target="_blank" rel="noopener">Discord</a>
+    <a class="dim" href="match.html" aria-current="page">Lab Match</a>
     <a class="dim" href="people.html">People</a>
     <a class="dim" href="sponsors.html">Sponsors</a>
     <a class="dim" href="chapters.html">Chapters</a>
     <a class="dim" data-link="contactForm" href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" rel="noopener">Contact</a>
     <span class="footer-copy">(c) 2026 CompNeuroSociety</span>
   </div>
+  <p class="footer-meta"><span class="field-phase" id="neuron-phase">resting potential · −70 mV</span><span class="sep">·</span><span id="neuron-status">Allen Cell Types · loading morphologies…</span><span class="sep">·</span><span id="neuron-list">mouse V1 reconstructions, drawn behind this page</span></p>
 </div></footer>
+<script type="module" src="js/site.js"></script>
 </body>
 </html>

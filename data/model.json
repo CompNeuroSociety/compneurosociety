@@ -782,13 +782,13 @@
      {
       "id": "email",
       "type": "email_fsu",
-      "prompt": "FSU email to send your matches to (required for the email; we don't keep it)",
+      "prompt": "FSU email (optional; nothing is emailed in this preview)",
       "validate": "^[^@\\s]+@fsu\\.edu$"
      },
      {
       "id": "consent",
       "type": "checkbox",
-      "prompt": "I understand matches are AI-assisted suggestions, that I'm expected to write my own outreach, and that I may get a one-time link to review the labs I contact."
+      "prompt": "I understand matches are AI-assisted suggestions and that I'm expected to check each lab's current requirements and write my own outreach."
      }
     ]
    }

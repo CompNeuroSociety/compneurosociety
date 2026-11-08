@@ -3,8 +3,8 @@
 //   document.body.dataset.lmState   "loading" -> "survey" | "error" -> "results"  (tests watch it)
 //   window.__labmatch               { ready, model, answers, results, textScores }
 //
-// 1. Loads data/model.json (the one file the Python side writes into the site) and GET api/status
-//    (serve.py now, a Worker later). A plain static server has no api/status: free-text scoring is off.
+// 1. Loads data/model.json and checks api/status at the configured API. If it is unavailable,
+//    structured matching still works; written-answer scoring is off.
 // 2. Mounts the survey with the saved draft and saves the draft as you go: localStorage
 //    "cns-labmatch-draft-v1", never the email, the transcript or the consent box.
 // 3. On submit: computeResults() and render right away. Then, only when scoring is on and something
@@ -20,8 +20,7 @@ const FALLBACK_TEXT_FIELDS = ['question_text', 'origin_text', 'bring_text'];
 const STATUS_TIMEOUT_MS = 4000;
 const SCORE_TIMEOUT_MS = 45000;
 const DEV = new URLSearchParams(location.search).get('dev') === '1';
-// Where /api/status and /api/score-text live. Empty (the local preview): same origin, i.e. serve.py.
-// The deployed page points <meta name="lm-api-base"> at the Cloudflare Worker (export_site.py fills it in).
+// An empty lm-api-base uses same-origin endpoints; GitHub Pages uses the separate Worker.
 const API_BASE = (document.querySelector('meta[name="lm-api-base"]')?.getAttribute('content') || '').trim();
 const apiUrl = (path) => (API_BASE ? new URL(path, API_BASE).href : path);
 const IS_LOCAL = /^(127\.0\.0\.1|localhost|\[::1\])$/.test(location.hostname);
@@ -464,13 +463,13 @@ async function loadStatus() {
   }
 }
 
-function fillStrip() {
+function fillModelNote() {
   const m = state.model;
   const n = m.labs.length;
   const v = m.labs.filter((l) => l && l.verified === true).length;
   const verified = v === 0 ? 'none verified yet' : v === n ? 'all verified' : `${v} verified`;
-  const note = $('lm-strip-note');
-  note.textContent = [IS_LOCAL ? 'Local build' : 'Preview', `model v${m.version}, built ${m.built}`,
+  const note = $('lm-model-note');
+  note.textContent = [IS_LOCAL ? 'Local preview' : 'Preview', `model v${m.version}, built ${m.built}`,
     `${n} labs, ${verified}`, `free-text scoring ${state.scoring.on ? 'on' : 'off'}`].join(' · ');
   note.title = state.scoring.on
     ? `Written answers are read by Claude Haiku through ${API_BASE ? 'the Lab Match API' : 'the local server'}.`
@@ -488,21 +487,14 @@ function errorCard(kind, err) {
   const detail = err && err.message ? err.message : err ? String(err) : '';
   const card = el('div', { class: 'card dashed lm-error', role: 'alert' },
     el('p', { class: 'label', text: 'lab match · couldn’t start' }));
-  if (kind === 'model') {
-    card.append(
-      el('h2', { class: 'h3', text: 'The lab data didn’t load.' }),
-      el('p', { text: 'This page reads data/model.json, which the Python side builds. From the project folder, run:' }),
-      el('pre', { class: 'lm-cmd' }, el('code', { text: 'python build_model.py --oracle 300\npython serve.py' })),
-      el('p', { text: 'Then open http://127.0.0.1:8000/match.html.' }),
-    );
-  } else {
-    card.append(
-      el('h2', { class: 'h3', text: kind === 'survey' ? 'The questions couldn’t be shown.' : 'Part of this page didn’t load.' }),
-      el('p', { text: 'Reload the page. If it keeps happening, start the preview from the project folder with:' }),
-      el('pre', { class: 'lm-cmd' }, el('code', { text: 'python serve.py' })),
-      el('p', { text: 'and open http://127.0.0.1:8000/match.html.' }),
-    );
-  }
+  card.append(
+    el('h2', { class: 'h3', text: kind === 'model' ? 'The lab data didn’t load.'
+      : kind === 'survey' ? 'The questions couldn’t be shown.' : 'Part of this page didn’t load.' }),
+    el('p', { text: 'Check your connection and reload the page. If it still won’t load, try again later.' }),
+    el('div', { class: 'cta-row' },
+      el('button', { type: 'button', class: 'pill sm', text: 'Reload Lab Match', onclick: () => location.reload() }),
+      el('a', { class: 'mono-link', href: 'projects.html', text: 'Back to projects' })),
+  );
   if (detail) card.append(el('p', { class: 'lm-error-detail', text: `Details: ${detail}` }));
   return card;
 }
@@ -514,7 +506,7 @@ function fail(kind, err) {
   $('lm-survey-section').hidden = false;
   $('lm-draft-line').hidden = true;
   $('lm-survey').replaceChildren(errorCard(kind, err));
-  if (kind === 'model') $('lm-strip-note').textContent = 'Local build · the lab data didn’t load';
+  $('lm-model-note').textContent = 'Preview · Lab Match couldn’t load';
   rejectReady(err instanceof Error ? err : new Error(String(err)));
 }
 
@@ -762,7 +754,7 @@ const SCORE_ERRORS = {
   bad_request: 'The server couldn’t accept your written answers (one may be too long), so these matches use your structured answers only.',
 };
 const RETRYABLE = new Set(['offline', 'rate_limited', 'api_error', 'network', 'timeout']);
-const NETWORK_MSG = 'The local server didn’t answer, so these matches use your structured answers only.';
+const NETWORK_MSG = 'The scoring service didn’t answer, so these matches use your structured answers only.';
 const TIMEOUT_MSG = 'Reading your written answers took too long, so these matches use your structured answers only.';
 
 function cancelScoring() {
@@ -1067,6 +1059,13 @@ function mountDev() {
 // ------------------------------------------------------------------------------------------ start
 async function init() {
   setState('loading');
+  const header = $('site-head');
+  const measureHeader = () => {
+    document.documentElement.style.setProperty('--lm-head-clear', `${Math.ceil(header.getBoundingClientRect().height) + 16}px`);
+  };
+  measureHeader();
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(measureHeader).observe(header);
+  else window.addEventListener('resize', measureHeader);
   const statusP = loadStatus();
   let model;
   try {
@@ -1077,7 +1076,7 @@ async function init() {
   }
   state.model = model;
   state.scoring = await statusP;
-  fillStrip();
+  fillModelNote();
 
   const [mm, sm] = await Promise.all([mods.matcher, mods.survey]);
   if (!mm.ok || typeof mm.m.computeResults !== 'function') {

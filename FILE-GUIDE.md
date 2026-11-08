@@ -32,6 +32,8 @@ A folder simply groups related files. `js/` holds JavaScript files. `images/` ho
 | An event copied from Google Calendar, including GBM 3 | The original event in Google Calendar. See below. |
 | Mini-project workshop dates, recordings, papers, or deadlines | `js/mini-project-data.js` |
 | Opportunities and resources for the cross-organization workshop | `js/workshop-data.js` |
+| Lab Match questions and lab profiles | `data/model.json` (see the preview notes in `README.md`) |
+| Lab Match survey, results, or charts | `js/match/` and `css/match*.css` |
 | Colors, fonts, or spacing across the website | `css/warm-lab.css` |
 | A heading or paragraph written directly on a page | That page's `.html` file |
 
@@ -69,6 +71,7 @@ The copying job is scheduled every six hours. `scripts/fetch_calendar_events.py`
 | `events.html` | Upcoming and past events. |
 | `people.html` | Leaders, mentors, and members. |
 | `projects.html` | Current and past projects. |
+| `match.html` | Lab Match preview: compare FSU labs with your interests and skills. Linked from Projects and the page footers. |
 | `mini-project.html` | Workshops, papers, and updates for the figure-replication project. |
 | `join.html` | How to join and attend a meeting. |
 | `sponsors.html` | Sponsors and sponsorship information. |

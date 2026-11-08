@@ -117,7 +117,7 @@ function mixParts(model) {
   const mix = (model && model.weights && model.weights.lens_mix) || {};
   return lensList(model)
     .filter((l) => isNum(mix[l.id]))
-    .map((l) => `${lowerFirst(l.label)} ${pct(mix[l.id])}%`);
+    .map((l) => `${lowerFirst(l.label)} ${Math.round(mix[l.id] * 1000) / 10}%`);
 }
 
 function flash(node) {

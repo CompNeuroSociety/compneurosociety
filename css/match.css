@@ -3,10 +3,8 @@
    so the light and dark themes both work with no extra rules. Breakpoints mirror warm-lab.css. */
 
 /* ------------------------------------------------------------------ page rhythm */
-/* Room for the sticky header (nav + preview strip) when the page scrolls a section into view,
-   like warm-lab.css's .anchor { scroll-margin-top: 140px }. Header: ~130px desktop, ~116px at
-   <= 900px, ~142px at <= 600px (two rows + strip); the extra keeps a little air above the heading. */
-:root { --lm-head-clear: 148px; }
+/* app.js measures the shared header, including any wrapped event-strip rows. */
+:root { --lm-head-clear: 164px; }
 .lm-page-head { padding-bottom: 40px; }
 .lm-section { padding: 24px 0 120px; scroll-margin-top: var(--lm-head-clear); }
 #lm-results { scroll-margin-top: calc(var(--lm-head-clear) - 40px); }
@@ -139,8 +137,6 @@
 /* ------------------------------------------------------------------ error card */
 .lm-error { max-width: 72ch; }
 .lm-error .h3 { margin: 0 0 6px; }
-.lm-cmd { margin: 14px 0 6px; padding: 14px 18px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line);
-  overflow-x: auto; font-family: var(--mono); font-size: 14px; line-height: 1.6; color: var(--ink); }
 .card .lm-error-detail, .lm-error-detail { font-family: var(--mono); font-size: 12px; line-height: 1.5; color: var(--faint);
   margin: 14px 0 0; overflow-wrap: anywhere; }
 
@@ -167,7 +163,6 @@
   .lm-card-body { grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); gap: 20px 32px; }
 }
 @media (max-width: 900px) {
-  :root { --lm-head-clear: 132px; }
   .lm-section { padding-bottom: 96px; }
   .lm-block { padding-top: 48px; }
   .lm-card-body { grid-template-columns: minmax(0, 1fr); }
@@ -175,11 +170,7 @@
   .lm-actions { margin-top: 56px; }
 }
 @media (max-width: 600px) {
-  :root { --lm-head-clear: 156px; }
-  /* header: keep the live site's mobile look (brand row + one links row) but with the extra
-     "Lab match" link it must not wrap onto two lines */
   .nav-links { gap: 12px; }
-  .nav-links a { white-space: nowrap; }
   .lm-page-head { padding-bottom: 24px; }
   .lm-section { padding-bottom: 80px; }
   .lm-block { padding-top: 40px; }
