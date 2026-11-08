@@ -94,7 +94,7 @@ export function createCubeViz(container, model) {
 
   const list = h('ol', { class: 'lm-cube-list' });
   const listEmpty = h('p', { class: 'lm-cube-empty', hidden: true, text: 'No labs to show yet.' });
-  const listLabel = h('p', { class: 'label', text: 'ranked at this step · fit' });
+  const listLabel = h('p', { class: 'label', text: 'ranked at this step (fit + boost) · fit' });
   const side = h('div', { class: 'lm-cube-side' }, listLabel, list, listEmpty);
   const live = h('p', { class: 'lm-viz-live', 'aria-live': 'polite' });
 

@@ -3,8 +3,10 @@
    so the light and dark themes both work with no extra rules. Breakpoints mirror warm-lab.css. */
 
 /* ------------------------------------------------------------------ page rhythm */
-/* app.js measures the shared header, including any wrapped event-strip rows. */
-:root { --lm-head-clear: 164px; }
+/* Room for the sticky header (nav + preview strip) when the page scrolls a section into view,
+   like warm-lab.css's .anchor { scroll-margin-top: 140px }. Header: ~130px desktop, ~116px at
+   <= 900px, ~142px at <= 600px (two rows + strip); the extra keeps a little air above the heading. */
+:root { --lm-head-clear: 148px; }
 .lm-page-head { padding-bottom: 40px; }
 .lm-section { padding: 24px 0 120px; scroll-margin-top: var(--lm-head-clear); }
 #lm-results { scroll-margin-top: calc(var(--lm-head-clear) - 40px); }
@@ -137,6 +139,8 @@
 /* ------------------------------------------------------------------ error card */
 .lm-error { max-width: 72ch; }
 .lm-error .h3 { margin: 0 0 6px; }
+.lm-cmd { margin: 14px 0 6px; padding: 14px 18px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line);
+  overflow-x: auto; font-family: var(--mono); font-size: 14px; line-height: 1.6; color: var(--ink); }
 .card .lm-error-detail, .lm-error-detail { font-family: var(--mono); font-size: 12px; line-height: 1.5; color: var(--faint);
   margin: 14px 0 0; overflow-wrap: anywhere; }
 
@@ -163,6 +167,7 @@
   .lm-card-body { grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); gap: 20px 32px; }
 }
 @media (max-width: 900px) {
+  :root { --lm-head-clear: 132px; }
   .lm-section { padding-bottom: 96px; }
   .lm-block { padding-top: 48px; }
   .lm-card-body { grid-template-columns: minmax(0, 1fr); }
@@ -170,7 +175,11 @@
   .lm-actions { margin-top: 56px; }
 }
 @media (max-width: 600px) {
+  :root { --lm-head-clear: 156px; }
+  /* header: keep the live site's mobile look (brand row + one links row) but with the extra
+     "Lab match" link it must not wrap onto two lines */
   .nav-links { gap: 12px; }
+  .nav-links a { white-space: nowrap; }
   .lm-page-head { padding-bottom: 24px; }
   .lm-section { padding-bottom: 80px; }
   .lm-block { padding-top: 40px; }
@@ -190,4 +199,36 @@
 @media (prefers-reduced-motion: reduce) {
   .lm-card, .lm-excl-name { transition: none; }
   .lm-status.is-busy::before { animation: none; opacity: 1; }
+}
+
+/* ------------------------------------------------------------------ star ratings (a card's footer) */
+.card .lm-fit-personal { margin: 4px 0 0; font-family: var(--mono); font-size: 12px; line-height: 1.4; color: var(--gold-text); }
+.lm-rate { margin: 18px 0 0; padding: 14px 0 0; border: 0; border-top: 1px solid var(--line); min-width: 0; scroll-margin-bottom: 160px; }
+.lm-rate-q { padding: 0; margin: 0 0 6px; font-size: 14px; font-weight: 600; color: var(--ink); }
+.lm-rate-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; }
+.lm-stars { display: inline-flex; gap: 2px; }
+.lm-star { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px;
+  cursor: pointer; border-radius: 6px; color: var(--past); font-size: 26px; line-height: 1; }
+/* filled: the checked star and every star before it; on hover, the hovered star and the ones before it */
+.lm-star:has(input:checked), .lm-star:has(~ .lm-star input:checked) { color: var(--gold); }
+.lm-stars:hover .lm-star { color: var(--past); }
+.lm-stars:hover .lm-star:hover, .lm-stars:hover .lm-star:has(~ .lm-star:hover) { color: var(--gold); }
+.lm-star:has(input:focus-visible) { outline: 2px solid var(--teal); outline-offset: 2px; }
+.lm-rate-clear { min-height: 44px; }
+.lm-rate-note { font-family: var(--mono); font-size: 12px; color: var(--faint); }
+
+/* the bar that applies / shares ratings: sticks to the bottom while the cards scroll past */
+.lm-rate-bar { position: sticky; bottom: 0; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px;
+  margin-top: 20px; padding: 12px 16px; background: var(--panel); border: 1px solid var(--teal-line); border-radius: 8px;
+  box-shadow: 0 -4px 16px var(--glow); }
+.lm-rate-bar[hidden], .lm-rate-bar .pill[hidden] { display: none; }   /* .pill sets display: inline-flex */
+.lm-rate-count:focus { outline: none; }
+.lm-rate-count { margin: 0; font-size: 15px; color: var(--ink); flex: 1 1 220px; }
+.lm-share { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; color: var(--muted); cursor: pointer; }
+.lm-share[hidden] { display: none; }
+.lm-share input { width: 18px; height: 18px; accent-color: var(--teal); }
+.lm-share-note { margin: 0; flex: 1 1 100%; font-family: var(--mono); font-size: 12px; line-height: 1.5; color: var(--faint); }
+@media (max-width: 600px) {
+  .lm-rate-bar { padding: 10px 12px; }
+  .lm-star { min-width: 40px; font-size: 24px; }
 }

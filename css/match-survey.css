@@ -6,7 +6,7 @@
    ========================================================================== */
 
 .lm-survey [hidden] { display: none !important; }
-.lm-survey { max-width: 880px; color: var(--ink); scroll-margin-top: var(--lm-head-clear); }
+.lm-survey { max-width: 880px; color: var(--ink); scroll-margin-top: 24px; }
 
 /* --- Progress + step indicator ------------------------------------------------ */
 .lm-head { margin-bottom: 8px; }
@@ -23,12 +23,12 @@
 
 /* --- Step ------------------------------------------------------------------------ */
 .lm-step-title { font-size: clamp(26px, 2.6vw, 34px); font-weight: 800; letter-spacing: -.025em; line-height: 1.15;
-  color: var(--ink); margin: 24px 0 0; scroll-margin-top: var(--lm-head-clear); }
+  color: var(--ink); margin: 24px 0 0; scroll-margin-top: 24px; }
 .lm-step-title:focus { outline: none; }
 .lm-step-title:focus-visible { outline: none; }   /* script-only focus target (tabindex -1), not a Tab stop */
 .lm-intro { font-size: 17px; line-height: 1.6; color: var(--muted); max-width: 60ch; margin: 12px 0 0; }
 
-.lm-q { border: 0; margin: 40px 0 0; padding: 0; min-width: 0; scroll-margin-top: var(--lm-head-clear); }
+.lm-q { border: 0; margin: 40px 0 0; padding: 0; min-width: 0; scroll-margin-top: 24px; }
 .lm-prompt { display: block; float: none; width: 100%; padding: 0; margin: 0 0 14px; font-size: 18px; font-weight: 700;
   line-height: 1.4; color: var(--ink); letter-spacing: -.005em; max-width: 64ch; }
 .lm-help { font-family: var(--mono); font-size: 13px; color: var(--faint); margin: -6px 0 12px; }
@@ -125,8 +125,8 @@
 .lm-file::file-selector-button:hover { border-color: var(--ink); }
 .lm-paste-toggle { background: none; border-top: 0; border-left: 0; border-right: 0; cursor: pointer; margin-top: 10px; }
 .lm-paste { display: grid; gap: 10px; justify-items: start; margin-top: 14px; }
-.lm-survey .lm-status { font-size: 14px; color: var(--muted); margin: 10px 0 0; }
-.lm-survey .lm-status:empty { margin: 0; }
+.lm-status { font-size: 14px; color: var(--muted); margin: 10px 0 0; }
+.lm-status:empty { margin: 0; }
 .lm-tr-review { border: 0; padding: 0; margin: 12px 0 0; min-width: 0; }
 .lm-courses { display: grid; max-height: 380px; overflow: auto; border-top: 1px solid var(--line); }
 .lm-course { display: grid; grid-template-columns: auto 7.5em minmax(0, 1fr); gap: 12px; align-items: center;
@@ -136,7 +136,7 @@
 .lm-course-title { font-size: 15px; color: var(--muted); }
 .lm-row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 16px; }
 .lm-row-actions .mono-link, .lm-tr-done .mono-link { background: none; border-top: 0; border-left: 0; border-right: 0; cursor: pointer; }
-.lm-survey .pill.sm:disabled { background: var(--panel2); color: var(--faint) !important; cursor: default; }
+.pill.sm:disabled { background: var(--panel2); color: var(--faint) !important; cursor: default; }
 .lm-done-text { font-size: 16px; color: var(--ink); margin: 0 0 10px; }
 .lm-done-text:focus { outline: none; }
 .lm-course-tags { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0 0 14px; }
@@ -152,8 +152,7 @@
 .lm-invalid .lm-input, .lm-invalid .lm-textarea, .lm-invalid .lm-consent { border-color: var(--pink); }
 .lm-invalid .lm-grid-row, .lm-invalid .lm-seg-pill { border-color: var(--pink); }
 .lm-invalid .lm-opt-input:not(:checked) + .lm-opt-pill { border-color: var(--pink); }
-.lm-errsum { margin: 24px 0 0; padding: 16px 20px; border: 1px solid var(--pink); border-left-width: 4px; border-radius: 8px; max-width: 720px;
-  scroll-margin-top: var(--lm-head-clear); }
+.lm-errsum { margin: 24px 0 0; padding: 16px 20px; border: 1px solid var(--pink); border-left-width: 4px; border-radius: 8px; max-width: 720px; }
 .lm-errsum:focus { outline: none; }
 .lm-errsum:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
 .lm-errsum-title { margin: 0 0 8px; font-weight: 700; color: var(--ink); font-size: 16px; }

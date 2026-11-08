@@ -258,13 +258,18 @@ export function gower(a, b, weights, spec, empty = 0) {
 }
 
 // ----------------------------------------------------------------------------- matching (viz 1)
+/** How computational the lab's day-to-day work is (compute_level; older models only have comp_neuro_level). */
+export function modelingLevel(lab) {
+  return lab.compute_level !== undefined && lab.compute_level !== null ? lab.compute_level : lab.comp_neuro_level;
+}
+
 /** Reason string if the lab fails a hard constraint, else null. */
 export function hardExclusion(vec, lab) {
   const orgs = new Set(get(lab, 'organisms') || []);
   if (orgs.size && get(vec, 'org_human') !== null) {     // student answered the organism question
     const comfort = new Set(ORGANISMS.filter((o) => get(vec, 'org_' + o) === 1));
     const overlap = [...comfort].some((o) => orgs.has(o));
-    if (!overlap && !(comfort.has('in_silico_only') && lab.comp_neuro_level >= 2)) return 'organism';
+    if (!overlap && !(comfort.has('in_silico_only') && modelingLevel(lab) >= 2)) return 'organism';
   }
   return null;
 }
@@ -295,7 +300,8 @@ export function boost(lab, model) {
          (1.0 + (lab.openings === 'posted' ? sc.openings_bonus : 0.0));
 }
 
-/** Labs best first: not-excluded before excluded, then by unrounded score; ties keep model order. */
+/** Labs best first: not-excluded before excluded, then by unrounded score at this step, then (labs tied at an
+ *  early step) by the all-facet score; remaining ties keep model order. */
 export function rankLabs(vec, model, upto = 3) {
   const mix = model.weights.lens_mix;
   const rows = model.labs.map((lab) => {
@@ -303,19 +309,22 @@ export function rankLabs(vec, model, upto = 3) {
     const f = fit(lenses, mix, upto);
     const b = boost(lab, model);
     const score = f * b;
+    const full = fit(lenses, mix, 3) * b;
     const rounded = {};
     for (const k of Object.keys(lenses)) rounded[k] = round4(lenses[k]);
-    return [score, { id: lab.id, fit: round4(f), boost: round4(b), score: round4(score),
+    return [score, full, { id: lab.id, fit: round4(f), boost: round4(b), score: round4(score),
                      lenses: rounded, excluded: hardExclusion(vec, lab) }];
   });
   rows.sort((x, y) => {
-    const ex = x[1].excluded !== null, ey = y[1].excluded !== null;
+    const ex = x[2].excluded !== null, ey = y[2].excluded !== null;
     if (ex !== ey) return ex ? 1 : -1;
     if (x[0] > y[0]) return -1;
     if (x[0] < y[0]) return 1;
+    if (x[1] > y[1]) return -1;
+    if (x[1] < y[1]) return 1;
     return 0;                                          // Array.prototype.sort is stable (ES2019)
   });
-  return rows.map((r) => r[1]);
+  return rows.map((r) => r[2]);
 }
 
 // ----------------------------------------------------------------------------- typing (viz 2)
@@ -349,6 +358,58 @@ export function project(vec, model) {
     for (let i = 0; i < row.length; i++) s += row[i] * (tm.b[i] - d2[i]);
     return round4(s);
   });
+}
+
+// ----------------------------------------------------------------------------- star ratings
+export const RATING_DEFAULTS = { strength: 0.35, neighbor: 0.5, prior: 1.0 };
+
+export function validStars(x) {
+  return Number.isInteger(x) && x >= 1 && x <= 5;
+}
+
+/** Lab-to-lab similarity for spreading a rating to similar labs: the skills + interests features. */
+export function ratingWeights(model) {
+  return Object.assign({}, model.weights.lens.skills, model.weights.lens.interests);
+}
+
+/** Re-rank rankLabs() rows with the student's ratings {labId: 1..5} (matcher.apply_ratings). Each row gains
+ *  `personal` (the multiplier) and `rated` (stars or null); order = score x personal, excluded last. */
+export function applyRatings(rows, ratings, model) {
+  const cfg = Object.assign({}, RATING_DEFAULTS, isDict(model.ratings) ? model.ratings : {});
+  const vecs = new Map(model.labs.map((lab) => [lab.id, lab.vector]));
+  const stars = new Map();
+  if (isDict(ratings)) {
+    for (const [k, v] of Object.entries(ratings)) if (vecs.has(k) && validStars(v)) stars.set(k, v);
+  }
+  const rated = model.labs.filter((lab) => stars.has(lab.id)).map((lab) => [lab.id, (stars.get(lab.id) - 3) / 2]);
+  const w = ratingWeights(model), spec = model.spec;
+  const out = rows.map((r) => {
+    let adj;
+    if (stars.has(r.id)) {
+      adj = (stars.get(r.id) - 3) / 2;
+    } else {
+      let numer = 0.0, denom = 0.0;
+      for (const [rid, a] of rated) {
+        let q = gower(vecs.get(r.id), vecs.get(rid), w, spec);
+        q = q * q;
+        q = q * q;
+        numer += q * a;
+        denom += q;
+      }
+      adj = rated.length ? cfg.neighbor * numer / (denom + cfg.prior) : 0.0;
+    }
+    const mult = 1.0 + cfg.strength * adj;
+    const row = Object.assign({}, r, { personal: round4(mult), rated: stars.has(r.id) ? stars.get(r.id) : null });
+    return [r.score * mult, row];
+  });
+  out.sort((x, y) => {
+    const ex = x[1].excluded !== null, ey = y[1].excluded !== null;
+    if (ex !== ey) return ex ? 1 : -1;
+    if (x[0] > y[0]) return -1;
+    if (x[0] < y[0]) return 1;
+    return 0;
+  });
+  return out.map((t) => t[1]);
 }
 
 // ----------------------------------------------------------------------------- everything the page needs

@@ -10,7 +10,8 @@
 //   point   {id, pos:[x,y,z] in [-1,1]^3, r, fill, hollow, alpha, ring, outline, shape, z,
 //            label, labelPriority, labelColor, labelFont, labelSize, labelWeight, labelPlacement,
 //            labelLeader (true: if no free spot next to the dot, put the label in a column beside the
-//            cluster with a 1px leader line; labelLeaderColor, default var(--rule-dark)), pickable, data}
+//            cluster with a 1px leader line; labelLeaderColor, default var(--rule-dark)),
+//            labelMaxWidth (px: wrap the label at spaces onto more lines when it is wider), pickable, data}
 //   segment {id, a, b, color, width, alpha}         a / b: [x,y,z] or the id of a point
 //   label   {id, pos, text, font "sans"|"mono", size, weight, color, align, priority,
 //            offset:[dx,dy], away:[x,y,z], gap, nudge}
@@ -553,6 +554,21 @@ export function createPlot3D(canvas, opts = {}) {
     const y0 = valign === 'top' ? y : valign === 'bottom' ? y - h : y - h / 2;
     return { x0, y0, x1: x0 + w, y1: y0 + h };
   }
+  // a label's lines: hard breaks ("\n"), then (with maxW) greedy word wrap so no line is wider than maxW
+  function wrapLines(text, font, maxW) {
+    const hard = String(text).split('\n');
+    if (!(maxW > 0)) return hard;
+    const lines = [];
+    for (const para of hard) {
+      let cur = '';
+      for (const word of para.split(' ')) {
+        const t = cur ? `${cur} ${word}` : word;
+        if (cur && measure(font, t) > maxW) { lines.push(cur); cur = word; } else cur = t;
+      }
+      lines.push(cur);
+    }
+    return lines;
+  }
   const overlaps = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
   // two labels must also keep a small gap, so neighbours never read as one string ("YouComputational")
   const LGAP = 4;
@@ -571,7 +587,7 @@ export function createPlot3D(canvas, opts = {}) {
         cands.push({ kind: 'point', p, id: it.id, text: String(it.label), font: it.labelFont || 'sans',
           size: num(it.labelSize, 12), weight: it.labelWeight, color: it.labelColor || 'var(--ink)',
           priority: it.labelPriority + (it.id === highlight ? 1000 : 0), alpha: p.alpha, order: it.labelPlacement,
-          leaderColor: it.labelLeaderColor });
+          leaderColor: it.labelLeaderColor, maxWidth: it.labelMaxWidth });
       }
     }
     for (const e of items.labels.values()) {
@@ -599,7 +615,7 @@ export function createPlot3D(canvas, opts = {}) {
     const out = [];
     for (const c of cands) {
       const font = fontOf(c);
-      const lines = c.text.split('\n');
+      const lines = wrapLines(c.text, font, c.maxWidth);
       const w = Math.max(...lines.map((s) => measure(font, s)));
       const h = lines.length * c.size * LINE;
       const tries = [];
@@ -665,7 +681,7 @@ export function createPlot3D(canvas, opts = {}) {
     const GAP = 4, OFF = 22;
     const its = missed.map((c) => {
       const fontStr = fontOf(c);
-      const lines = c.text.split('\n');
+      const lines = wrapLines(c.text, fontStr, c.maxWidth);
       return { c, fontStr, lines, w: Math.max(...lines.map((t) => measure(fontStr, t))), h: lines.length * c.size * LINE };
     }).sort((a, b) => a.c.p.y - b.c.p.y || b.c.priority - a.c.priority);
     // stack the boxes near their dots' heights, then keep the stack inside the canvas

@@ -117,7 +117,7 @@ function mixParts(model) {
   const mix = (model && model.weights && model.weights.lens_mix) || {};
   return lensList(model)
     .filter((l) => isNum(mix[l.id]))
-    .map((l) => `${lowerFirst(l.label)} ${Math.round(mix[l.id] * 1000) / 10}%`);
+    .map((l) => `${lowerFirst(l.label)} ${pct(mix[l.id])}%`);
 }
 
 function flash(node) {
@@ -149,7 +149,49 @@ function extLink(href, text, labName) {
     el('span', { class: 'sr-only', text: ` for ${labName} (opens in a new tab)` }));
 }
 
-function buildCard(model, lab, row, rank, onSelect) {
+const STAR_WORDS = ['', 'Poor fit', 'Weak fit', 'Okay fit', 'Good fit', 'Great fit'];
+
+/** The 1-5 star control on a card: native radios in a fieldset (arrow keys work), a clear button and a
+ *  short note. onRate(labId, stars | null) is called on every change; the card itself never re-sorts. */
+function ratingControl(id, name, stars, onRate) {
+  const group = `lm-rate-${id}`;
+  const note = el('span', { class: 'lm-rate-note', 'aria-live': 'polite' });
+  const clear = el('button', { type: 'button', class: 'mono-link lm-linkbtn lm-rate-clear' }, 'clear',
+    el('span', { class: 'sr-only', text: ` my rating of ${name}` }));
+  const stars_ = el('div', { class: 'lm-stars' });
+  const inputs = [];
+  for (let n = 1; n <= 5; n++) {
+    const input = el('input', { type: 'radio', class: 'sr-only', name: group, value: String(n), 'data-stars': String(n) });
+    inputs.push(input);
+    stars_.append(el('label', { class: 'lm-star', title: STAR_WORDS[n] }, input,
+      el('span', { class: 'lm-star-icon', 'aria-hidden': 'true', text: '★' }),
+      el('span', { class: 'sr-only', text: `${n} of 5: ${STAR_WORDS[n]}` })));
+  }
+  const show = (v) => {
+    for (const i of inputs) i.checked = Number(i.value) === v;
+    clear.hidden = !v;
+    note.textContent = v ? `You rated this ${v} of 5 (${STAR_WORDS[v].toLowerCase()}).` : '';
+  };
+  for (const i of inputs) {
+    i.addEventListener('change', () => {
+      if (!i.checked) return;
+      const v = Number(i.value);
+      show(v);
+      onRate(id, v);
+    });
+  }
+  clear.addEventListener('click', () => {
+    show(null);
+    onRate(id, null);
+    if (inputs[0]) inputs[0].focus();
+  });
+  show(Number.isInteger(stars) && stars >= 1 && stars <= 5 ? stars : null);
+  return el('fieldset', { class: 'lm-rate', 'data-lab-id': id },
+    el('legend', { class: 'lm-rate-q' }, 'How good a fit does this look to you?', el('span', { class: 'sr-only', text: ` (${name})` })),
+    el('div', { class: 'lm-rate-row' }, stars_, clear, note));
+}
+
+function buildCard(model, lab, row, rank, onSelect, rating = null) {
   const id = String(lab.id);
   const name = hasText(lab.name) ? lab.name : id;
   const nameId = `lm-card-${id}-name`;
@@ -171,14 +213,25 @@ function buildCard(model, lab, row, rank, onSelect) {
   if (isNum(row.boost) && Math.round((row.boost - 1) * 100) > 0) {
     fit.append(el('p', { class: 'lm-fit-boost', text: `+${Math.round((row.boost - 1) * 100)}% ranking boost` }));
   }
+  if (isNum(row.personal) && Math.round((row.personal - 1) * 100) !== 0) {
+    const d = Math.round((row.personal - 1) * 100);
+    fit.append(el('p', { class: 'lm-fit-personal', text: `${d > 0 ? '+' : '−'}${Math.abs(d)}% from your ratings` }));
+  }
   card.append(el('div', { class: 'lm-card-head' }, title, fit));
 
   // Side: the three facet meters + tags
   const meters = el('div', { class: 'lm-meters' });
   for (const lens of lensList(model)) meters.append(meter(lens, row.lenses ? row.lenses[lens.id] : null));
   const tags = el('div', { class: 'lm-tags' });
-  const levels = model && model.meta && Array.isArray(model.meta.comp_levels) ? model.meta.comp_levels : [];
-  if (Number.isInteger(lab.comp_neuro_level) && hasText(levels[lab.comp_neuro_level])) {
+  const meta = (model && model.meta) || {};
+  const levels = Array.isArray(meta.comp_levels) ? meta.comp_levels : [];
+  const work = Array.isArray(meta.compute_levels) ? meta.compute_levels : [];
+  // what the day-to-day work is like (any field), then how much of it is neuroscience modeling
+  if (Number.isInteger(lab.compute_level) && hasText(work[lab.compute_level])) {
+    tags.append(el('span', { class: 'tag dim', text: work[lab.compute_level] }));
+  }
+  if (Number.isInteger(lab.comp_neuro_level) && hasText(levels[lab.comp_neuro_level]) &&
+      (lab.comp_neuro_level > 0 || !work.length)) {
     tags.append(el('span', { class: 'tag teal', text: levels[lab.comp_neuro_level] }));
   }
   if (lab.openings === 'posted') tags.append(el('span', { class: 'tag gold', text: 'Openings posted' }));
@@ -209,6 +262,7 @@ function buildCard(model, lab, row, rank, onSelect) {
   }
   if (links.childElementCount) main.append(links);
   card.append(el('div', { class: 'lm-card-body' }, side, main));
+  if (rating && typeof rating.onRate === 'function') card.append(ratingControl(id, name, rating.stars, rating.onRate));
 
   // Provenance
   const checked = hasText(lab.last_checked) ? ` · last checked ${lab.last_checked}` : '';
@@ -223,7 +277,7 @@ function buildCard(model, lab, row, rank, onSelect) {
  * Lab cards for the top non-excluded rows (rows = results.ranks[3]), `limit` shown at first and a
  * "Show 5 more" button for the rest. onSelect(labId), when given, adds a "Show in chart" button.
  */
-export function renderMatches(container, model, rows, { limit = 5, onSelect } = {}) {
+export function renderMatches(container, model, rows, { limit = 5, onSelect, ratings, onRate } = {}) {
   if (!container) return;
   const labs = labMap(model);
   const list = (Array.isArray(rows) ? rows : []).filter((r) => r && !r.excluded && labs.has(String(r.id)));
@@ -241,13 +295,15 @@ export function renderMatches(container, model, rows, { limit = 5, onSelect } = 
   container.append(el('p', {
     class: 'lm-sub',
     text: `Fit is how closely your answers line up with each lab on ${joinAnd(lensNames)}. ` +
-      'The order also includes two small boosts, explained under “How this works”.',
+      'The order also includes two small boosts, explained under “How this works”.' +
+      (typeof onRate === 'function' ? ' Rate a card to tell us how it looks to you: your ratings can reorder this list.' : ''),
   }));
 
   const ol = el('ol', { class: 'lm-cards', 'aria-labelledby': 'lm-matches-title' });
   const first = Math.max(1, Math.min(list.length, Number.isFinite(limit) ? Math.floor(limit) : MORE_STEP));
   const items = list.map((row, i) => el('li', { class: 'lm-card-item', hidden: i >= first },
-    buildCard(model, labs.get(String(row.id)), row, i + 1, onSelect)));
+    buildCard(model, labs.get(String(row.id)), row, i + 1, onSelect,
+      typeof onRate === 'function' ? { stars: ratings && Object.hasOwn(ratings, String(row.id)) ? ratings[String(row.id)] : null, onRate } : null)));
   ol.append(...items);
   container.append(ol);
 
@@ -304,9 +360,11 @@ function organismSentence(model, labsOut, vector) {
   const inSilico = vector && vector.org_in_silico_only === 1;
   const head = `${n} ${one ? 'lab is' : 'labs are'} hidden because ${one ? 'it only works' : 'they only work'} with ${what}`;
   if (inSilico) {
-    // "...only work with rats and mice (you didn’t pick them), and modeling is too small a part of their work for a computer-only role: "
+    // "...only work with rats and mice (you didn’t pick them), and coding isn’t a regular part of their day-to-day
+    // work, so they don’t fit a computer-only role: " (matcher: compute_level < 2)
     const note = names.length <= 1 ? 'you didn’t pick them' : names.length === 2 ? 'you didn’t pick either' : 'you didn’t pick any of them';
-    return `${head} (${note}), and modeling is too small a part of ${one ? 'its' : 'their'} work for a computer-only role: `;
+    return `${head} (${note}), and coding isn’t a regular part of ${one ? 'its' : 'their'} day-to-day work, ` +
+      `so ${one ? 'it doesn’t' : 'they don’t'} fit a computer-only role: `;
   }
   return `${head}, ${picked}: `;
 }
@@ -400,6 +458,7 @@ function ratioWords(r) {
 export function renderHowItWorks(container, model, opts = {}) {
   if (!container || !model) return;
   const scoring = typeof opts.textScoring === 'boolean' ? opts.textScoring : null;
+  const sharing = opts.ratingsShared === true;
   const labs = Array.isArray(model.labs) ? model.labs : [];
   const nLabs = labs.length;
   const lenses = lensList(model);
@@ -484,9 +543,26 @@ export function renderHowItWorks(container, model, opts = {}) {
     }),
     el('p', {
       text: `There is one hard filter. If a lab only works with organisms you didn’t pick (say, ${exampleOrg}), it is left out instead of ranked lower. ` +
-        (levels[2] ? `If you’d rather stay on the computer, labs rated “${levels[2]}” or higher stay in.` : ''),
+        'If you’d rather stay on the computer, labs where coding is a regular part of the work stay in.',
     }),
   ));
+  // 2b. Star ratings
+  faq.append(faqItem('What do the star ratings do?',
+    el('p', {
+      text: 'Each card has 1 to 5 stars for how good a fit the lab looks to you. Your ratings stay in this browser and, when you ' +
+        'press “Update my ranking”, move that lab up or down your list; labs that look like it (similar skills and interests) move ' +
+        'a little the same way. A 5-star lab gets up to +35%, a 1-star lab −35%.',
+    }),
+    el('p', {
+      text: (sharing
+        ? 'You can also choose to share your ratings anonymously. '
+        : 'When the server accepts shared ratings, you can choose to share yours anonymously. ') +
+        'A shared rating is the stars, the lab, where it sat in your list and the number profile your answers make (the same one ' +
+        'used for matching). Never your email, your written answers or your transcript, and nothing that names you. We use shared ' +
+        'ratings only to tune how much skills, interests and goals count for everyone; they never score a lab or its PI.',
+    }),
+  ));
+
   // 3. Are these labs taking students?
   const when = !dates.length ? '' : dates[0] === dates[dates.length - 1] ? ` on ${dates[0]}` : ` between ${dates[0]} and ${dates[dates.length - 1]}`;
   const verifiedText = nVerified === 0
@@ -507,10 +583,10 @@ export function renderHowItWorks(container, model, opts = {}) {
 
   // 4. What happens to my answers
   const sent = scoring === true
-    ? `Your ${writtenWord} are sent to Claude Haiku (Anthropic) only to read your interests. Nothing else you enter leaves this page.`
+    ? `Your ${writtenWord} are sent to Claude Haiku (Anthropic) only to read your interests. Nothing else you enter leaves this page, unless you choose to share your star ratings.`
     : scoring === false
-      ? `Written-answer scoring is off in this preview, so your ${writtenWord} stay on this page too. Nothing you enter leaves this page.`
-      : `When written-answer scoring is on, your ${writtenWord} are sent to Claude Haiku (Anthropic) only to read your interests. Nothing else you enter leaves this page.`;
+      ? `Written-answer scoring is off in this preview, so your ${writtenWord} stay on this page too. Nothing you enter leaves this page, unless you choose to share your star ratings.`
+      : `When written-answer scoring is on, your ${writtenWord} are sent to Claude Haiku (Anthropic) only to read your interests. Nothing else you enter leaves this page, unless you choose to share your star ratings.`;
   faq.append(faqItem('What happens to my answers?',
     el('p', {
       text: 'Your answers stay in this browser. While you work they are saved in this browser’s storage so you can come back later; ' +
@@ -522,7 +598,8 @@ export function renderHowItWorks(container, model, opts = {}) {
     }),
     el('p', { text: sent }),
     el('p', {
-      text: '“Download my results” saves a file to your device; there is no copy on a server. This page has no analytics. It loads its ' +
+      text: '“Download my results” saves a file to your device; there is no copy on a server. Star ratings stay in this browser ' +
+        'unless you tick “Share my ratings anonymously”. This page has no analytics. It loads its ' +
         'fonts from Google Fonts, and pdf.js from cdnjs only if you upload a PDF transcript; neither gets your answers.',
     }),
   ));
@@ -535,7 +612,8 @@ export function renderHowItWorks(container, model, opts = {}) {
   faq.append(faqItem('Is this AI?',
     el('p', {
       text: 'The matching is plain arithmetic: similarity scores, a weighted average and the two boosts above, worked out in your browser ' +
-        'the same way every time. Nothing is learned from you.',
+        'the same way every time. The only thing that learns is the weighting of skills, interests and goals, which we retune from ' +
+        'ratings people chose to share, and only when that makes the rankings agree with those ratings better than before.',
     }),
     el('p', { text: aiStep }),
   ));

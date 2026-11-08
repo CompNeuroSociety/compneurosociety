@@ -782,13 +782,13 @@
      {
       "id": "email",
       "type": "email_fsu",
-      "prompt": "FSU email (optional; nothing is emailed in this preview)",
+      "prompt": "FSU email to send your matches to (required for the email; we don't keep it)",
       "validate": "^[^@\\s]+@fsu\\.edu$"
      },
      {
       "id": "consent",
       "type": "checkbox",
-      "prompt": "I understand matches are AI-assisted suggestions and that I'm expected to check each lab's current requirements and write my own outreach."
+      "prompt": "I understand matches are AI-assisted suggestions, that I'm expected to write my own outreach, and that I may get a one-time link to review the labs I contact."
      }
     ]
    }
@@ -808,6 +808,7 @@
    "expectations": "",
    "entry_point": "Nee (2021) eLife, integrative frontal-parietal dynamics supporting cognitive control.",
    "comp_neuro_level": 2,
+   "compute_level": 2,
    "openings": "posted",
    "project_fit": [
     "DIS",
@@ -820,8 +821,8 @@
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 4.5,
-    "axis_cognitive": 4.0,
+    "axis_computational": 4.0,
+    "axis_cognitive": 5.0,
     "axis_organism": 1.0,
     "axis_clinical": 1.0,
     "org_human": 1,
@@ -830,7 +831,7 @@
     "org_in_silico_only": 1,
     "wet_dry": 4.0,
     "coding_level": 1,
-    "math_level": 2,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -866,6 +867,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "posted",
    "project_fit": [
     "DIS",
@@ -881,14 +883,14 @@
     "axis_computational": 1.5,
     "axis_cognitive": 5.0,
     "axis_organism": 1.0,
-    "axis_clinical": 1.0,
+    "axis_clinical": 4.0,
     "org_human": 1,
     "org_rodent": 0,
     "org_invertebrate": 0,
     "org_in_silico_only": 0,
     "wet_dry": 3.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -896,8 +898,8 @@
     },
     "career": {
      "phd": 0.8,
-     "md": 0.45,
-     "md_phd": 0.62,
+     "md": 0.9,
+     "md_phd": 0.85,
      "industry_ml": 0.27,
      "industry_other": 0.25,
      "undecided": 0.85
@@ -924,6 +926,7 @@
    "expectations": "At least 9 hours/week (3 credits), weekly lab meetings, participant recruitment and data collection.",
    "entry_point": "",
    "comp_neuro_level": 1,
+   "compute_level": 0,
    "openings": "posted",
    "project_fit": [
     "DIS"
@@ -935,7 +938,7 @@
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 1.5,
+    "axis_computational": 1.0,
     "axis_cognitive": 5.0,
     "axis_organism": 1.0,
     "axis_clinical": 4.0,
@@ -943,9 +946,9 @@
     "org_rodent": 0,
     "org_invertebrate": 0,
     "org_in_silico_only": 0,
-    "wet_dry": 3.0,
+    "wet_dry": 2.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 0.3,
@@ -955,7 +958,7 @@
      "phd": 0.55,
      "md": 0.9,
      "md_phd": 0.72,
-     "industry_ml": 0.27,
+     "industry_ml": 0.15,
      "industry_other": 0.25,
      "undecided": 0.85
     },
@@ -981,6 +984,7 @@
    "expectations": "Running participants, making conference posters, weekly lab meetings, recruitment.",
    "entry_point": "",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "posted",
    "project_fit": [
     "DIS"
@@ -1002,7 +1006,7 @@
     "org_in_silico_only": 0,
     "wet_dry": 3.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 0.3,
@@ -1038,6 +1042,7 @@
    "expectations": "",
    "entry_point": "NSF-funded project with Vincis applying network-science tools to taste-coding neural data.",
    "comp_neuro_level": 3,
+   "compute_level": 3,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1050,7 +1055,7 @@
     "_lab": true,
     "axis_computational": 5.0,
     "axis_cognitive": 1.0,
-    "axis_organism": 2.0,
+    "axis_organism": 1.0,
     "axis_clinical": 1.0,
     "org_human": 0,
     "org_rodent": 0,
@@ -1094,6 +1099,7 @@
    "expectations": "",
    "entry_point": "Collaborates with Bertram and Storace on the neural basis of smell.",
    "comp_neuro_level": 3,
+   "compute_level": 3,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1150,6 +1156,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 2,
+   "compute_level": 3,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1160,7 +1167,7 @@
    "organisms": [],
    "vector": {
     "_lab": true,
-    "axis_computational": 4.5,
+    "axis_computational": 5.0,
     "axis_cognitive": 1.0,
     "axis_organism": 1.0,
     "axis_clinical": 1.0,
@@ -1169,8 +1176,8 @@
     "org_invertebrate": 0,
     "org_in_silico_only": 1,
     "wet_dry": 5.0,
-    "coding_level": 1,
-    "math_level": 2,
+    "coding_level": 2,
+    "math_level": 4,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -1180,7 +1187,7 @@
      "phd": 1.0,
      "md": 0.15,
      "md_phd": 0.57,
-     "industry_ml": 0.88,
+     "industry_ml": 1.0,
      "industry_other": 0.25,
      "undecided": 0.85
     },
@@ -1206,6 +1213,7 @@
    "expectations": "",
    "entry_point": "Joint NSF project with Bertram on patterns of neural activity coding taste.",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1227,8 +1235,8 @@
     "org_invertebrate": 0,
     "org_in_silico_only": 0,
     "wet_dry": 2.0,
-    "coding_level": 1,
-    "math_level": 1,
+    "coding_level": 0,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -1264,6 +1272,7 @@
    "expectations": "",
    "entry_point": "Collaborates with Bertram and Karamched on olfaction.",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1271,20 +1280,22 @@
    ],
    "verified": true,
    "last_checked": "2026-11-07",
-   "organisms": [],
+   "organisms": [
+    "rodent"
+   ],
    "vector": {
     "_lab": true,
     "axis_computational": 1.5,
     "axis_cognitive": 1.0,
     "axis_organism": 5.0,
     "axis_clinical": 1.0,
-    "org_human": null,
-    "org_rodent": null,
-    "org_invertebrate": null,
-    "org_in_silico_only": null,
+    "org_human": 0,
+    "org_rodent": 1,
+    "org_invertebrate": 0,
+    "org_in_silico_only": 0,
     "wet_dry": 2.0,
-    "coding_level": 1,
-    "math_level": 1,
+    "coding_level": 0,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -1320,6 +1331,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1342,7 +1354,7 @@
     "org_in_silico_only": 0,
     "wet_dry": 2.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -1378,6 +1390,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 0,
+   "compute_level": 0,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1393,7 +1406,7 @@
     "axis_computational": 1.0,
     "axis_cognitive": 1.0,
     "axis_organism": 5.0,
-    "axis_clinical": 1.0,
+    "axis_clinical": 4.0,
     "org_human": 0,
     "org_rodent": 1,
     "org_invertebrate": 0,
@@ -1408,8 +1421,8 @@
     },
     "career": {
      "phd": 0.8,
-     "md": 0.15,
-     "md_phd": 0.48,
+     "md": 0.7,
+     "md_phd": 0.75,
      "industry_ml": 0.15,
      "industry_other": 0.25,
      "undecided": 0.85
@@ -1436,6 +1449,7 @@
    "expectations": "Funded by NIMH, Whitehall Foundation, and Alzheimer's Association; Apr 2026 ad sought postbacc/PhD/postdoc researchers.",
    "entry_point": "Varela et al. 2024, Frontiers in Neuroscience: thalamic deviance detection as a predictive-processing mechanism (DOI 10.3389/fnins.2024.1359180).",
    "comp_neuro_level": 2,
+   "compute_level": 1,
    "openings": "posted",
    "project_fit": [
     "DIS",
@@ -1448,27 +1462,27 @@
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 4.5,
+    "axis_computational": 3.0,
     "axis_cognitive": 1.0,
-    "axis_organism": 4.0,
+    "axis_organism": 5.0,
     "axis_clinical": 4.0,
     "org_human": 0,
     "org_rodent": 1,
     "org_invertebrate": 0,
-    "org_in_silico_only": 1,
-    "wet_dry": 3.0,
-    "coding_level": 1,
-    "math_level": 2,
+    "org_in_silico_only": 0,
+    "wet_dry": 2.0,
+    "coding_level": 0,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
      "UROP": 0.6
     },
     "career": {
-     "phd": 1.0,
+     "phd": 0.8,
      "md": 0.7,
-     "md_phd": 0.85,
-     "industry_ml": 0.88,
+     "md_phd": 0.75,
+     "industry_ml": 0.77,
      "industry_other": 0.55,
      "undecided": 0.85
     },
@@ -1494,6 +1508,7 @@
    "expectations": "Recommended: basic neuroscience, basic MATLAB/Python, strong analytical skills; RAs present findings at lab meetings.",
    "entry_point": "Kira et al. 2023, Nature Communications: mixed-selectivity population code for flexible navigation decisions (DOI 10.1038/s41467-023-37804-2).",
    "comp_neuro_level": 2,
+   "compute_level": 2,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1516,7 +1531,7 @@
     "org_in_silico_only": 1,
     "wet_dry": 3.0,
     "coding_level": 1,
-    "math_level": 2,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -1552,6 +1567,7 @@
    "expectations": "",
    "entry_point": "Moberly, Cardin & Higley 2025, bioRxiv: learning-dependent cholinergic plasticity reconfigures cortical circuit dynamics (DOI 10.1101/2025.11.10.687664).",
    "comp_neuro_level": 2,
+   "compute_level": 2,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1564,9 +1580,9 @@
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 4.5,
+    "axis_computational": 4.0,
     "axis_cognitive": 1.0,
-    "axis_organism": 4.0,
+    "axis_organism": 5.0,
     "axis_clinical": 1.0,
     "org_human": 0,
     "org_rodent": 1,
@@ -1574,7 +1590,7 @@
     "org_in_silico_only": 1,
     "wet_dry": 3.0,
     "coding_level": 1,
-    "math_level": 2,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -1610,6 +1626,7 @@
    "expectations": "",
    "entry_point": "Takagi et al. 2025, Cell Reports: olfactory projection neuron rewiring in an ecological specialist (DOI 10.1016/j.celrep.2025.115615).",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1632,7 +1649,7 @@
     "org_in_silico_only": 0,
     "wet_dry": 2.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -1667,7 +1684,8 @@
    "bridge": "",
    "expectations": "",
    "entry_point": "NSF-funded project with Martin Bauer on generalized optimal transport models for images, shapes, and networks (2025).",
-   "comp_neuro_level": 2,
+   "comp_neuro_level": 1,
+   "compute_level": 3,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1678,7 +1696,7 @@
    "organisms": [],
    "vector": {
     "_lab": true,
-    "axis_computational": 4.5,
+    "axis_computational": 5.0,
     "axis_cognitive": 1.0,
     "axis_organism": 1.0,
     "axis_clinical": 1.0,
@@ -1687,8 +1705,8 @@
     "org_invertebrate": 0,
     "org_in_silico_only": 1,
     "wet_dry": 5.0,
-    "coding_level": 1,
-    "math_level": 2,
+    "coding_level": 2,
+    "math_level": 4,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -1698,7 +1716,7 @@
      "phd": 1.0,
      "md": 0.15,
      "md_phd": 0.57,
-     "industry_ml": 0.88,
+     "industry_ml": 1.0,
      "industry_other": 0.25,
      "undecided": 0.85
     },
@@ -1724,6 +1742,7 @@
    "expectations": "Minimum 3.5 GPA; at least a two-semester commitment; weekly hours not stated.",
    "entry_point": "Neurophysiology (EEG) DIS track within the anxiety-disorder studies described on the DIS page.",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "posted",
    "project_fit": [
     "DIS",
@@ -1746,7 +1765,7 @@
     "org_in_silico_only": 0,
     "wet_dry": 3.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -1781,7 +1800,8 @@
    "bridge": "Executive-function and working-memory task data in a clinical child population is the kind of behavioral dataset that cognitive models are fit to; the site mentions no neural recording, so treat this as behavior-first (needs confirmation).",
    "expectations": "GPA 3.5 or higher; minimum one-year (3 semesters) commitment at 10 hours per week; weekly lab meeting; sophomore/junior standing or UROP acceptance.",
    "entry_point": "Serving as an 'Executive Function Coach' for children with ADHD and assisting lab data work, per the students page.",
-   "comp_neuro_level": 1,
+   "comp_neuro_level": 0,
+   "compute_level": 0,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1795,7 +1815,7 @@
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 1.5,
+    "axis_computational": 1.0,
     "axis_cognitive": 4.0,
     "axis_organism": 1.0,
     "axis_clinical": 5.0,
@@ -1803,9 +1823,9 @@
     "org_rodent": 0,
     "org_invertebrate": 0,
     "org_in_silico_only": 0,
-    "wet_dry": 3.0,
+    "wet_dry": 2.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -1815,7 +1835,7 @@
      "phd": 0.8,
      "md": 0.9,
      "md_phd": 0.85,
-     "industry_ml": 0.27,
+     "industry_ml": 0.15,
      "industry_other": 0.25,
      "undecided": 0.85
     },
@@ -1841,10 +1861,12 @@
    "expectations": "GPA above 3.0 and a two-semester commitment; hours not stated.",
    "entry_point": "Helping develop and run language comprehension/production experiments and attending lab meetings.",
    "comp_neuro_level": 0,
+   "compute_level": 1,
    "openings": "posted",
    "project_fit": [
     "DIS",
-    "thesis"
+    "thesis",
+    "UROP"
    ],
    "verified": true,
    "last_checked": "2026-11-07",
@@ -1853,7 +1875,7 @@
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 1.0,
+    "axis_computational": 1.5,
     "axis_cognitive": 5.0,
     "axis_organism": 1.0,
     "axis_clinical": 1.0,
@@ -1861,19 +1883,19 @@
     "org_rodent": 0,
     "org_invertebrate": 0,
     "org_in_silico_only": 0,
-    "wet_dry": 2.0,
+    "wet_dry": 3.0,
     "coding_level": 0,
     "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
-     "UROP": 0.6
+     "UROP": 1.0
     },
     "career": {
      "phd": 0.8,
      "md": 0.45,
      "md_phd": 0.62,
-     "industry_ml": 0.15,
+     "industry_ml": 0.27,
      "industry_other": 0.25,
      "undecided": 0.85
     },
@@ -1899,6 +1921,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -1920,8 +1943,8 @@
     "org_invertebrate": 0,
     "org_in_silico_only": 0,
     "wet_dry": 3.0,
-    "coding_level": 1,
-    "math_level": 1,
+    "coding_level": 0,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -1957,6 +1980,7 @@
    "expectations": "",
    "entry_point": "Speech-in-noise EEG/psychophysics studies of aging and hearing loss described on the lab home page.",
    "comp_neuro_level": 2,
+   "compute_level": 1,
    "openings": "posted",
    "project_fit": [
     "DIS",
@@ -1969,27 +1993,27 @@
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 4.0,
+    "axis_computational": 3.0,
     "axis_cognitive": 5.0,
     "axis_organism": 1.0,
     "axis_clinical": 4.0,
     "org_human": 1,
     "org_rodent": 0,
     "org_invertebrate": 0,
-    "org_in_silico_only": 1,
-    "wet_dry": 4.0,
-    "coding_level": 1,
-    "math_level": 2,
+    "org_in_silico_only": 0,
+    "wet_dry": 3.0,
+    "coding_level": 0,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
      "UROP": 0.6
     },
     "career": {
-     "phd": 1.0,
+     "phd": 0.8,
      "md": 0.9,
-     "md_phd": 0.95,
-     "industry_ml": 0.88,
+     "md_phd": 0.85,
+     "industry_ml": 0.77,
      "industry_other": 0.25,
      "undecided": 0.85
     },
@@ -2014,7 +2038,8 @@
    "bridge": "Brain-behavior mapping in aphasia with automatically extracted language features is a computational-adjacent clinical neuroscience path for CSD students; no undergraduate route is posted (needs confirmation).",
    "expectations": "",
    "entry_point": "Lukic et al. 2024, Cortex: discriminating PPA variants with automatically extracted morphosyntactic measures from connected speech.",
-   "comp_neuro_level": 2,
+   "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -2027,27 +2052,27 @@
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 4.0,
+    "axis_computational": 3.0,
     "axis_cognitive": 4.0,
     "axis_organism": 1.0,
     "axis_clinical": 5.0,
     "org_human": 1,
     "org_rodent": 0,
     "org_invertebrate": 0,
-    "org_in_silico_only": 1,
-    "wet_dry": 4.0,
+    "org_in_silico_only": 0,
+    "wet_dry": 3.0,
     "coding_level": 1,
-    "math_level": 2,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
      "UROP": 0.6
     },
     "career": {
-     "phd": 1.0,
+     "phd": 0.8,
      "md": 0.9,
-     "md_phd": 0.95,
-     "industry_ml": 0.88,
+     "md_phd": 0.85,
+     "industry_ml": 0.77,
      "industry_other": 0.7,
      "undecided": 0.85
     },
@@ -2073,6 +2098,7 @@
    "expectations": "",
    "entry_point": "Current project on treating dysarthric speech via perceptual listening training (lab home page).",
    "comp_neuro_level": 0,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -2085,7 +2111,7 @@
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 1.0,
+    "axis_computational": 1.5,
     "axis_cognitive": 5.0,
     "axis_organism": 1.0,
     "axis_clinical": 4.0,
@@ -2093,7 +2119,7 @@
     "org_rodent": 0,
     "org_invertebrate": 0,
     "org_in_silico_only": 0,
-    "wet_dry": 2.0,
+    "wet_dry": 3.0,
     "coding_level": 0,
     "math_level": 0,
     "project_kind": {
@@ -2105,7 +2131,7 @@
      "phd": 0.8,
      "md": 0.9,
      "md_phd": 0.85,
-     "industry_ml": 0.15,
+     "industry_ml": 0.27,
      "industry_other": 0.25,
      "undecided": 0.85
     },
@@ -2131,6 +2157,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 0,
+   "compute_level": 0,
    "openings": "posted",
    "project_fit": [
     "DIS",
@@ -2146,7 +2173,7 @@
     "axis_computational": 1.0,
     "axis_cognitive": 1.0,
     "axis_organism": 5.0,
-    "axis_clinical": 1.0,
+    "axis_clinical": 4.0,
     "org_human": 0,
     "org_rodent": 1,
     "org_invertebrate": 0,
@@ -2161,8 +2188,8 @@
     },
     "career": {
      "phd": 0.8,
-     "md": 0.15,
-     "md_phd": 0.48,
+     "md": 0.7,
+     "md_phd": 0.75,
      "industry_ml": 0.15,
      "industry_other": 0.55,
      "undecided": 0.85
@@ -2189,6 +2216,7 @@
    "expectations": "Some course prerequisites required (not specified on the page).",
    "entry_point": "",
    "comp_neuro_level": 0,
+   "compute_level": 0,
    "openings": "posted",
    "project_fit": [
     "DIS",
@@ -2204,7 +2232,7 @@
     "axis_computational": 1.0,
     "axis_cognitive": 1.0,
     "axis_organism": 5.0,
-    "axis_clinical": 1.0,
+    "axis_clinical": 4.0,
     "org_human": 0,
     "org_rodent": 1,
     "org_invertebrate": 0,
@@ -2219,8 +2247,8 @@
     },
     "career": {
      "phd": 0.8,
-     "md": 0.15,
-     "md_phd": 0.48,
+     "md": 0.7,
+     "md_phd": 0.75,
      "industry_ml": 0.15,
      "industry_other": 0.25,
      "undecided": 0.85
@@ -2247,6 +2275,7 @@
    "expectations": "Wants students who are dedicated, hard-working, and reliable; hours not stated.",
    "entry_point": "Setting up and scoring vole social-behavior experiments and processing brain tissue for histology.",
    "comp_neuro_level": 0,
+   "compute_level": 0,
    "openings": "posted",
    "project_fit": [
     "DIS",
@@ -2305,6 +2334,7 @@
    "expectations": "Minimum two-year commitment, DIS credit enrollment, weekend availability for colony work; students should be 'smart, reliable, hard-working'.",
    "entry_point": "Mouse colony care and data entry/cleaning as a first role, per the DIS page.",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "posted",
    "project_fit": [
     "DIS",
@@ -2317,8 +2347,8 @@
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 1.5,
-    "axis_cognitive": 4.0,
+    "axis_computational": 3.0,
+    "axis_cognitive": 1.0,
     "axis_organism": 5.0,
     "axis_clinical": 1.0,
     "org_human": 0,
@@ -2327,7 +2357,7 @@
     "org_in_silico_only": 0,
     "wet_dry": 2.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -2337,7 +2367,7 @@
      "phd": 0.8,
      "md": 0.15,
      "md_phd": 0.48,
-     "industry_ml": 0.27,
+     "industry_ml": 0.52,
      "industry_other": 0.55,
      "undecided": 0.85
     },
@@ -2363,6 +2393,7 @@
    "expectations": "",
    "entry_point": "fMRI data analysis and brain-based classification techniques (as listed on the department research page).",
    "comp_neuro_level": 2,
+   "compute_level": 3,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -2370,22 +2401,20 @@
    ],
    "verified": true,
    "last_checked": "2026-11-07",
-   "organisms": [
-    "human"
-   ],
+   "organisms": [],
    "vector": {
     "_lab": true,
-    "axis_computational": 4.5,
+    "axis_computational": 5.0,
     "axis_cognitive": 1.0,
     "axis_organism": 1.0,
     "axis_clinical": 4.0,
-    "org_human": 1,
+    "org_human": 0,
     "org_rodent": 0,
     "org_invertebrate": 0,
     "org_in_silico_only": 1,
-    "wet_dry": 4.0,
-    "coding_level": 1,
-    "math_level": 2,
+    "wet_dry": 5.0,
+    "coding_level": 2,
+    "math_level": 4,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -2393,9 +2422,9 @@
     },
     "career": {
      "phd": 1.0,
-     "md": 0.9,
-     "md_phd": 0.95,
-     "industry_ml": 0.88,
+     "md": 0.6,
+     "md_phd": 0.8,
+     "industry_ml": 1.0,
      "industry_other": 0.7,
      "undecided": 0.85
     },
@@ -2421,6 +2450,7 @@
    "expectations": "",
    "entry_point": "Convolutional Neural Networks for Sea Surface Data Assimilation in Operational Ocean Models (Ocean Science, 2025) as a representative scientific-ML project.",
    "comp_neuro_level": 1,
+   "compute_level": 3,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -2428,32 +2458,30 @@
    ],
    "verified": true,
    "last_checked": "2026-11-07",
-   "organisms": [
-    "human"
-   ],
+   "organisms": [],
    "vector": {
     "_lab": true,
-    "axis_computational": 3.5,
+    "axis_computational": 5.0,
     "axis_cognitive": 1.0,
     "axis_organism": 1.0,
     "axis_clinical": 4.0,
-    "org_human": 1,
+    "org_human": 0,
     "org_rodent": 0,
     "org_invertebrate": 0,
-    "org_in_silico_only": 0,
-    "wet_dry": 3.0,
-    "coding_level": 1,
-    "math_level": 1,
+    "org_in_silico_only": 1,
+    "wet_dry": 5.0,
+    "coding_level": 2,
+    "math_level": 4,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
      "UROP": 0.6
     },
     "career": {
-     "phd": 0.8,
-     "md": 0.9,
-     "md_phd": 0.85,
-     "industry_ml": 0.77,
+     "phd": 1.0,
+     "md": 0.6,
+     "md_phd": 0.8,
+     "industry_ml": 1.0,
      "industry_other": 0.7,
      "undecided": 0.85
     },
@@ -2479,6 +2507,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 0,
+   "compute_level": 3,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -2489,27 +2518,27 @@
    "organisms": [],
    "vector": {
     "_lab": true,
-    "axis_computational": 3.0,
+    "axis_computational": 5.0,
     "axis_cognitive": 1.0,
     "axis_organism": 1.0,
     "axis_clinical": 1.0,
-    "org_human": null,
-    "org_rodent": null,
-    "org_invertebrate": null,
-    "org_in_silico_only": null,
-    "wet_dry": 1.0,
-    "coding_level": 0,
-    "math_level": 0,
+    "org_human": 0,
+    "org_rodent": 0,
+    "org_invertebrate": 0,
+    "org_in_silico_only": 1,
+    "wet_dry": 5.0,
+    "coding_level": 2,
+    "math_level": 6,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
      "UROP": 0.6
     },
     "career": {
-     "phd": 0.8,
+     "phd": 1.0,
      "md": 0.15,
-     "md_phd": 0.48,
-     "industry_ml": 0.65,
+     "md_phd": 0.57,
+     "industry_ml": 1.0,
      "industry_other": 0.55,
      "undecided": 0.85
     },
@@ -2535,6 +2564,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 1,
+   "compute_level": 3,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -2545,27 +2575,27 @@
    "organisms": [],
    "vector": {
     "_lab": true,
-    "axis_computational": 3.5,
+    "axis_computational": 5.0,
     "axis_cognitive": 4.0,
     "axis_organism": 1.0,
     "axis_clinical": 1.0,
-    "org_human": null,
-    "org_rodent": null,
-    "org_invertebrate": null,
-    "org_in_silico_only": null,
-    "wet_dry": 2.0,
-    "coding_level": 1,
-    "math_level": 1,
+    "org_human": 0,
+    "org_rodent": 0,
+    "org_invertebrate": 0,
+    "org_in_silico_only": 1,
+    "wet_dry": 5.0,
+    "coding_level": 2,
+    "math_level": 4,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
      "UROP": 0.6
     },
     "career": {
-     "phd": 0.8,
+     "phd": 1.0,
      "md": 0.15,
-     "md_phd": 0.48,
-     "industry_ml": 0.77,
+     "md_phd": 0.57,
+     "industry_ml": 1.0,
      "industry_other": 0.25,
      "undecided": 0.85
     },
@@ -2591,6 +2621,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 0,
+   "compute_level": 3,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -2598,32 +2629,30 @@
    ],
    "verified": true,
    "last_checked": "2026-11-07",
-   "organisms": [
-    "human"
-   ],
+   "organisms": [],
    "vector": {
     "_lab": true,
-    "axis_computational": 3.0,
-    "axis_cognitive": 1.0,
+    "axis_computational": 5.0,
+    "axis_cognitive": 4.0,
     "axis_organism": 1.0,
     "axis_clinical": 4.0,
-    "org_human": 1,
+    "org_human": 0,
     "org_rodent": 0,
     "org_invertebrate": 0,
-    "org_in_silico_only": 0,
-    "wet_dry": 2.0,
-    "coding_level": 0,
-    "math_level": 0,
+    "org_in_silico_only": 1,
+    "wet_dry": 5.0,
+    "coding_level": 2,
+    "math_level": 4,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
      "UROP": 0.6
     },
     "career": {
-     "phd": 0.8,
-     "md": 0.9,
-     "md_phd": 0.85,
-     "industry_ml": 0.65,
+     "phd": 1.0,
+     "md": 0.6,
+     "md_phd": 0.8,
+     "industry_ml": 1.0,
      "industry_other": 0.25,
      "undecided": 0.85
     },
@@ -2648,8 +2677,9 @@
    "bridge": "A statistics-department route into ML and medical imaging for math/stats majors; department page says he is recruiting a graduate student and won the 2023 Graduate Faculty Mentor Award, undergrad route not stated.",
    "expectations": "",
    "entry_point": "",
-   "comp_neuro_level": 1,
-   "openings": "posted",
+   "comp_neuro_level": 0,
+   "compute_level": 3,
+   "openings": "unknown",
    "project_fit": [
     "DIS",
     "thesis"
@@ -2659,27 +2689,27 @@
    "organisms": [],
    "vector": {
     "_lab": true,
-    "axis_computational": 3.5,
+    "axis_computational": 5.0,
     "axis_cognitive": 1.0,
     "axis_organism": 1.0,
     "axis_clinical": 4.0,
-    "org_human": null,
-    "org_rodent": null,
-    "org_invertebrate": null,
-    "org_in_silico_only": null,
-    "wet_dry": 2.0,
-    "coding_level": 1,
-    "math_level": 1,
+    "org_human": 0,
+    "org_rodent": 0,
+    "org_invertebrate": 0,
+    "org_in_silico_only": 1,
+    "wet_dry": 5.0,
+    "coding_level": 2,
+    "math_level": 5,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
      "UROP": 0.6
     },
     "career": {
-     "phd": 0.8,
+     "phd": 1.0,
      "md": 0.6,
-     "md_phd": 0.7,
-     "industry_ml": 0.77,
+     "md_phd": 0.8,
+     "industry_ml": 1.0,
      "industry_other": 0.7,
      "undecided": 0.85
     },
@@ -2705,7 +2735,8 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 1,
-   "openings": "unknown",
+   "compute_level": 2,
+   "openings": "posted",
    "project_fit": [
     "DIS",
     "thesis"
@@ -2715,16 +2746,16 @@
    "organisms": [],
    "vector": {
     "_lab": true,
-    "axis_computational": 3.5,
+    "axis_computational": 4.5,
     "axis_cognitive": 1.0,
-    "axis_organism": 4.0,
+    "axis_organism": 1.0,
     "axis_clinical": 1.0,
-    "org_human": null,
-    "org_rodent": null,
-    "org_invertebrate": null,
-    "org_in_silico_only": null,
-    "wet_dry": 2.0,
-    "coding_level": 1,
+    "org_human": 0,
+    "org_rodent": 0,
+    "org_invertebrate": 0,
+    "org_in_silico_only": 1,
+    "wet_dry": 5.0,
+    "coding_level": 0,
     "math_level": 1,
     "project_kind": {
      "DIS": 1.0,
@@ -2732,10 +2763,10 @@
      "UROP": 0.6
     },
     "career": {
-     "phd": 0.8,
+     "phd": 1.0,
      "md": 0.15,
-     "md_phd": 0.48,
-     "industry_ml": 0.77,
+     "md_phd": 0.57,
+     "industry_ml": 0.88,
      "industry_other": 0.7,
      "undecided": 0.85
     },
@@ -2754,13 +2785,14 @@
    "pi": "Jonathan Clark",
    "dept": "Department of Mechanical Engineering, FAMU-FSU College of Engineering",
    "focus": "The STRIDe Laboratory builds biologically inspired legged robots (Sprawl, RHex and Dynoclimber families) that run and climb, studying the dynamics, design and control of agile legged locomotion.",
-   "lab_url": "https://web1.eng.famu.fsu.edu/~clarkj/stride/people/people.htm",
+   "lab_url": "https://eng.famu.fsu.edu/node/11731",
    "listing_url": "",
-   "how_to_apply": "No posted undergrad process; lab contact page gives (850) 410-6563 and clarkj@eng.famu.fsu.edu.",
+   "how_to_apply": "No posted undergrad process and the old STRIDe lab site is gone; the 2024 FAMU-FSU College of Engineering page lists clarkj@eng.famu.fsu.edu, so email to ask whether the lab is taking students.",
    "bridge": "Bio-inspired locomotion for mechanical/electrical engineers; the lab people page lists Undergraduate Research Assistants, though the visible roster is dated 2008-2009 and a 2024 college page still lists him as Professor of Mechanical Engineering (needs confirmation).",
    "expectations": "",
    "entry_point": "",
-   "comp_neuro_level": 1,
+   "comp_neuro_level": 0,
+   "compute_level": 2,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -2771,27 +2803,27 @@
    "organisms": [],
    "vector": {
     "_lab": true,
-    "axis_computational": 3.5,
+    "axis_computational": 4.5,
     "axis_cognitive": 1.0,
-    "axis_organism": 4.0,
+    "axis_organism": 1.0,
     "axis_clinical": 1.0,
-    "org_human": null,
-    "org_rodent": null,
-    "org_invertebrate": null,
-    "org_in_silico_only": null,
-    "wet_dry": 2.0,
+    "org_human": 0,
+    "org_rodent": 0,
+    "org_invertebrate": 0,
+    "org_in_silico_only": 1,
+    "wet_dry": 5.0,
     "coding_level": 1,
-    "math_level": 1,
+    "math_level": 2,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
      "UROP": 0.6
     },
     "career": {
-     "phd": 0.8,
+     "phd": 1.0,
      "md": 0.15,
-     "md_phd": 0.48,
-     "industry_ml": 0.52,
+     "md_phd": 0.57,
+     "industry_ml": 0.63,
      "industry_other": 0.7,
      "undecided": 0.85
     },
@@ -2817,6 +2849,7 @@
    "expectations": "",
    "entry_point": "Magnetic resonance imaging with 21.1T and pathological correlations in diffuse Lewy body disease (listed on faculty page, no DOI given).",
    "comp_neuro_level": 1,
+   "compute_level": 2,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -2825,31 +2858,31 @@
    "verified": true,
    "last_checked": "2026-11-07",
    "organisms": [
-    "human"
+    "rodent"
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 3.5,
+    "axis_computational": 4.5,
     "axis_cognitive": 1.0,
     "axis_organism": 4.0,
     "axis_clinical": 4.0,
-    "org_human": 1,
-    "org_rodent": 0,
+    "org_human": 0,
+    "org_rodent": 1,
     "org_invertebrate": 0,
-    "org_in_silico_only": 0,
+    "org_in_silico_only": 1,
     "wet_dry": 3.0,
-    "coding_level": 0,
-    "math_level": 1,
+    "coding_level": 1,
+    "math_level": 2,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
      "UROP": 0.6
     },
     "career": {
-     "phd": 0.8,
-     "md": 0.9,
+     "phd": 1.0,
+     "md": 0.7,
      "md_phd": 0.85,
-     "industry_ml": 0.52,
+     "industry_ml": 0.63,
      "industry_other": 1.0,
      "undecided": 0.85
     },
@@ -2875,6 +2908,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 0,
+   "compute_level": 3,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -2885,27 +2919,27 @@
    "organisms": [],
    "vector": {
     "_lab": true,
-    "axis_computational": 3.0,
+    "axis_computational": 5.0,
     "axis_cognitive": 1.0,
     "axis_organism": 1.0,
     "axis_clinical": 1.0,
-    "org_human": null,
-    "org_rodent": null,
-    "org_invertebrate": null,
-    "org_in_silico_only": null,
-    "wet_dry": 1.0,
-    "coding_level": 0,
-    "math_level": 0,
+    "org_human": 0,
+    "org_rodent": 0,
+    "org_invertebrate": 0,
+    "org_in_silico_only": 1,
+    "wet_dry": 5.0,
+    "coding_level": 2,
+    "math_level": 4,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
      "UROP": 0.6
     },
     "career": {
-     "phd": 0.8,
+     "phd": 1.0,
      "md": 0.15,
-     "md_phd": 0.48,
-     "industry_ml": 0.65,
+     "md_phd": 0.57,
+     "industry_ml": 1.0,
      "industry_other": 0.7,
      "undecided": 0.85
     },
@@ -2931,6 +2965,7 @@
    "expectations": "",
    "entry_point": "Sotolongo-Lopez et al. 2016, PLoS Genetics, on zebrafish photoreceptor specification (listed on the department page without DOI).",
    "comp_neuro_level": 0,
+   "compute_level": 0,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -2989,6 +3024,7 @@
    "expectations": "",
    "entry_point": "Lyons et al. 2020, Molecular Brain, on circadian/sleep effects on memory consolidation.",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -3012,7 +3048,7 @@
     "org_in_silico_only": 0,
     "wet_dry": 2.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -3048,6 +3084,7 @@
    "expectations": "",
    "entry_point": "Kaplan et al. 2022, Frontiers in Genetics, review of DNA epigenetics in addiction susceptibility.",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -3069,8 +3106,8 @@
     "org_invertebrate": 0,
     "org_in_silico_only": 0,
     "wet_dry": 2.0,
-    "coding_level": 1,
-    "math_level": 1,
+    "coding_level": 0,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -3106,6 +3143,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -3114,8 +3152,7 @@
    "verified": true,
    "last_checked": "2026-11-07",
    "organisms": [
-    "invertebrate",
-    "human"
+    "invertebrate"
    ],
    "vector": {
     "_lab": true,
@@ -3123,13 +3160,13 @@
     "axis_cognitive": 1.0,
     "axis_organism": 5.0,
     "axis_clinical": 4.0,
-    "org_human": 1,
+    "org_human": 0,
     "org_rodent": 0,
     "org_invertebrate": 1,
     "org_in_silico_only": 0,
     "wet_dry": 2.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -3137,8 +3174,8 @@
     },
     "career": {
      "phd": 0.8,
-     "md": 1.0,
-     "md_phd": 0.9,
+     "md": 0.7,
+     "md_phd": 0.75,
      "industry_ml": 0.27,
      "industry_other": 0.55,
      "undecided": 0.85
@@ -3165,6 +3202,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -3187,8 +3225,8 @@
     "org_invertebrate": 1,
     "org_in_silico_only": 0,
     "wet_dry": 2.0,
-    "coding_level": 1,
-    "math_level": 1,
+    "coding_level": 0,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -3224,6 +3262,7 @@
    "expectations": "",
    "entry_point": "Duclot, Lindsay, Koutakis, Wang & Kabbaj 2022, Biological Psychiatry (listed on lab page without DOI).",
    "comp_neuro_level": 0,
+   "compute_level": 0,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -3282,6 +3321,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 0,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -3289,18 +3329,20 @@
    ],
    "verified": true,
    "last_checked": "2026-11-07",
-   "organisms": [],
+   "organisms": [
+    "rodent"
+   ],
    "vector": {
     "_lab": true,
-    "axis_computational": 1.0,
+    "axis_computational": 1.5,
     "axis_cognitive": 1.0,
     "axis_organism": 5.0,
     "axis_clinical": 4.0,
-    "org_human": null,
-    "org_rodent": null,
-    "org_invertebrate": null,
-    "org_in_silico_only": null,
-    "wet_dry": 1.0,
+    "org_human": 0,
+    "org_rodent": 1,
+    "org_invertebrate": 0,
+    "org_in_silico_only": 0,
+    "wet_dry": 2.0,
     "coding_level": 0,
     "math_level": 0,
     "project_kind": {
@@ -3310,9 +3352,9 @@
     },
     "career": {
      "phd": 0.8,
-     "md": 0.6,
-     "md_phd": 0.7,
-     "industry_ml": 0.15,
+     "md": 0.7,
+     "md_phd": 0.75,
+     "industry_ml": 0.27,
      "industry_other": 0.55,
      "undecided": 0.85
     },
@@ -3338,6 +3380,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -3345,20 +3388,22 @@
    ],
    "verified": true,
    "last_checked": "2026-11-07",
-   "organisms": [],
+   "organisms": [
+    "rodent"
+   ],
    "vector": {
     "_lab": true,
     "axis_computational": 3.0,
     "axis_cognitive": 1.0,
     "axis_organism": 5.0,
     "axis_clinical": 4.0,
-    "org_human": null,
-    "org_rodent": null,
-    "org_invertebrate": null,
-    "org_in_silico_only": null,
+    "org_human": 0,
+    "org_rodent": 1,
+    "org_invertebrate": 0,
+    "org_in_silico_only": 0,
     "wet_dry": 2.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -3366,8 +3411,8 @@
     },
     "career": {
      "phd": 0.8,
-     "md": 0.6,
-     "md_phd": 0.7,
+     "md": 0.7,
+     "md_phd": 0.75,
      "industry_ml": 0.52,
      "industry_other": 0.25,
      "undecided": 0.85
@@ -3394,6 +3439,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -3402,8 +3448,7 @@
    "verified": true,
    "last_checked": "2026-11-07",
    "organisms": [
-    "rodent",
-    "human"
+    "rodent"
    ],
    "vector": {
     "_lab": true,
@@ -3411,13 +3456,13 @@
     "axis_cognitive": 1.0,
     "axis_organism": 5.0,
     "axis_clinical": 4.0,
-    "org_human": 1,
+    "org_human": 0,
     "org_rodent": 1,
     "org_invertebrate": 0,
     "org_in_silico_only": 0,
     "wet_dry": 2.0,
-    "coding_level": 1,
-    "math_level": 1,
+    "coding_level": 0,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -3425,8 +3470,8 @@
     },
     "career": {
      "phd": 0.8,
-     "md": 1.0,
-     "md_phd": 0.9,
+     "md": 0.7,
+     "md_phd": 0.75,
      "industry_ml": 0.27,
      "industry_other": 0.55,
      "undecided": 0.85
@@ -3453,6 +3498,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 1,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -3475,7 +3521,7 @@
     "org_in_silico_only": 0,
     "wet_dry": 2.0,
     "coding_level": 0,
-    "math_level": 1,
+    "math_level": 0,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -3511,6 +3557,7 @@
    "expectations": "",
    "entry_point": "Zheng et al. 2020, Nature Cell Biology, on centrosome protein function.",
    "comp_neuro_level": 0,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -3520,20 +3567,19 @@
    "last_checked": "2026-11-07",
    "organisms": [
     "rodent",
-    "invertebrate",
-    "human"
+    "invertebrate"
    ],
    "vector": {
     "_lab": true,
-    "axis_computational": 1.0,
+    "axis_computational": 1.5,
     "axis_cognitive": 1.0,
     "axis_organism": 5.0,
     "axis_clinical": 4.0,
-    "org_human": 1,
+    "org_human": 0,
     "org_rodent": 1,
     "org_invertebrate": 1,
     "org_in_silico_only": 0,
-    "wet_dry": 1.0,
+    "wet_dry": 2.0,
     "coding_level": 0,
     "math_level": 0,
     "project_kind": {
@@ -3543,9 +3589,9 @@
     },
     "career": {
      "phd": 0.8,
-     "md": 1.0,
-     "md_phd": 0.9,
-     "industry_ml": 0.15,
+     "md": 0.7,
+     "md_phd": 0.75,
+     "industry_ml": 0.27,
      "industry_other": 0.55,
      "undecided": 0.85
     },
@@ -3571,6 +3617,7 @@
    "expectations": "",
    "entry_point": "",
    "comp_neuro_level": 0,
+   "compute_level": 1,
    "openings": "unknown",
    "project_fit": [
     "DIS",
@@ -3583,15 +3630,15 @@
     "_lab": true,
     "axis_computational": 3.0,
     "axis_cognitive": 1.0,
-    "axis_organism": 1.0,
+    "axis_organism": 5.0,
     "axis_clinical": 1.0,
-    "org_human": null,
-    "org_rodent": null,
-    "org_invertebrate": null,
-    "org_in_silico_only": null,
-    "wet_dry": 1.0,
+    "org_human": 0,
+    "org_rodent": 0,
+    "org_invertebrate": 0,
+    "org_in_silico_only": 0,
+    "wet_dry": 2.0,
     "coding_level": 0,
-    "math_level": 0,
+    "math_level": 1,
     "project_kind": {
      "DIS": 1.0,
      "thesis": 1.0,
@@ -3601,7 +3648,7 @@
      "phd": 0.8,
      "md": 0.15,
      "md_phd": 0.48,
-     "industry_ml": 0.4,
+     "industry_ml": 0.52,
      "industry_other": 0.55,
      "undecided": 0.85
     },
@@ -9861,9 +9908,9 @@
    }
   },
   "lens_mix": {
-   "skills": 0.375,
-   "interests": 0.375,
-   "goals": 0.25
+   "skills": 0.3636,
+   "interests": 0.3636,
+   "goals": 0.2727
   },
   "type": {
    "axis_computational": 1.0,
@@ -9904,10 +9951,16 @@
    }
   ],
   "comp_levels": [
-   "No modeling",
-   "Data-rich, modeling-adjacent",
-   "Modeling is part of the work",
-   "Modeling is the work"
+   "No neuro modeling",
+   "Neural data, modeling-adjacent",
+   "Neuro modeling is part of the work",
+   "Neuro modeling is the work"
+  ],
+  "compute_levels": [
+   "Bench or participant work",
+   "Some data analysis",
+   "Coding is part of the work",
+   "The work is code and math"
   ],
   "axes": {
    "computational": "Computational",
@@ -9926,41 +9979,47 @@
   "mean_top_share": 0.355,
   "text": null,
   "lens_spread": {
-   "skills": 0.093,
-   "interests": 0.132,
-   "goals": 0.121
+   "skills": 0.138,
+   "interests": 0.136,
+   "goals": 0.118
   },
   "match_heldout": {
    "default": [
-    0.9266666666666666,
-    0.5822222222222223
+    0.94,
+    0.5533333333333333
    ],
    "tuned": [
-    0.9466666666666667,
-    0.6111111111111112
+    0.9666666666666667,
+    0.5577777777777777
    ],
    "chance": [
     0.552937472861485,
     0.23251700680272103
    ],
    "precision_by_step": [
-    0.653,
-    0.644,
-    0.611
+    0.549,
+    0.564,
+    0.558
    ],
    "unconstrained": {
     "mix": {
-     "skills": 0.6,
-     "interests": 0.2,
-     "goals": 0.2
+     "skills": 0.5,
+     "interests": 0.375,
+     "goals": 0.125
     },
     "heldout": [
-     0.9733333333333334,
-     0.6622222222222222
+     0.98,
+     0.5644444444444444
     ]
    }
-  }
+  },
+  "ratings": null
  },
- "version": "0.4",
- "built": "2026-11-07"
+ "ratings": {
+  "strength": 0.35,
+  "neighbor": 0.5,
+  "prior": 1.0
+ },
+ "version": "0.5",
+ "built": "2026-11-08"
 }

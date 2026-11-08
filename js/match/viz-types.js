@@ -22,6 +22,7 @@ const YOU = 'you';
 const CAMERA = { yaw: -0.6, pitch: 0.35, zoom: 1 };
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const TOP_N = 3;
+const NARROW_LABEL_W = 110;   // px: prototype labels wider than this wrap onto two lines on narrow canvases
 const COLORS = ['var(--lm-types-c1)', 'var(--lm-types-c2)', 'var(--lm-types-c3)'];
 const CTX_DOT = 'var(--lm-types-ctx)';        // neutral cloud dots (context)
 const CTX_MARK = 'var(--lm-types-ctx-mark)';  // neutral prototype markers, swatches, meters (>= 3:1)
@@ -238,6 +239,8 @@ export function createTypesViz(container, model) {
           label: labelOf(a.type), labelLeader: true, labelLeaderColor: 'var(--faint)',
           labelPriority: on ? 90 : top ? 60 - rankOf.get(a.type) : 40,
           labelColor: top || on ? 'var(--ink)' : 'var(--muted)', labelSize: narrow ? 11 : 12, labelWeight: top ? 700 : 600,
+          // phone width: long names ("Computational neuroscientist") take two lines so they don't wall off their neighbours
+          labelMaxWidth: narrow ? NARROW_LABEL_W : undefined,
           data: { kind: 'prototype', type: a.type } });
       } else {
         const on = focusing && a.type === focusType;

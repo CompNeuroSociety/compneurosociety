@@ -3,24 +3,31 @@
 //   document.body.dataset.lmState   "loading" -> "survey" | "error" -> "results"  (tests watch it)
 //   window.__labmatch               { ready, model, answers, results, textScores }
 //
-// 1. Loads data/model.json and checks api/status at the configured API. If it is unavailable,
-//    structured matching still works; written-answer scoring is off.
+// 1. Loads data/model.json (the one file the Python side writes into the site) and GET api/status
+//    (serve.py now, a Worker later). A plain static server has no api/status: free-text scoring is off.
 // 2. Mounts the survey with the saved draft and saves the draft as you go: localStorage
 //    "cns-labmatch-draft-v1", never the email, the transcript or the consent box.
 // 3. On submit: computeResults() and render right away. Then, only when scoring is on and something
 //    was written, POST ONLY {question_text, origin_text, bring_text} to api/score-text and re-render.
+// 4. Star ratings on the cards: saved in localStorage "cns-labmatch-ratings-v1" ({labId: 1..5}), applied
+//    with matcher.applyRatings when the student presses "Update my ranking" (cards never jump mid-click).
+//    Only if the server accepts them (api/status "ratings") AND the student ticks "Share my ratings
+//    anonymously" (never remembered), each rating is POSTed to api/rate: {session, lab_id, stars, rank,
+//    vector, model_version}. Never the email, written answers or transcript.
 // The two charts load on their own: if one fails, its mount point says so and the rest keeps working.
 
 import { renderMatches, renderExcluded, renderWritten, renderHowItWorks, highlightCard } from './results.js';
 
 const DRAFT_KEY = 'cns-labmatch-draft-v1';
+const RATINGS_KEY = 'cns-labmatch-ratings-v1';
 const NEVER_SAVED = ['email', 'transcript', 'consent'];   // not in the draft
 const NEVER_DOWNLOADED = ['email', 'transcript'];         // not in the downloaded file
 const FALLBACK_TEXT_FIELDS = ['question_text', 'origin_text', 'bring_text'];
 const STATUS_TIMEOUT_MS = 4000;
 const SCORE_TIMEOUT_MS = 45000;
 const DEV = new URLSearchParams(location.search).get('dev') === '1';
-// An empty lm-api-base uses same-origin endpoints; GitHub Pages uses the separate Worker.
+// Where /api/status and /api/score-text live. Empty (the local preview): same origin, i.e. serve.py.
+// The deployed page points <meta name="lm-api-base"> at the Cloudflare Worker (export_site.py fills it in).
 const API_BASE = (document.querySelector('meta[name="lm-api-base"]')?.getAttribute('content') || '').trim();
 const apiUrl = (path) => (API_BASE ? new URL(path, API_BASE).href : path);
 const IS_LOCAL = /^(127\.0\.0\.1|localhost|\[::1\])$/.test(location.hostname);
@@ -366,6 +373,14 @@ const state = {
   cardSelect: null,
   draftMode: 'fresh',
   devExample: null,
+  ratings: {},            // {labId: 1..5}, this browser only
+  ratingsApplied: '[]',   // ratingsKey() of the ratings the cards were last ranked with
+  share: false,           // "Share my ratings anonymously" (off on every visit)
+  rateSession: null,      // random id kept with the saved ratings while the answers stay the same
+  cardRows: [],           // the rows the cards show, in their order
+  sent: new Map(),        // labId -> stars the server has for this session (sharing on)
+  shareTimers: new Map(), // labId -> pending coalesce timer
+  shareChain: Promise.resolve(),
 };
 
 let resolveReady;
@@ -455,7 +470,7 @@ async function loadStatus() {
     if (!r.ok) return off;
     const s = await r.json();
     if (!s || typeof s.text_scoring !== 'boolean') return off;
-    return { on: s.text_scoring, reason: typeof s.reason === 'string' ? s.reason : '' };
+    return { on: s.text_scoring, reason: typeof s.reason === 'string' ? s.reason : '', ratings: s.ratings === true };
   } catch {
     return off;
   } finally {
@@ -463,13 +478,13 @@ async function loadStatus() {
   }
 }
 
-function fillModelNote() {
+function fillStrip() {
   const m = state.model;
   const n = m.labs.length;
   const v = m.labs.filter((l) => l && l.verified === true).length;
   const verified = v === 0 ? 'none verified yet' : v === n ? 'all verified' : `${v} verified`;
-  const note = $('lm-model-note');
-  note.textContent = [IS_LOCAL ? 'Local preview' : 'Preview', `model v${m.version}, built ${m.built}`,
+  const note = $('lm-strip-note');
+  note.textContent = [IS_LOCAL ? 'Local build' : 'Preview', `model v${m.version}, built ${m.built}`,
     `${n} labs, ${verified}`, `free-text scoring ${state.scoring.on ? 'on' : 'off'}`].join(' · ');
   note.title = state.scoring.on
     ? `Written answers are read by Claude Haiku through ${API_BASE ? 'the Lab Match API' : 'the local server'}.`
@@ -487,14 +502,21 @@ function errorCard(kind, err) {
   const detail = err && err.message ? err.message : err ? String(err) : '';
   const card = el('div', { class: 'card dashed lm-error', role: 'alert' },
     el('p', { class: 'label', text: 'lab match · couldn’t start' }));
-  card.append(
-    el('h2', { class: 'h3', text: kind === 'model' ? 'The lab data didn’t load.'
-      : kind === 'survey' ? 'The questions couldn’t be shown.' : 'Part of this page didn’t load.' }),
-    el('p', { text: 'Check your connection and reload the page. If it still won’t load, try again later.' }),
-    el('div', { class: 'cta-row' },
-      el('button', { type: 'button', class: 'pill sm', text: 'Reload Lab Match', onclick: () => location.reload() }),
-      el('a', { class: 'mono-link', href: 'projects.html', text: 'Back to projects' })),
-  );
+  if (kind === 'model') {
+    card.append(
+      el('h2', { class: 'h3', text: 'The lab data didn’t load.' }),
+      el('p', { text: 'This page reads data/model.json, which the Python side builds. From the project folder, run:' }),
+      el('pre', { class: 'lm-cmd' }, el('code', { text: 'python build_model.py --oracle 300\npython serve.py' })),
+      el('p', { text: 'Then open http://127.0.0.1:8000/match.html.' }),
+    );
+  } else {
+    card.append(
+      el('h2', { class: 'h3', text: kind === 'survey' ? 'The questions couldn’t be shown.' : 'Part of this page didn’t load.' }),
+      el('p', { text: 'Reload the page. If it keeps happening, start the preview from the project folder with:' }),
+      el('pre', { class: 'lm-cmd' }, el('code', { text: 'python serve.py' })),
+      el('p', { text: 'and open http://127.0.0.1:8000/match.html.' }),
+    );
+  }
   if (detail) card.append(el('p', { class: 'lm-error-detail', text: `Details: ${detail}` }));
   return card;
 }
@@ -506,7 +528,7 @@ function fail(kind, err) {
   $('lm-survey-section').hidden = false;
   $('lm-draft-line').hidden = true;
   $('lm-survey').replaceChildren(errorCard(kind, err));
-  $('lm-model-note').textContent = 'Preview · Lab Match couldn’t load';
+  if (kind === 'model') $('lm-strip-note').textContent = 'Local build · the lab data didn’t load';
   rejectReady(err instanceof Error ? err : new Error(String(err)));
 }
 
@@ -514,7 +536,7 @@ function fail(kind, err) {
 const DRAFT_TEXT = {
   fresh: 'Your answers are saved in this browser as you go (never your email or transcript).',
   restored: 'Welcome back: your answers saved in this browser are filled in (never your email or transcript).',
-  cleared: 'Removed your saved answers from this browser. Anything you change from now on is saved again.',
+  cleared: 'Removed your saved answers and star ratings from this browser. Anything you change from now on is saved again.',
   blocked: 'This browser isn’t letting the page save, so your answers last only until you leave.',
 };
 
@@ -560,6 +582,178 @@ function clearDraft() {
   }
 }
 
+// --------------------------------------------------------------------------------------- ratings
+const SESSION_KEY = 'cns-labmatch-rate-session-v1';   // {id, vec}: the shared-rating session for these answers
+const SHARE_NOTE = 'Sends only the stars, the lab, its place in your list and your answer profile. Never your email, written answers or transcript.';
+const SHARE_DELAY_MS = 600;       // coalesce quick changes (arrowing through the stars) into one request per lab
+const RETRY_429_MS = 61000;
+
+/** Ratings as a string that ignores key order: [[labId, stars], ...] sorted by lab id. */
+const ratingsKey = (r) => JSON.stringify(Object.keys(r).sort().map((k) => [k, r[k]]));
+const NO_RATINGS = ratingsKey({});
+
+function loadRatings() {
+  try {
+    const d = JSON.parse(localStorage.getItem(RATINGS_KEY) || '{}');
+    const out = {};
+    if (d && typeof d === 'object' && !Array.isArray(d)) {
+      for (const [k, v] of Object.entries(d)) if (Number.isInteger(v) && v >= 1 && v <= 5) out[k] = v;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+function saveRatings() {
+  try {
+    if (Object.keys(state.ratings).length) localStorage.setItem(RATINGS_KEY, JSON.stringify(state.ratings));
+    else localStorage.removeItem(RATINGS_KEY);
+  } catch {
+    /* storage blocked: ratings last until the page closes */
+  }
+}
+
+function newSessionId() {
+  const b = new Uint8Array(12);
+  crypto.getRandomValues(b);
+  return [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
+}
+
+/** The same random id while the answer vector is the same (so re-sharing replaces rows instead of adding a
+ *  second "student"); a new one when the answers change or the ratings are cleared. */
+function sessionFor(vector) {
+  const vec = JSON.stringify(vector);
+  try {
+    const d = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+    if (d && typeof d.id === 'string' && /^[0-9a-f]{24}$/.test(d.id) && d.vec === vec) return d.id;
+  } catch {
+    /* fall through */
+  }
+  const id = newSessionId();
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ id, vec }));
+  } catch {
+    /* storage blocked: the id lasts for this page */
+  }
+  return id;
+}
+
+function clearRatings() {
+  state.ratings = {};
+  state.ratingsApplied = NO_RATINGS;
+  state.share = false;
+  state.sent = new Map();
+  for (const t of state.shareTimers.values()) clearTimeout(t);
+  state.shareTimers = new Map();
+  saveRatings();
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch {
+    /* nothing saved */
+  }
+  state.rateSession = null;   // the next result gets a fresh id (sessionFor finds none saved)
+  const box = $('lm-share-box');
+  if (box) box.checked = false;
+  $('lm-share-note').textContent = SHARE_NOTE;
+  updateRateBar();
+}
+
+function ratingsChanged() {
+  return ratingsKey(state.ratings) !== state.ratingsApplied;
+}
+
+function updateRateBar(message) {
+  const bar = $('lm-rate-bar');
+  if (!bar) return;
+  const n = Object.keys(state.ratings).length;
+  bar.hidden = !state.results || (n === 0 && state.ratingsApplied === NO_RATINGS);
+  const changed = ratingsChanged();
+  $('lm-rate-apply').hidden = !changed;
+  $('lm-rate-count').textContent = message || (n === 0
+    ? 'You cleared your ratings. Update your ranking to undo their effect.'
+    : `You rated ${numberWord(n)} ${n === 1 ? 'lab' : 'labs'}.` +
+      (changed ? ' Update your ranking to use the new ratings.' : ' Your list is ranked with them.'));
+  const canShare = state.scoring.ratings === true;
+  $('lm-share').hidden = !canShare;
+  $('lm-share-note').hidden = !canShare;
+}
+
+function onRate(labId, stars) {
+  if (stars) state.ratings[labId] = stars;
+  else delete state.ratings[labId];
+  saveRatings();
+  updateRateBar();
+  queueShare(labId);
+}
+
+function applyRatingsNow() {
+  state.ratingsApplied = ratingsKey(state.ratings);
+  renderCards({ keepView: true });
+  const n = Object.keys(state.ratings).length;
+  const msg = n ? `Re-ranked with your ${numberWord(n)} ${n === 1 ? 'rating' : 'ratings'}.` : 'Your ranking no longer uses ratings.';
+  updateRateBar(msg);
+  setStatus(msg);   // #lm-status stays visible and announced even when the bar hides (no ratings left)
+  // the button just hid: keep keyboard focus on something stable instead of dropping it to <body>
+  const target = $('lm-rate-bar').hidden ? $('lm-results-title') : $('lm-rate-count');
+  target.focus({ preventScroll: true });
+}
+
+// Sharing: at most one pending request per lab (the latest value wins), sent one at a time, and only when
+// it differs from what the server already has for this session (undefined = nothing sent yet).
+function queueShare(labId) {
+  if (!state.share || state.scoring.ratings !== true || !state.results) return;
+  clearTimeout(state.shareTimers.get(labId));
+  state.shareTimers.set(labId, setTimeout(() => {
+    state.shareTimers.delete(labId);
+    state.shareChain = state.shareChain.then(() => shareNow(labId));
+  }, SHARE_DELAY_MS));
+}
+
+async function shareNow(labId, retried = false) {
+  if (!state.share || !state.results || !state.rateSession) return;
+  const stars = Object.hasOwn(state.ratings, labId) ? state.ratings[labId] : null;
+  const sent = state.sent.get(labId);
+  if (sent === stars || (sent === undefined && stars === null)) return;   // server already agrees
+  const shown = state.cardRows.filter((r) => !r.excluded);
+  const at = shown.findIndex((r) => r.id === labId);
+  const body = stars === null
+    ? { v: 1, session: state.rateSession, lab_id: labId, stars: null }
+    : { v: 1, model_version: String(state.model.version || ''), session: state.rateSession, lab_id: labId, stars,
+        rank: at >= 0 ? at + 1 : null, vector: state.results.vector };
+  const note = $('lm-share-note');
+  try {
+    const r = await fetch(apiUrl('api/rate'), {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body),
+    });
+    if (r.status === 429 && !retried) {
+      note.textContent = 'Sharing is busy; trying again in a minute. Your ratings are saved in this browser.';
+      setTimeout(() => { state.shareChain = state.shareChain.then(() => shareNow(labId, true)); }, RETRY_429_MS);
+      return;
+    }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    if (stars === null) state.sent.delete(labId);
+    else state.sent.set(labId, stars);
+    const n = state.sent.size;
+    note.textContent = `Shared anonymously: ${numberWord(n)} ${n === 1 ? 'rating' : 'ratings'}. Thank you.`;
+  } catch {
+    note.textContent = 'A rating couldn’t be shared just now. It is still saved in this browser.';
+  }
+}
+
+function onShareToggle(e) {
+  state.share = Boolean(e.target.checked);
+  if (!state.share) {
+    for (const t of state.shareTimers.values()) clearTimeout(t);
+    state.shareTimers = new Map();
+    $('lm-share-note').textContent = SHARE_NOTE;
+    return;
+  }
+  const labs = Object.keys(state.ratings);
+  if (!labs.length) $('lm-share-note').textContent = 'Your ratings will be shared anonymously as you make them.';
+  for (const labId of labs) state.shareChain = state.shareChain.then(() => shareNow(labId));
+}
+
 function onSurveyChange(answers) {
   if (!answers || typeof answers !== 'object') return;
   state.answers = answers;
@@ -579,6 +773,9 @@ function compute() {
     const r = state.matcher.computeResults(state.answers, state.model, state.textScores);
     if (!r || !r.ranks || !Array.isArray(r.ranks[3])) throw new Error('computeResults returned no ranking');
     state.results = r;
+    const prev = state.rateSession;
+    state.rateSession = sessionFor(r.vector);
+    if (state.rateSession !== prev) state.sent = new Map();
     return r;
   } catch (e) {
     console.error('[lab match] computeResults failed:', e);
@@ -589,7 +786,10 @@ function compute() {
 function renderCards({ keepView = false } = {}) {
   const r = state.results;
   if (!r) return;
-  const rows = r.ranks[3];
+  const applied = Object.fromEntries(JSON.parse(state.ratingsApplied));
+  const rows = Object.keys(applied).length && typeof state.matcher.applyRatings === 'function'
+    ? state.matcher.applyRatings(r.ranks[3], applied, state.model) : r.ranks[3];
+  state.cardRows = rows;
   const box = $('lm-matches');
   let limit = 5;
   let focusId = null;
@@ -599,7 +799,10 @@ function renderCards({ keepView = false } = {}) {
     const card = a && box.contains(a) ? a.closest('.lm-card') : null;
     focusId = card ? card.getAttribute('data-lab-id') : null;
   }
-  renderMatches(box, state.model, rows, { limit, onSelect: state.cubeFailed ? undefined : showInChart });
+  renderMatches(box, state.model, rows, {
+    limit, onSelect: state.cubeFailed ? undefined : showInChart, ratings: state.ratings, onRate,
+  });
+  updateRateBar();
   renderExcluded($('lm-excluded'), state.model, rows, r.vector);
   renderWritten($('lm-written'), r.textScores !== undefined ? r.textScores : state.textScores);
   if (focusId) {
@@ -631,6 +834,7 @@ async function submit(answers) {
   state.answers = answers;
   state.textScores = null;
   saveDraft(answers);
+  state.ratingsApplied = ratingsKey(state.ratings);   // a fresh result uses every saved rating
   if (!compute()) {
     $('lm-draft-text').textContent = 'Something went wrong while working out your matches. Reload the page and try again.';
     return;
@@ -754,7 +958,7 @@ const SCORE_ERRORS = {
   bad_request: 'The server couldn’t accept your written answers (one may be too long), so these matches use your structured answers only.',
 };
 const RETRYABLE = new Set(['offline', 'rate_limited', 'api_error', 'network', 'timeout']);
-const NETWORK_MSG = 'The scoring service didn’t answer, so these matches use your structured answers only.';
+const NETWORK_MSG = 'The local server didn’t answer, so these matches use your structured answers only.';
 const TIMEOUT_MSG = 'Reading your written answers took too long, so these matches use your structured answers only.';
 
 function cancelScoring() {
@@ -876,6 +1080,8 @@ function download() {
     types: typeShares(),
     results: state.results,
     textScores: state.textScores,
+    ratings: { ...state.ratings },
+    ranked_with_ratings: state.cardRows.filter((row) => !row.excluded).map((row) => row.id),
   };
   const url = URL.createObjectURL(new Blob([`${JSON.stringify(payload, null, 2)}\n`], { type: 'application/json' }));
   const a = el('a', { href: url, download: `lab-match-results-${today()}.json`, hidden: true });
@@ -895,6 +1101,7 @@ function startOver() {
   if (!ok) return;
   cancelScoring();
   clearDraft();
+  clearRatings();
   try {
     if (state.survey) state.survey.reset();
   } catch (e) {
@@ -925,11 +1132,15 @@ function wireActions() {
     else if (action === 'download') download();
     else if (action === 'start-over') startOver();
     else if (action === 'retry') scoreWrittenAnswers(state.answers);
+    else if (action === 'apply-ratings') applyRatingsNow();
     else if (action === 'clear-draft') {
       clearDraft();
+      clearRatings();
       setDraftMode('cleared');
     }
   });
+  const box = $('lm-share-box');
+  if (box) box.addEventListener('change', onShareToggle);
 }
 
 // ------------------------------------------------------------------------------------- dev panel
@@ -1059,13 +1270,6 @@ function mountDev() {
 // ------------------------------------------------------------------------------------------ start
 async function init() {
   setState('loading');
-  const header = $('site-head');
-  const measureHeader = () => {
-    document.documentElement.style.setProperty('--lm-head-clear', `${Math.ceil(header.getBoundingClientRect().height) + 16}px`);
-  };
-  measureHeader();
-  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(measureHeader).observe(header);
-  else window.addEventListener('resize', measureHeader);
   const statusP = loadStatus();
   let model;
   try {
@@ -1076,7 +1280,7 @@ async function init() {
   }
   state.model = model;
   state.scoring = await statusP;
-  fillModelNote();
+  fillStrip();
 
   const [mm, sm] = await Promise.all([mods.matcher, mods.survey]);
   if (!mm.ok || typeof mm.m.computeResults !== 'function') {
@@ -1104,11 +1308,13 @@ async function init() {
     return;
   }
   state.answers = draft;
+  state.ratings = loadRatings();
+  $('lm-share-note').textContent = SHARE_NOTE;
   setDraftMode(draft ? 'restored' : 'fresh');
   $('lm-draft-line').hidden = false;
 
   try {
-    renderHowItWorks($('lm-how'), model, { textScoring: state.scoring.on });
+    renderHowItWorks($('lm-how'), model, { textScoring: state.scoring.on, ratingsShared: state.scoring.ratings === true });
   } catch (e) {
     console.warn('[lab match] the FAQ failed to render:', e);
   }
