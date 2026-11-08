@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Lab Match (preview): answer about 20 questions and see what kind of researcher you are, which FSU neuroscience labs fit you right now, and why.">
+<meta name="author" content="Upi Shanker, Sebastian Ruiz">
+<meta name="robots" content="noindex">
+<!-- Where the page finds /api/status and /api/score-text. Empty = same origin (python serve.py).
+     export_site.py --api <Worker URL> fills this in for the deployed page. -->
+<meta name="lm-api-base" content="https://labmatch-api.compneurosociety.workers.dev/">
+<!-- GitHub Pages can't send security headers, so the policy lives here. export_site.py adds the Worker's
+     origin to connect-src. Style ATTRIBUTES are allowed (chart swatches set them); style sheets, scripts,
+     fonts and network calls are limited to this site, Google Fonts and cdnjs (pdf.js, only for a PDF). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' https://compneurosociety.com data: blob:; connect-src 'self' https://labmatch-api.compneurosociety.workers.dev; worker-src 'self' blob: https://cdnjs.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'none'">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="css/warm-lab.css" rel="stylesheet">
+<link href="css/match.css" rel="stylesheet">
+<link href="css/match-survey.css" rel="stylesheet">
+<link href="css/match-viz.css" rel="stylesheet">
+<link href="css/match-types.css" rel="stylesheet">
+<script src="js/theme.js"></script>
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+<title>Lab Match (preview) | CompNeuroSociety</title>
+<script type="module" src="js/match/app.js"></script>
+</head>
+<body data-lm-state="loading">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head" id="site-head">
+  <nav class="nav wrap" aria-label="Primary">
+    <a class="brand" href="index.html"><img src="images/logo.jpeg" alt="CompNeuroSociety at FSU logo" width="34" height="34"><b>CompNeuroSociety</b><span class="brand-tag">cns@fsu</span></a>
+    <div class="nav-links">
+      <a href="about.html">About</a>
+      <a href="events.html">Events</a>
+      <a href="projects.html">Projects</a>
+      <a class="active" href="match.html" aria-current="page">Lab match</a>
+      <a class="nav-join" href="join.html">Join</a>
+      <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch color theme"></button>
+    </div>
+  </nav>
+  <div class="strip"><div class="strip-inner wrap" id="lm-strip">
+    <span class="strip-label">PREVIEW</span><span class="strip-note" id="lm-strip-note">Local build · loading the lab data…</span>
+  </div></div>
+</header>
+
+<main class="wrap" id="main">
+
+  <section class="page-head lm-page-head" aria-labelledby="lm-title">
+    <p class="label">lab match · preview</p>
+    <h1 class="h1" id="lm-title">Find a lab that fits <span class="accent">how you think</span>.</h1>
+    <p class="lede">About 20 questions, 6 minutes. You'll see what kind of researcher you are, which FSU labs fit you right now, and why.</p>
+  </section>
+
+  <section class="lm-section lm-survey-section" id="lm-survey-section" tabindex="-1" aria-label="Questions">
+    <p class="lm-draft-line" id="lm-draft-line" hidden>
+      <span id="lm-draft-text" data-lm-draft-text>Your answers are saved in this browser as you go (never your email or transcript).</span>
+      <button type="button" class="mono-link lm-linkbtn" data-lm-action="clear-draft">Clear my saved answers</button>
+    </p>
+    <div id="lm-survey">
+      <p class="lm-loading" role="status">Loading the questions…</p>
+      <noscript><p class="lm-loading">Lab Match needs JavaScript to work out your matches in this browser.</p></noscript>
+    </div>
+  </section>
+
+  <section class="lm-section lm-results" id="lm-results" aria-labelledby="lm-results-title" hidden>
+    <div class="lm-results-head">
+      <p class="label">your results</p>
+      <h2 class="h2" id="lm-results-title" tabindex="-1">Here’s where you fit.</h2>
+      <div class="lm-status-row">
+        <p class="lm-status" id="lm-status" role="status" aria-live="polite"></p>
+        <button type="button" class="mono-link teal lm-linkbtn" id="lm-retry" data-lm-action="retry" hidden>Try again</button>
+      </div>
+    </div>
+    <div class="lm-block lm-chart" id="lm-types"></div>
+    <div class="lm-block lm-chart" id="lm-cube"></div>
+    <div class="lm-block" id="lm-matches"></div>
+    <div class="lm-excluded" id="lm-excluded" hidden></div>
+    <div class="lm-block" id="lm-written" hidden></div>
+    <div class="lm-block" id="lm-how"></div>
+    <div class="band lm-actions" id="lm-actions">
+      <div>
+        <p class="label">what next</p>
+        <p class="headline">Keep this, change it, or start fresh.</p>
+        <p class="sub">The download is a file on your device, without your email or transcript.</p>
+      </div>
+      <div class="lm-actions-row">
+        <button type="button" class="pill sm" data-lm-action="edit">Edit my answers</button>
+        <button type="button" class="lm-ghost" data-lm-action="download">Download my results</button>
+        <button type="button" class="lm-ghost" data-lm-action="start-over">Start over</button>
+      </div>
+    </div>
+  </section>
+
+  <aside class="lm-dev" id="lm-dev" aria-labelledby="lm-dev-title" hidden></aside>
+
+</main>
+
+<footer class="footer"><div class="footer-inner wrap">
+  <div class="footer-gbm">See you at the next GBM</div>
+  <div class="footer-links">
+    <a data-link="instagram" href="https://www.instagram.com/compneurosocietyfsu/" target="_blank" rel="noopener">Instagram</a>
+    <a data-link="linkedin" href="https://linkedin.com/company/compneurosociety-at-fsu" target="_blank" rel="noopener">LinkedIn</a>
+    <a data-link="discord" href="https://discord.gg/sfm2RPd3gH" target="_blank" rel="noopener">Discord</a>
+    <a class="dim" href="people.html">People</a>
+    <a class="dim" href="sponsors.html">Sponsors</a>
+    <a class="dim" href="chapters.html">Chapters</a>
+    <a class="dim" data-link="contactForm" href="https://docs.google.com/forms/d/e/1FAIpQLScl6mZQyUl-RaMnC2vbm66aq9_yOaN-d0mZLhUlyMYOliZvEw/viewform" target="_blank" rel="noopener">Contact</a>
+    <span class="footer-copy">(c) 2026 CompNeuroSociety</span>
+  </div>
+</div></footer>
+</body>
+</html>

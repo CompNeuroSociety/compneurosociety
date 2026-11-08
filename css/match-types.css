@@ -1,0 +1,171 @@
+/* match-types.css: viz 2, "what kind of researcher you are" (owner: viz-types).
+   Tokens only. The three colors (this student's top three types, in rank order) come from the shared
+   viz palette (--viz-1..3, defined in match-viz.css); the fallbacks below are the same validated
+   values from site/README.md, so the chart still works if match-viz.css is missing. Every other type
+   is neutral: --lm-types-ctx for the faint cloud dots, --lm-types-ctx-mark (--faint, >= 3:1 on --bg)
+   for prototype markers, swatches and meters. */
+
+.lm-types {
+  --lm-types-c1: var(--viz-1, #B23A60);
+  --lm-types-c2: var(--viz-2, #B6862C);
+  --lm-types-c3: var(--viz-3, #0f6fa8);
+  --lm-types-ctx: var(--viz-context, var(--neuron-rest));
+  --lm-types-ctx-mark: var(--faint);
+  color: var(--ink);
+}
+:root[data-theme="dark"] .lm-types {
+  --lm-types-c1: var(--viz-1, #D5718C);
+  --lm-types-c2: var(--viz-2, #B6862C);
+  --lm-types-c3: var(--viz-3, #379ed6);
+}
+
+.lm-types-label { margin-bottom: 14px; }
+.lm-types-headline { margin: 0; max-width: 32ch; font-size: clamp(22px, 2.2vw, 28px); }
+.lm-types-jobs { margin: 10px 0 0; max-width: 62ch; font-size: 17px; line-height: 1.6; color: var(--ink); }
+.lm-types-jobs[hidden] { display: none; }
+.lm-types-note { margin: 10px 0 28px; max-width: 70ch; font-size: 15px; line-height: 1.6; color: var(--muted); }
+
+.lm-types-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+/* ------------------------------------------------------------------ chart */
+.lm-types-chart { min-width: 0; }
+.lm-types-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  max-height: 560px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.lm-types-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  border-radius: 8px;
+}
+.lm-types-canvas.is-dragging { cursor: grabbing; }
+
+.lm-types-tip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  max-width: 260px;
+  padding: 9px 12px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--rule-dark);
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.lm-types-tip[hidden] { display: none; }
+.lm-types-tip-title { font-weight: 700; color: var(--ink); }
+.lm-types-tip-text { color: var(--muted); }
+.lm-types-tip-meta { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+.lm-types-tip-row { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); }
+.lm-types-tip-val { font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.lm-types-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 12px;
+}
+.lm-types-hint { margin: 0; font-family: var(--mono); font-size: 12px; line-height: 1.55; color: var(--faint); max-width: 62ch; }
+.lm-types-reset {
+  flex: none;
+  min-height: 44px;
+  padding: 0 16px;
+  font: 600 13px var(--sans);
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--rule-dark);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.lm-types-reset:hover { border-color: var(--teal); color: var(--teal); }
+
+.lm-types-axes {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.lm-types-axis-n { font-family: var(--mono); font-size: 12px; color: var(--ink); }
+
+/* ------------------------------------------------------------------ membership panel (legend + table view) */
+.lm-types-panel { min-width: 0; }
+.lm-types-panel-label, .lm-types-sub { margin: 0 0 6px; font-family: var(--mono); font-size: 12px; color: var(--faint); }
+.lm-types-sub { margin: 26px 0 2px; }
+.lm-types-sub[hidden], .lm-types-rows[hidden] { display: none; }
+.lm-types-rows { list-style: none; margin: 0; padding: 0; }
+.lm-types-row {
+  position: relative;
+  padding: 12px 0 14px;
+  border-bottom: 1px solid var(--line);
+  outline-offset: 4px;
+  cursor: default;
+  transition: background-color .15s ease, box-shadow .15s ease;
+}
+.lm-types-row:first-child { padding-top: 8px; }
+/* highlight: the panel tint bleeds 8px past the text on both sides, without moving the row rules */
+.lm-types-row.is-focus, .lm-types-row.is-mapped, .lm-types-row:hover {
+  background: var(--panel2);
+  box-shadow: -8px 0 0 var(--panel2), 8px 0 0 var(--panel2);
+}
+.lm-types-row-head { display: flex; align-items: center; gap: 10px; }
+.lm-types-swatch { flex: none; overflow: visible; }
+.lm-types-name { flex: 1 1 auto; min-width: 0; font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+.lm-types-pct { flex: none; font-family: var(--mono); font-size: 16px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.lm-types-meter { height: 4px; margin: 10px 0 10px 26px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.lm-types-meter-fill { display: block; height: 100%; width: 0; border-radius: 2px; transition: width .5s ease; }
+.lm-types-blurb { margin: 0 0 0 26px; font-size: 14px; line-height: 1.55; color: var(--muted); }
+.lm-types-leads { margin: 6px 0 0 26px; font-size: 13px; line-height: 1.5; color: var(--faint); }
+.lm-types-row:not(.is-compact) .lm-types-leads { color: var(--muted); }
+
+/* compact rows: the types outside this student's top three */
+.lm-types-row.is-compact { padding: 9px 0 10px; }
+.lm-types-row.is-compact:first-child { padding-top: 8px; }
+.lm-types-row.is-compact .lm-types-name { font-size: 15px; font-weight: 600; color: var(--muted); }
+.lm-types-row.is-compact .lm-types-pct { font-size: 14px; font-weight: 400; color: var(--muted); }
+.lm-types-row.is-compact .lm-types-meter { height: 3px; margin: 7px 0 6px 26px; }
+.lm-types-row.is-compact .lm-types-leads { margin-top: 0; font-size: 12px; }
+
+/* ------------------------------------------------------------------ breakpoints */
+@media (max-width: 1280px) {
+  .lm-types-grid { gap: 32px; grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr); }
+}
+@media (max-width: 900px) {
+  .lm-types-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .lm-types-stage { aspect-ratio: 3 / 2; max-height: 520px; }
+}
+@media (max-width: 600px) {
+  .lm-types-stage { aspect-ratio: 1 / 1; max-height: none; }   /* room above/below for label columns */
+  .lm-types-toolbar { flex-direction: column; align-items: stretch; }
+  .lm-types-reset { align-self: flex-start; }
+  .lm-types-note { margin-bottom: 22px; }
+  .lm-types-name { font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lm-types-meter-fill, .lm-types-row { transition: none; }
+}
