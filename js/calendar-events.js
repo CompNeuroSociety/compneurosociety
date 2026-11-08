@@ -3,6 +3,7 @@
 // hard-coded EVENTS in site-data.js by js/site.js (hard-coded wins).
 export const CALENDAR_EVENTS = [
   {"title": "GBM 4", "date": "2026-12-03T18:30", "location": "Psychology Department Building, Psychology Dept Bldg, 1107 W Call St, Tallahassee, FL 32304, USA", "blurb": "A204", "image": "images/placeholder.jpg"},
+  {"title": "Workshop 7: Simulating The Spike", "date": "2026-11-09T18:30", "location": "TBA", "blurb": "", "image": "images/placeholder.jpg"},
   {"title": "Workshop 5: Import and File Management", "date": "2026-10-28T18:30", "location": "TBA", "blurb": "", "image": "images/placeholder.jpg"},
   {"title": "Workshop 4 - Python Basics: Functions and Plotting", "date": "2026-10-05T18:30", "location": "PDB A204", "blurb": "", "image": "images/placeholder.jpg"},
   {"title": "Collab Workshop - Why you should land a research internship!", "date": "2026-10-01T18:30", "location": "Bellamy Building, Bellamy Bldg Room 0004, Tallahassee, FL 32304, USA", "blurb": "BEL 0004", "image": "images/placeholder.jpg"},
