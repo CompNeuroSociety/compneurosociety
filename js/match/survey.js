@@ -1,7 +1,7 @@
 // survey.js: the Lab Match survey wizard, rendered entirely from the questions data
 // (model.questions, same shape as questions.json). One step per section.
 //
-// createSurvey(root, questions, { initialAnswers, onSubmit, onChange, textScoringNote })
+// createSurvey(root, questions, { initialAnswers, onSubmit, onChange, textScoringNote, emailNote, emailPrompt })
 //   -> { getAnswers(), setAnswers(a), goTo(i), stepCount, reset(), destroy() }
 //
 // Answers follow the README "Answers object". Unanswered fields are omitted. The transcript is kept
@@ -11,6 +11,10 @@
 import { parseTranscriptFile, parseTranscriptText, suggestMath } from './transcript.js';
 
 let instances = 0;
+
+// Under the email box when the page doesn't pass emailNote (it does: the text depends on api/status).
+// emailPrompt, when passed, replaces the email question's label for the same reason.
+const EMAIL_NOTE_OFF = 'Emailing your matches is off in this preview, so nothing is sent and your address isn’t stored.';
 
 const MSG = {
   one: 'Choose one.',
@@ -314,7 +318,8 @@ function textCtrl(q, uid, ctx) {
   const { wrap, err, errId } = baseShell(q, uid, false);
   const id = `${uid}-in-${q.id}`;
   const describe = [];
-  const label = h('label', { class: 'lm-prompt', for: id, text: q.prompt || '' });
+  const prompt = q.type === 'email_fsu' && ctx.emailPrompt ? ctx.emailPrompt : q.prompt;
+  const label = h('label', { class: 'lm-prompt', for: id, text: prompt || '' });
   let input;
   let counter = null;
   let note = null;
@@ -330,7 +335,7 @@ function textCtrl(q, uid, ctx) {
     wrap.append(label, err, input, h('div', { class: 'lm-under' }, note || h('span'), counter));
   } else if (q.type === 'email_fsu') {
     input = h('input', { id, class: 'lm-input', type: 'email', autocomplete: 'email', inputmode: 'email', spellcheck: 'false', maxlength: 120 });
-    note = h('p', { class: 'lm-note', id: `${id}-note`, text: 'Preview: nothing is emailed or stored.' });
+    note = h('p', { class: 'lm-note', id: `${id}-note`, text: ctx.emailNote || EMAIL_NOTE_OFF });
     describe.push(note.id);
     wrap.append(label, err, input, note);
   } else {
@@ -554,7 +559,7 @@ function makeCtrl(q, uid, ctx) {
 // ------------------------------------------------------------------------------------------ wizard
 export function createSurvey(root, questions, opts = {}) {
   if (!root) throw new Error('createSurvey: no root element');
-  const { initialAnswers = {}, onSubmit, onChange, textScoringNote = '' } = opts || {};
+  const { initialAnswers = {}, onSubmit, onChange, textScoringNote = '', emailNote = '' } = opts || {};
   const sections = questions && Array.isArray(questions.sections) ? questions.sections : [];
   if (!sections.length) throw new Error('createSurvey: questions.sections is empty');
 
@@ -567,6 +572,7 @@ export function createSurvey(root, questions, opts = {}) {
 
   const ctx = {
     textScoringNote: typeof textScoringNote === 'string' ? textScoringNote : '',
+    emailNote: typeof emailNote === 'string' ? emailNote : '',
     getAnswer: (qid) => (byId.has(qid) ? byId.get(qid).get() : undefined),
     setAnswer: (qid, v) => { if (byId.has(qid)) { byId.get(qid).set(v); recheck(byId.get(qid)); } },
     hasQuestion: (qid) => byId.has(qid),

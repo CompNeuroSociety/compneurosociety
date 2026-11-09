@@ -6,8 +6,8 @@
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#ffffff">
 <meta name="description" content="Lab Match (preview): answer about 20 questions and see what kind of researcher you are, which FSU neuroscience labs fit you right now, and why.">
-<meta name="author" content="Upi Shanker, Sebastian Ruiz">
-<!-- Where the page finds /api/status and /api/score-text. Empty = same origin (python serve.py).
+<meta name="author" content="Sebastian Ruiz">
+<!-- Where the page finds /api/status, /api/score-text, /api/rate and /api/email-results. Empty = same origin (python serve.py).
      export_site.py --api <Worker URL> fills this in for the deployed page. -->
 <meta name="lm-api-base" content="https://labmatch-api.compneurosociety.workers.dev/">
 <!-- GitHub Pages can't send security headers, so the policy lives here. export_site.py adds the Worker's
@@ -96,8 +96,11 @@
       <div class="lm-actions-row">
         <button type="button" class="pill sm" data-lm-action="edit">Edit my answers</button>
         <button type="button" class="lm-ghost" data-lm-action="download">Download my results</button>
+        <!-- shown only when api/status says emailing is set up and the student typed an FSU address -->
+        <button type="button" class="lm-ghost" id="lm-email-btn" data-lm-action="email" hidden>Email me my matches</button>
         <button type="button" class="lm-ghost" data-lm-action="start-over">Start over</button>
       </div>
+      <p class="lm-status lm-email-note" id="lm-email-note" role="status" aria-live="polite"></p>
     </div>
   </section>
 

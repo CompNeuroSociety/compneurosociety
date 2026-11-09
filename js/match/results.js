@@ -453,12 +453,14 @@ function ratioWords(r) {
 
 /**
  * The FAQ, built from model numbers. opts.textScoring (true/false) makes the privacy and AI answers
- * exact for this session; when it is not given they describe both cases.
+ * exact for this session; when it is not given they describe both cases. opts.emailOn: api/status said
+ * emailing is set up, so the privacy answer explains "Email me my matches" instead of saying it is off.
  */
 export function renderHowItWorks(container, model, opts = {}) {
   if (!container || !model) return;
   const scoring = typeof opts.textScoring === 'boolean' ? opts.textScoring : null;
   const sharing = opts.ratingsShared === true;
+  const emailOn = opts.emailOn === true;
   const labs = Array.isArray(model.labs) ? model.labs : [];
   const nLabs = labs.length;
   const lenses = lensList(model);
@@ -582,11 +584,22 @@ export function renderHowItWorks(container, model, opts = {}) {
   ));
 
   // 4. What happens to my answers
+  const unless = emailOn
+    ? 'unless you choose to share your star ratings or press “Email me my matches”.'
+    : 'unless you choose to share your star ratings.';
   const sent = scoring === true
-    ? `Your ${writtenWord} are sent to Claude Haiku (Anthropic) only to read your interests. Nothing else you enter leaves this page, unless you choose to share your star ratings.`
+    ? `Your ${writtenWord} are sent to Claude Haiku (Anthropic) only to read your interests. Nothing else you enter leaves this page, ${unless}`
     : scoring === false
-      ? `Written-answer scoring is off in this preview, so your ${writtenWord} stay on this page too. Nothing you enter leaves this page, unless you choose to share your star ratings.`
-      : `When written-answer scoring is on, your ${writtenWord} are sent to Claude Haiku (Anthropic) only to read your interests. Nothing else you enter leaves this page, unless you choose to share your star ratings.`;
+      ? `Written-answer scoring is off in this preview, so your ${writtenWord} stay on this page too. Nothing you enter leaves this page, ${unless}`
+      : `When written-answer scoring is on, your ${writtenWord} are sent to Claude Haiku (Anthropic) only to read your interests. Nothing else you enter leaves this page, ${unless}`;
+  const emailText = emailOn
+    ? 'Your email is sent only if you press “Email me my matches” on your results. Then the Lab Match server gets your ' +
+      'address and the IDs of your top five labs and your top researcher type (nothing else you entered), writes one email from its ' +
+      'own lab details and sends it to you through Resend, the email service it uses. Lab Match doesn’t store or log the ' +
+      'address; Resend keeps a delivery log, which includes it, for a limited time. ' +
+      'To stop repeat sends, the server counts each day’s emails with a one-way code made from the address and the date, ' +
+      'not the address itself.'
+    : 'Emailing your matches is off in this preview, so your email is not sent or stored.';
   faq.append(faqItem('What happens to my answers?',
     el('p', {
       text: 'Your answers stay in this browser. While you work they are saved in this browser’s storage so you can come back later; ' +
@@ -594,8 +607,9 @@ export function renderHowItWorks(container, model, opts = {}) {
     }),
     el('p', {
       text: 'If you add a transcript, it is read inside your browser. Only course codes and titles are kept; grades, your name and ' +
-        'ID numbers are dropped, and the transcript is never sent anywhere. Your email is not sent or stored, and nothing is emailed in this preview.',
+        'ID numbers are dropped, and the transcript is never sent anywhere.',
     }),
+    el('p', { text: emailText }),
     el('p', { text: sent }),
     el('p', {
       text: '“Download my results” saves a file to your device; there is no copy on a server. Star ratings stay in this browser ' +
