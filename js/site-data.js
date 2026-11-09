@@ -32,7 +32,7 @@ export const LINKS = {
   discord: "https://discord.gg/sfm2RPd3gH",
   hq: "https://hq.fsu.edu/compneurosociety",
   calendar: "https://calendar.google.com/calendar/embed?src=compneurosociety%40gmail.com&ctz=America%2FNew_York",
-  email: "compneurosociety@outlook.com",
+  email: "contact@compneurosociety.com",
   constitution: "constitution.pdf",
   chaptersPage: "chapters.html",
 };

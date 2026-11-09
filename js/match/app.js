@@ -507,24 +507,24 @@ function fillStrip() {
 function scoringNote() {
   const n = questions(state.model).filter((q) => q.type === 'free_text').length || 3;
   return state.scoring.on
-    ? `Your ${numberWord(n)} written answers are sent to Claude Haiku (Anthropic) only to read your interests; nothing else you enter leaves this page.`
-    : 'Written-answer scoring is off in this preview, so these answers stay on this page.';
+    ? `Your ${numberWord(n)} written answers go to Claude Haiku (Anthropic) only to read your interests. Nothing else leaves this page.`
+    : 'Written-answer scoring is off in this preview. Your answers stay on this page.';
 }
 
 // Lab Match itself keeps no copy of the address, but Resend's delivery log does for a while, so the "on"
 // text says exactly that (the same wording as the email's footer and worker/README.md).
 function emailNote() {
   return state.scoring.email === true
-    ? 'Used only to send you your matches: tick the box to get them as soon as they’re ready, or send them from ' +
-      'your results. Lab Match doesn’t keep it; Resend, the mail service, keeps a delivery log for a limited time.'
-    : 'Emailing your matches is off in this preview, so nothing is sent and your address isn’t stored.';
+    ? 'Only used to email your matches: tick the box, or send them from your results. ' +
+      'Lab Match doesn’t keep it; Resend, our mail service, keeps a delivery log for a while.'
+    : 'Emailing your matches is off in this preview, so nothing is sent. Your address isn’t stored.';
 }
 
 // The email question's label. It comes from here, not questions.json, so it can't offer to send the matches
 // while emailing is off (the default until the Worker has a Resend key, and always on serve.py).
 function emailPrompt() {
   return state.scoring.email === true
-    ? 'Your email (optional; only used if you choose to email yourself your matches)'
+    ? 'Your email (optional; only to email yourself your matches)'
     : 'Your email (optional)';
 }
 
@@ -535,14 +535,14 @@ function errorCard(kind, err) {
   if (kind === 'model') {
     card.append(
       el('h2', { class: 'h3', text: 'The lab data didn’t load.' }),
-      el('p', { text: 'This page reads data/model.json, which the Python side builds. From the project folder, run:' }),
+      el('p', { text: 'Build the lab data first. From the project folder, run:' }),
       el('pre', { class: 'lm-cmd' }, el('code', { text: 'python build_model.py --oracle 300\npython serve.py' })),
       el('p', { text: 'Then open http://127.0.0.1:8000/match.html.' }),
     );
   } else {
     card.append(
       el('h2', { class: 'h3', text: kind === 'survey' ? 'The questions couldn’t be shown.' : 'Part of this page didn’t load.' }),
-      el('p', { text: 'Reload the page. If it keeps happening, start the preview from the project folder with:' }),
+      el('p', { text: 'Reload the page. If it still fails, run this from the project folder:' }),
       el('pre', { class: 'lm-cmd' }, el('code', { text: 'python serve.py' })),
       el('p', { text: 'and open http://127.0.0.1:8000/match.html.' }),
     );
@@ -558,16 +558,16 @@ function fail(kind, err) {
   $('lm-survey-section').hidden = false;
   $('lm-draft-line').hidden = true;
   $('lm-survey').replaceChildren(errorCard(kind, err));
-  if (kind === 'model') $('lm-strip-note').textContent = 'Local build · the lab data didn’t load';
+  if (kind === 'model') $('lm-strip-note').textContent = 'Local build · no lab data';
   rejectReady(err instanceof Error ? err : new Error(String(err)));
 }
 
 // ----------------------------------------------------------------------------------------- draft
 const DRAFT_TEXT = {
-  fresh: 'Your answers are saved in this browser as you go (never your email or transcript).',
-  restored: 'Welcome back: your answers saved in this browser are filled in (never your email or transcript).',
-  cleared: 'Removed your saved answers and star ratings from this browser. Anything you change from now on is saved again.',
-  blocked: 'This browser isn’t letting the page save, so your answers last only until you leave.',
+  fresh: 'Answers save in this browser as you go. Never your email or transcript.',
+  restored: 'Welcome back. Saved answers are filled in. Email and transcript are never saved.',
+  cleared: 'Saved answers and ratings removed. Changes save again from now on.',
+  blocked: 'This browser won’t save your answers. They last until you leave the page.',
 };
 
 function setDraftMode(mode) {
@@ -614,7 +614,7 @@ function clearDraft() {
 
 // --------------------------------------------------------------------------------------- ratings
 const SESSION_KEY = 'cns-labmatch-rate-session-v1';   // {id, vec}: the shared-rating session for these answers
-const SHARE_NOTE = 'Sends only the stars, the lab, its place in your list and your answer profile. Never your email, written answers or transcript.';
+const SHARE_NOTE = 'Sends only your stars, the lab, its rank and your answer profile. Never your email, written answers or transcript.';
 const SHARE_DELAY_MS = 600;       // coalesce quick changes (arrowing through the stars) into one request per lab
 const RETRY_429_MS = 61000;
 
@@ -701,9 +701,9 @@ function updateRateBar(message) {
   const changed = ratingsChanged();
   $('lm-rate-apply').hidden = !changed;
   $('lm-rate-count').textContent = message || (n === 0
-    ? 'You cleared your ratings. Update your ranking to undo their effect.'
+    ? 'Ratings cleared. Update your ranking to undo them.'
     : `You rated ${numberWord(n)} ${n === 1 ? 'lab' : 'labs'}.` +
-      (changed ? ' Update your ranking to use the new ratings.' : ' Your list is ranked with them.'));
+      (changed ? ' Update your ranking to apply them.' : ' Your list uses them.'));
   const canShare = state.scoring.ratings === true;
   $('lm-share').hidden = !canShare;
   $('lm-share-note').hidden = !canShare;
@@ -757,7 +757,7 @@ async function shareNow(labId, retried = false) {
       method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body),
     });
     if (r.status === 429 && !retried) {
-      note.textContent = 'Sharing is busy; trying again in a minute. Your ratings are saved in this browser.';
+      note.textContent = 'Sharing is busy. Trying again in a minute. Ratings stay saved in this browser.';
       setTimeout(() => { state.shareChain = state.shareChain.then(() => shareNow(labId, true)); }, RETRY_429_MS);
       return;
     }
@@ -767,7 +767,7 @@ async function shareNow(labId, retried = false) {
     const n = state.sent.size;
     note.textContent = `Shared anonymously: ${numberWord(n)} ${n === 1 ? 'rating' : 'ratings'}. Thank you.`;
   } catch {
-    note.textContent = 'A rating couldn’t be shared just now. It is still saved in this browser.';
+    note.textContent = 'A rating couldn’t be shared. It’s still saved in this browser.';
   }
 }
 
@@ -780,7 +780,7 @@ function onShareToggle(e) {
     return;
   }
   const labs = Object.keys(state.ratings);
-  if (!labs.length) $('lm-share-note').textContent = 'Your ratings will be shared anonymously as you make them.';
+  if (!labs.length) $('lm-share-note').textContent = 'Ratings will be shared anonymously as you make them.';
   for (const labId of labs) state.shareChain = state.shareChain.then(() => shareNow(labId));
 }
 
@@ -902,7 +902,7 @@ function chartFailed(which, err) {
   const mount = $(which === 'types' ? 'lm-types' : 'lm-cube');
   mount.replaceChildren(
     el('p', { class: 'label', text: CHART_LABELS[which] }),
-    el('p', { class: 'lm-chart-error', text: 'This chart didn’t load, so it’s skipped. Your matches below don’t depend on it.' }),
+    el('p', { class: 'lm-chart-error', text: 'This chart didn’t load. Your matches below still work.' }),
   );
   if (DEV && err) mount.append(el('p', { class: 'lm-error-detail', text: String((err && err.message) || err) }));
   if (which === 'cube' && !state.cubeFailed) {
@@ -987,16 +987,16 @@ function showInChart(labId) {
 
 // ---------------------------------------------------------------------------- written-answer scores
 const SCORE_ERRORS = {
-  no_key: 'Written-answer scoring isn’t set up on this server (no API key), so these matches use your structured answers only.',
-  no_sdk: 'The server is missing the anthropic package, so these matches use your structured answers only.',
-  offline: 'The server couldn’t reach Claude, so these matches use your structured answers only.',
-  rate_limited: 'Too many requests right now, so these matches use your structured answers only; try again in a minute.',
-  api_error: 'Claude returned an error while reading your answers, so these matches use your structured answers only.',
-  bad_request: 'The server couldn’t accept your written answers (one may be too long), so these matches use your structured answers only.',
+  no_key: 'Written-answer scoring isn’t set up on this server. Using structured answers only.',
+  no_sdk: 'The server is missing a package. Using structured answers only.',
+  offline: 'The server couldn’t reach Claude. Using structured answers only.',
+  rate_limited: 'Too many requests right now. Using structured answers only. Try again in a minute.',
+  api_error: 'Claude hit an error reading your answers. Using structured answers only.',
+  bad_request: 'The server couldn’t accept your written answers (one may be too long). Using structured answers only.',
 };
 const RETRYABLE = new Set(['offline', 'rate_limited', 'api_error', 'network', 'timeout']);
-const NETWORK_MSG = 'The local server didn’t answer, so these matches use your structured answers only.';
-const TIMEOUT_MSG = 'Reading your written answers took too long, so these matches use your structured answers only.';
+const NETWORK_MSG = 'The server didn’t answer. Using structured answers only.';
+const TIMEOUT_MSG = 'Reading your written answers took too long. Using structured answers only.';
 
 function cancelScoring() {
   state.scoreSeq += 1;
@@ -1019,12 +1019,12 @@ function writtenPayload(answers) {
 
 async function scoreWrittenAnswers(answers) {
   if (!state.scoring.on) {
-    setStatus('These matches use your structured answers only; written-answer scoring is off in this preview.');
+    setStatus('Using structured answers only. Written-answer scoring is off in this preview.');
     return;
   }
   const payload = writtenPayload(answers);
   if (!payload) {
-    setStatus('These matches use your structured answers only, since the written questions were left blank.');
+    setStatus('Using structured answers only. The written questions were left blank.');
     return;
   }
   cancelScoring();
@@ -1060,19 +1060,19 @@ async function scoreWrittenAnswers(answers) {
   if (!res.ok) {
     const code = data && typeof data.code === 'string' ? data.code : '';
     setStatus(Object.hasOwn(SCORE_ERRORS, code) ? SCORE_ERRORS[code]
-      : `The server answered HTTP ${res.status}, so these matches use your structured answers only.`, { retry: RETRYABLE.has(code) });
+      : `Server error (HTTP ${res.status}). Using structured answers only.`, { retry: RETRYABLE.has(code) });
     return;
   }
   const scores = data && data.scores;
   if (!scores || typeof scores !== 'object') {
-    setStatus('Your written answers didn’t give a clear signal, so these matches use your structured answers only.');
+    setStatus('Written answers gave no clear signal. Using structured answers only.');
     return;
   }
   state.textScores = scores;
   if (!compute()) {
     state.textScores = null;
     compute();
-    setStatus('Your written answers came back in a shape this page can’t use, so these matches use your structured answers only.');
+    setStatus('Written answers couldn’t be used. Using structured answers only.');
     return;
   }
   renderCards({ keepView: true });
@@ -1087,22 +1087,21 @@ async function scoreWrittenAnswers(answers) {
 const EMAIL_RE = /^[a-z0-9._%+-]{1,64}@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/i;   // = the Worker's PLAIN_EMAIL
 const EMAIL_MAX = 120;
 const EMAIL_LABS = 5;
-const EMAIL_INVALID = 'Lab Match can email only a plain address like name@example.com (letters, numbers and . _ % + -), ' +
-  'so check the one above and try again.';
+const EMAIL_INVALID = 'Use a plain address like name@example.com (letters, numbers and . _ % + -).';
 const EMAIL_ERRORS = {
-  rate_limited: 'Lab Match has sent as many emails as it can for now (to this address or from your network). ' +
-    'Try again later, or download your results instead.',
-  no_email: 'Emailing isn’t available right now, so nothing was sent. You can still download your results.',
-  send_failed: 'The email service didn’t take the message just now, so it probably wasn’t sent. ' +
-    'Try again in a minute, or download your results instead.',
+  rate_limited: 'Lab Match has sent as many emails as it can for now (to this address or your network). ' +
+    'Try again later or download your results.',
+  no_email: 'Emailing isn’t available right now. Nothing was sent. You can still download your results.',
+  send_failed: 'The email service didn’t take the message, so it probably wasn’t sent. ' +
+    'Try again in a minute, or download your results.',
   // The address can't cause this (emailAddress() runs the Worker's own check), so a 400 means the lab or type
   // IDs are ones the server doesn't know: the page's model.json was updated before the Worker, or vice versa.
-  bad_request: 'This page and the Lab Match server are out of step (one was updated before the other), so nothing ' +
-    'was sent. Reload the page and try again later, or download your results instead.',
-  forbidden: 'This copy of the page isn’t allowed to send email, so nothing was sent.',
+  bad_request: 'The page and the server are out of step, so nothing was sent. ' +
+    'Reload the page, or download your results.',
+  forbidden: 'This page isn’t allowed to send email. Nothing was sent.',
 };
-const EMAIL_NETWORK_MSG = 'The Lab Match server didn’t answer, so your email may not have been sent. Check your connection and try again.';
-const EMAIL_TIMEOUT_MSG = 'Sending took too long, so your email may not have been sent. Check your inbox in a few minutes before trying again.';
+const EMAIL_NETWORK_MSG = 'The server didn’t answer, so your email may not have been sent. Check your connection and try again.';
+const EMAIL_TIMEOUT_MSG = 'Sending took too long, so your email may not have been sent. Check your inbox in a few minutes first.';
 
 /** What's in the results page's email box (filled in from the survey answer), trimmed and lowercased. */
 function emailTyped() {
@@ -1206,12 +1205,12 @@ async function sendEmail() {
     msg = failure === 'timeout' ? EMAIL_TIMEOUT_MSG : EMAIL_NETWORK_MSG;
   } else if (res.ok && data && data.ok === true) {
     state.emailSentKey = key;
-    msg = `Sent to ${body.email}. It should arrive within a few minutes; if it doesn’t, check your Junk or Clutter folder. ` +
+    msg = `Sent to ${body.email}. It should arrive in a few minutes. If not, check Junk or Clutter. ` +
       'Lab Match doesn’t keep your address.';
   } else {
     const code = data && typeof data.code === 'string' ? data.code : res.status === 429 ? 'rate_limited' : '';
     msg = Object.hasOwn(EMAIL_ERRORS, code) ? EMAIL_ERRORS[code]
-      : `The server answered HTTP ${res.status}, so your email probably wasn’t sent. Try again later, or download your results instead.`;
+      : `Server error (HTTP ${res.status}). Your email probably wasn’t sent. Try again later or download your results.`;
   }
   updateEmailUI();
   setEmailNote(msg, key);   // after the update, so it shows even if the results changed while sending
@@ -1504,7 +1503,7 @@ async function init() {
       emailNote: emailNote(),
       emailPrompt: emailPrompt(),
       emailOptIn: state.scoring.email === true
-        ? { checked: false, label: 'Email me my matches when they’re ready', onChange: (v) => { state.emailOptIn = Boolean(v); } }
+        ? { checked: false, label: 'Email me my matches when ready', onChange: (v) => { state.emailOptIn = Boolean(v); } }
         : null,
     });
   } catch (e) {

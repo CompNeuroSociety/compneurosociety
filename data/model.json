@@ -323,7 +323,7 @@
      {
       "id": "major",
       "type": "select_multi_other",
-      "prompt": "What is your major (or intended major)?",
+      "prompt": "What's your major (or planned major)?",
       "options": [
        "Behavioral Neuroscience",
        "Cell & Molecular Neuroscience",
@@ -387,13 +387,13 @@
    },
    {
     "id": "explore",
-    "title": "Explore your interests",
-    "intro": "There are no wrong answers here. The point is to notice what actually pulls you.",
+    "title": "Your interests",
+    "intro": "No wrong answers here.",
     "questions": [
      {
       "id": "pull",
       "type": "select_up_to_2",
-      "prompt": "When you think about the brain, which of these pulls you most?",
+      "prompt": "Which of these pulls you most?",
       "options": [
        {
         "key": "circuits",
@@ -465,7 +465,7 @@
      {
       "id": "question_text",
       "type": "free_text",
-      "prompt": "Describe one question about the brain or mind you'd love to help answer. Two or three sentences; it can be vague.",
+      "prompt": "What question about the brain or mind would you love to help answer? (2-3 sentences)",
       "max_chars": 600,
       "feeds": [
        "axis_*",
@@ -485,7 +485,7 @@
      {
       "id": "organism_comfort",
       "type": "select_multi",
-      "prompt": "Which of these would you be comfortable working with?",
+      "prompt": "What would you be comfortable working with?",
       "options": [
        {
         "key": "human",
@@ -513,8 +513,8 @@
       "id": "wet_dry",
       "type": "slider",
       "prompt": "Where do you want to spend your time?",
-      "left": "At the bench (wet lab)",
-      "right": "At the keyboard (analysis and modeling)",
+      "left": "Bench (wet lab)",
+      "right": "Keyboard (analysis, modeling)",
       "feeds": [
        "wet_dry"
       ]
@@ -563,7 +563,7 @@
      {
       "id": "math_reached",
       "type": "select_one",
-      "prompt": "Highest math you've completed or are in now",
+      "prompt": "Highest math you've taken or are taking?",
       "options": [
        "Pre-calculus",
        "Calculus 1",
@@ -597,7 +597,7 @@
      {
       "id": "transcript",
       "type": "file_client_parsed",
-      "prompt": "Optional: upload your unofficial transcript. It's parsed in your browser into course codes and titles only; grades and your name never leave your device, and nothing is stored.",
+      "prompt": "Optional: upload an unofficial transcript. It's read in your browser, keeping only course codes and titles. Grades and name never leave your device. Nothing is stored.",
       "extracts": [
        "course_code",
        "course_title"
@@ -649,7 +649,7 @@
      {
       "id": "project",
       "type": "select_one",
-      "prompt": "What kind of research commitment are you looking for?",
+      "prompt": "What commitment are you looking for?",
       "options": [
        {
         "key": "volunteer_first",
@@ -679,7 +679,7 @@
      {
       "id": "hours",
       "type": "select_one",
-      "prompt": "Hours per week you can realistically give",
+      "prompt": "How many hours per week can you give?",
       "options": [
        "3-5",
        "6-9",
@@ -709,14 +709,14 @@
    {
     "id": "workstyle",
     "title": "How you like to work",
-    "intro": "Labs run differently. This helps match you to one you'll enjoy, not judge you.",
+    "intro": "Labs differ. This helps match you to one you'll enjoy.",
     "questions": [
      {
       "id": "structure",
       "type": "slider",
       "prompt": "I do my best work with...",
       "left": "Clear tasks and a checklist",
-      "right": "An open problem and room to figure it out",
+      "right": "An open problem to figure out",
       "feeds": [
        "work_style.structure"
       ]
@@ -756,7 +756,7 @@
      {
       "id": "ambiguity",
       "type": "slider",
-      "prompt": "When a project's direction isn't fully clear yet, I feel...",
+      "prompt": "When a project's direction is unclear, I feel...",
       "left": "Uneasy, I want a plan",
       "right": "Excited, that's the fun part",
       "feeds": [
@@ -766,7 +766,7 @@
      {
       "id": "bring_text",
       "type": "free_text",
-      "prompt": "If a lab let you run with one idea of your own, what would it be? Dream a little. (optional)",
+      "prompt": "If a lab let you run with your own idea, what would it be? (optional)",
       "max_chars": 500,
       "feeds": [
        "topics",
@@ -782,13 +782,13 @@
      {
       "id": "email",
       "type": "email_fsu",
-      "prompt": "FSU email to send your matches to (required for the email; we don't keep it)",
-      "validate": "^[^@\\s]+@fsu\\.edu$"
+      "prompt": "Your email (optional; only used if you choose to email yourself your matches)",
+      "validate": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
      },
      {
       "id": "consent",
       "type": "checkbox",
-      "prompt": "I understand matches are AI-assisted suggestions, that I'm expected to write my own outreach, and that I may get a one-time link to review the labs I contact."
+      "prompt": "I understand matches are AI-assisted suggestions. I write my own outreach. I may get a one-time link to review labs I contact."
      }
     ]
    }

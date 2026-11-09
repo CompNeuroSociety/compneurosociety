@@ -15,7 +15,7 @@ let instances = 0;
 
 // Under the email box when the page doesn't pass emailNote (it does: the text depends on api/status).
 // emailPrompt, when passed, replaces the email question's label for the same reason.
-const EMAIL_NOTE_OFF = 'Emailing your matches is off in this preview, so nothing is sent and your address isn’t stored.';
+const EMAIL_NOTE_OFF = 'Emailing is off in this preview. Nothing is sent, and your address isn’t stored.';
 
 const MSG = {
   one: 'Choose one.',
@@ -23,9 +23,9 @@ const MSG = {
   grid: 'Answer each row.',
   scale: 'Pick a point on the scale.',
   text: 'Write a sentence or two.',
-  email: 'Enter an email address like name@example.com, or leave it blank.',
-  emailNeeded: 'Enter your email to get your matches by email, or untick the box.',
-  consent: 'Please confirm to see your matches.',
+  email: 'Use a format like name@example.com, or leave it blank.',
+  emailNeeded: 'Enter your email, or untick the box.',
+  consent: 'Confirm to see your matches.',
 };
 const NONE_YET = 'None yet';
 const OTHER = 'Other';
@@ -140,7 +140,7 @@ function choiceCtrl(q, uid, ctx) {
   if (otherBox) {
     otherInput = h('input', { type: 'text', id: `${name}-other`, class: 'lm-input', maxlength: 80, autocomplete: 'off' });
     otherWrap = h('div', { class: 'lm-other', hidden: true },
-      h('label', { class: 'lm-sublabel', for: otherInput.id, text: 'Tell us which' }), otherInput);
+      h('label', { class: 'lm-sublabel', for: otherInput.id, text: 'Which ones?' }), otherInput);
     wrap.append(otherWrap);
   }
   const noneBox = multi ? opts.find((i) => i.value === NONE_YET) : null;
@@ -149,7 +149,7 @@ function choiceCtrl(q, uid, ctx) {
     if (q.type === 'select_up_to_2') {
       const n = opts.filter((i) => i.checked).length;
       for (const i of opts) i.disabled = n >= 2 && !i.checked;
-      helper.textContent = n >= 2 ? 'Pick up to 2 · uncheck one to change' : 'Pick up to 2';
+      helper.textContent = n >= 2 ? 'Max 2 · uncheck one to change' : 'Pick up to 2';
     }
     if (otherWrap) otherWrap.hidden = !otherBox.checked;
   }
@@ -222,7 +222,7 @@ function gridCtrl(q, uid) {
   const { wrap, err, errId } = baseShell(q, uid, true);
   const scale = Array.isArray(q.scale) ? q.scale : [];
   const n = scale.length;
-  wrap.append(q.prompt ? legendFor(q, uid) : h('legend', { class: 'sr-only', text: 'Rate each row on the scale' }));
+  wrap.append(q.prompt ? legendFor(q, uid) : h('legend', { class: 'sr-only', text: 'Rate each row' }));
   wrap.append(err);
   const grid = h('div', { class: 'lm-grid' });
   grid.style.setProperty('--lm-cols', String(n));
@@ -348,7 +348,7 @@ function textCtrl(q, uid, ctx) {
       optIn.checked = Boolean(ctx.emailOptIn.checked);
       optIn.addEventListener('change', () => ctx.emailOptIn.onChange(optIn.checked));
       wrap.append(h('label', { class: 'lm-consent lm-email-optin', for: optIn.id }, optIn,
-        h('span', { class: 'lm-consent-text', text: ctx.emailOptIn.label || 'Email me my matches when they’re ready' })));
+        h('span', { class: 'lm-consent-text', text: ctx.emailOptIn.label || 'Email me my matches' })));
     }
     wrap.append(note);
   } else {
@@ -411,8 +411,8 @@ function transcriptCtrl(q, uid, ctx) {
   const note = h('p', { class: 'lm-prompt lm-privacy', id: `${id}-note`, text: q.prompt || '' });
   const fileInput = h('input', { type: 'file', id: `${id}-file`, class: 'lm-file', accept: '.pdf,.txt,application/pdf,text/plain', 'aria-describedby': note.id });
   const fileRow = h('div', { class: 'lm-file-row' },
-    h('label', { class: 'lm-sublabel', for: fileInput.id, text: 'Choose a transcript file (.pdf or .txt)' }), fileInput);
-  const toggle = h('button', { type: 'button', class: 'mono-link lm-paste-toggle', 'aria-expanded': 'false', 'aria-controls': `${id}-paste`, text: 'or paste the text instead' });
+    h('label', { class: 'lm-sublabel', for: fileInput.id, text: 'Choose a file (.pdf or .txt)' }), fileInput);
+  const toggle = h('button', { type: 'button', class: 'mono-link lm-paste-toggle', 'aria-expanded': 'false', 'aria-controls': `${id}-paste`, text: 'or paste text' });
   const pasteArea = h('textarea', { id: `${id}-text`, class: 'lm-textarea', rows: 6, spellcheck: 'false', autocomplete: 'off' });
   const findBtn = h('button', { type: 'button', class: 'pill sm teal lm-find', text: 'Find courses' });
   const paste = h('div', { class: 'lm-paste', id: `${id}-paste`, hidden: true },
@@ -425,7 +425,7 @@ function transcriptCtrl(q, uid, ctx) {
   const useBtn = h('button', { type: 'button', class: 'pill sm teal' });
   const cancelBtn = h('button', { type: 'button', class: 'mono-link', text: 'Start over' });
   const review = h('fieldset', { class: 'lm-tr-review', hidden: true },
-    h('legend', { class: 'lm-sublabel', text: 'Courses we found. Uncheck any that are wrong.' }),
+    h('legend', { class: 'lm-sublabel', text: 'Courses found. Uncheck any that are wrong.' }),
     reviewCount, reviewList, h('div', { class: 'lm-row-actions' }, useBtn, cancelBtn));
 
   const doneText = h('p', { class: 'lm-done-text' });
@@ -453,7 +453,7 @@ function transcriptCtrl(q, uid, ctx) {
     found = cleanCourses(result.courses);
     status.textContent = '';
     if (!found.length) {
-      status.textContent = (result.warnings && result.warnings[0]) || 'No courses found. Try pasting the text instead.';
+      status.textContent = (result.warnings && result.warnings[0]) || 'No courses found. Try pasting text.';
       view('pick');
       return;
     }
@@ -465,7 +465,7 @@ function transcriptCtrl(q, uid, ctx) {
         h('span', { class: 'lm-course-code', text: c.course_code }),
         h('span', { class: 'lm-course-title', text: c.course_title })));
     });
-    reviewCount.textContent = `We found ${found.length} course${found.length === 1 ? '' : 's'}.`;
+    reviewCount.textContent = `Found ${found.length} course${found.length === 1 ? '' : 's'}.`;
     updateUse();
     view('review');
     useBtn.focus();
@@ -477,10 +477,10 @@ function transcriptCtrl(q, uid, ctx) {
       if (c.course_title) li.title = c.course_title;
       doneList.append(li);
     }
-    doneText.textContent = `Using ${confirmed.length} course${confirmed.length === 1 ? '' : 's'} from your transcript. They stay in this tab only.`;
+    doneText.textContent = `Using ${confirmed.length} course${confirmed.length === 1 ? '' : 's'} from your transcript. Kept in this tab only.`;
     const m = suggestMath(confirmed);
     if (m && ctx.getAnswer('math_reached') !== m.level && ctx.hasQuestion('math_reached')) {
-      mathText.textContent = `Your highest math course looks like ${m.code} (${m.level}). Use it for your highest math?`;
+      mathText.textContent = `Highest math looks like ${m.code} (${m.level}). Use it?`;
       mathBtn.hidden = false;
       mathOffer.hidden = false;
       mathBtn.onclick = () => {
@@ -512,7 +512,7 @@ function transcriptCtrl(q, uid, ctx) {
   fileInput.addEventListener('change', async () => {
     const f = fileInput.files && fileInput.files[0];
     if (!f) return;
-    status.textContent = 'Reading your transcript in this browser…';
+    status.textContent = 'Reading transcript in this browser…';
     const result = await parseTranscriptFile(f);
     fileInput.value = '';     // drop the file reference
     showFound(result);

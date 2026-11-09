@@ -49,6 +49,8 @@ Static site for CompNeuroSociety at FSU. No build step, no framework: plain HTML
 
 **Links:** every form/social/external URL is a key in `LINKS`. HTML elements use `data-link="key"` and get hydrated by `site.js` — change the URL once in `LINKS` and every page updates. (Exception: the footer Contact link is hardcoded in each HTML file's footer — update all 8 if it ever changes.)
 
+**Public email:** `contact@compneurosociety.com` (`LINKS.email`, plus the two hardcoded mailto buttons and the meta descriptions in `chapters.html`). Mail to it is received by Resend (Inboxes) and forwarded to compneurosociety@gmail.com by the Lab Match Worker (`/api/inbound`); see the worker README in the FSU_Lab_Matcher project.
+
 **Deploy:** commit → push to the default branch → GitHub Pages rebuilds (usually <1 min).
 
 ### 2a. Light / dark theme
@@ -154,7 +156,7 @@ All JS-rendered images (people, events, projects, gallery thumbs) plus the ORCA 
 
 ## 8. New webmaster access checklist
 
-GitHub repo admin (CompNeuroSociety org) · club Google account (compneurosociety@outlook.com — owns forms, spreadsheet, Apps Script, calendar) · club Outlook inbox (same address — receives alerts/digests) · GA4 property + Search Console · domain DNS (CNAME for compneurosociety.com) · Discord server admin · Instagram/LinkedIn credentials.
+GitHub repo admin (CompNeuroSociety org) · club Google account (compneurosociety@outlook.com — owns forms, spreadsheet, Apps Script, calendar) · club Outlook inbox (same address — receives alerts/digests) · Resend account (domain compneurosociety.com, `contact@` inbox, Lab Match emails) · Cloudflare account (Lab Match Worker) · GA4 property + Search Console · domain DNS (CNAME for compneurosociety.com) · Discord server admin · Instagram/LinkedIn credentials.
 
 ## 9. Known issues / TODO
 
