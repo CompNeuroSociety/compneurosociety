@@ -614,7 +614,8 @@ export function renderHowItWorks(container, model, opts = {}) {
     el('p', { text: sent }),
     el('p', {
       text: '“Download my results” saves a file to your device; there is no copy on a server. Star ratings stay in this browser ' +
-        'unless you tick “Share my ratings anonymously”. This page has no analytics. It loads its ' +
+        'unless you tick “Share my ratings anonymously”. This page has no analytics or tracking cookies; our server only adds one ' +
+        'to a count of how many times the page was opened that day, with nothing about who opened it. It loads its ' +
         'fonts from Google Fonts, and pdf.js from cdnjs only if you upload a PDF transcript; neither gets your answers.',
     }),
   ));

@@ -66,7 +66,7 @@
         <p class="label">01</p>
         <h3>Install Python</h3>
         <p><a class="mono-link" href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads ↗</a></p>
-        <p>On Windows, tick <strong>Add Python to PATH</strong> during install.</p>
+        <p style="margin-top:8px">On Windows, tick <strong>Add Python to PATH</strong> during install.</p>
       </div>
       <div>
         <p class="label">02</p>
@@ -77,7 +77,7 @@
         <p class="label">03</p>
         <h3>Add the Python and Jupyter extensions</h3>
         <p><a class="mono-link" href="https://marketplace.visualstudio.com/items?itemName=ms-python.python" target="_blank" rel="noopener">Python extension ↗</a></p>
-        <p><a class="mono-link" href="https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter" target="_blank" rel="noopener">Jupyter extension ↗</a></p>
+        <p style="margin-top:8px"><a class="mono-link" href="https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter" target="_blank" rel="noopener">Jupyter extension ↗</a></p>
       </div>
       <div>
         <p class="label">04</p>
@@ -95,11 +95,11 @@
   <section class="sec tight">
     <p class="label">quick test</p>
     <p class="body-copy">Open a terminal (Command Prompt on Windows) and run these. Each should print a version, and the last one opens VS Code.</p>
-    <pre class="lm-cmd" style="margin-top:14px;padding:14px 18px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);overflow-x:auto;font-family:var(--mono);font-size:14px;line-height:1.6;color:var(--ink)"><code>python --version
+    <pre style="margin:14px 0;padding:14px 18px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);overflow-x:auto;font-family:var(--mono);font-size:14px;line-height:1.6;color:var(--ink)"><code>python --version
 pip --version
 git --version
 code .</code></pre>
-    <p class="body-copy">On a Mac, try <code>python3</code> and <code>pip3</code> if <code>python</code> isn’t found.</p>
+    <p class="body-copy">On a Mac, use <code style="font-family:var(--mono)">python3</code> and <code style="font-family:var(--mono)">pip3</code>. For <code style="font-family:var(--mono)">code .</code> to work, open VS Code, press Cmd+Shift+P and run <strong>Shell Command: Install ‘code’ command in PATH</strong>. On Windows, reopen the terminal after installing.</p>
   </section>
 
 </main>
