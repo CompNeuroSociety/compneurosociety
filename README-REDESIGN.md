@@ -44,10 +44,11 @@ Then open a pull request and preview before merging to `main`.
 
 ## Notes
 
-- Old pages (`leadership.html`, `team.html`, `gradcouncil.html`, `mentors.html`,
-  `leadevent.html`, `projectsold.html`, `setup.html`, …) are untouched; old links
-  keep working. Retire them whenever you like - their content now lives in
-  `people.html`, `events.html`, and `projects.html`.
+- Old pages were removed in the redesign. Their URLs are now tiny redirect stubs to
+  the matching section of `people.html`, `events.html`, `projects.html`, `join.html`
+  or `brain-viz.html` (`contact.html` goes to the contact form), so old links keep
+  working; `setup.html` (Python workshop setup) was rebuilt in the new design. See
+  README.md, "Known issues / TODO".
 - `navbar.js`, `darkmode.js`, `styles.css` are not used by the new pages
   (the redesign is dark-only by design; delete the toggle later if you retire the old pages).
 - Paid-role/stipend advertisements were intentionally removed per the redesign brief.

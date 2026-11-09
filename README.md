@@ -160,7 +160,8 @@ GitHub repo admin (CompNeuroSociety org) · club Google account (compneurosociet
 
 ## 9. Known issues / TODO
 
-- `about.html` links to `constitution.pdf` (the "Constitution" tab from the redesign wireframes), which is **not in the repo** (404) — add the PDF, or delete the `#constitution` section in `about.html` and the tab link above it.
+- `constitution.pdf` was restored (the Feb 2026 version, from git history). Replace the file to publish a new constitution; keep the name.
+- **Old URLs:** pages removed in the 2026 redesign (`team`, `leadership`, `gradcouncil`, `mentors`, `varela-award` → `people.html#…`; `projectsold`, `project_fiu`, `collaborativeinitiative` → `projects.html`; `leadevent` → `events.html`; `membership` → `join.html`; `neural_visualizer` → `brain-viz.html`; `contact` → the contact form) are tiny redirect stubs, so old links and Google results keep working. `setup.html` (Python workshop setup, likely behind `images/setup-qr.png` on printed slides) was rebuilt in the current design. Don't add them to `sitemap.xml`. Any other missing URL gets `404.html` (absolute paths, since GitHub Pages serves it at any depth).
 - Old Microsoft Forms are still open — close them in the club Microsoft account so responses don't split.
 - `GRAD_COUNCIL` is commented out in `site-data.js` (section auto-hides).
 - Nice-to-have: pre-render people/projects/events cards into static HTML at build time for non-Google crawlers.
