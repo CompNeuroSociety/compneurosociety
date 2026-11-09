@@ -1,7 +1,8 @@
 // survey.js: the Lab Match survey wizard, rendered entirely from the questions data
 // (model.questions, same shape as questions.json). One step per section.
 //
-// createSurvey(root, questions, { initialAnswers, onSubmit, onChange, textScoringNote, emailNote, emailPrompt })
+// createSurvey(root, questions, { initialAnswers, onSubmit, onChange, textScoringNote, emailNote, emailPrompt,
+//   emailOptIn: {checked, label, onChange(bool)} | null })
 //   -> { getAnswers(), setAnswers(a), goTo(i), stepCount, reset(), destroy() }
 //
 // Answers follow the README "Answers object". Unanswered fields are omitted. The transcript is kept
@@ -22,7 +23,8 @@ const MSG = {
   grid: 'Answer each row.',
   scale: 'Pick a point on the scale.',
   text: 'Write a sentence or two.',
-  email: 'Use your @fsu.edu email, or leave it blank.',
+  email: 'Enter an email address like name@example.com, or leave it blank.',
+  emailNeeded: 'Enter your email to get your matches by email, or untick the box.',
   consent: 'Please confirm to see your matches.',
 };
 const NONE_YET = 'None yet';
@@ -323,6 +325,7 @@ function textCtrl(q, uid, ctx) {
   let input;
   let counter = null;
   let note = null;
+  let optIn = null;
   if (q.type === 'free_text') {
     const max = Number.isInteger(q.max_chars) && q.max_chars > 0 ? q.max_chars : 600;
     input = h('textarea', { id, class: 'lm-textarea', maxlength: max, rows: 4 });
@@ -337,14 +340,26 @@ function textCtrl(q, uid, ctx) {
     input = h('input', { id, class: 'lm-input', type: 'email', autocomplete: 'email', inputmode: 'email', spellcheck: 'false', maxlength: 120 });
     note = h('p', { class: 'lm-note', id: `${id}-note`, text: ctx.emailNote || EMAIL_NOTE_OFF });
     describe.push(note.id);
-    wrap.append(label, err, input, note);
+    wrap.append(label, err, input);
+    // "Email me my matches" opt-in, only when the page offers emailing. Kept out of the answers (and so out of
+    // the draft and the download): the page hears about it through ctx.emailOptIn.onChange.
+    if (ctx.emailOptIn) {
+      optIn = h('input', { type: 'checkbox', id: `${id}-send`, class: 'lm-check-input' });
+      optIn.checked = Boolean(ctx.emailOptIn.checked);
+      optIn.addEventListener('change', () => ctx.emailOptIn.onChange(optIn.checked));
+      wrap.append(h('label', { class: 'lm-consent lm-email-optin', for: optIn.id }, optIn,
+        h('span', { class: 'lm-consent-text', text: ctx.emailOptIn.label || 'Email me my matches when they’re ready' })));
+    }
+    wrap.append(note);
   } else {
     input = h('input', { id, class: 'lm-input', type: 'text', maxlength: 160, autocomplete: 'off' });
     wrap.append(label, err, input);
   }
   let re = null;
   if (q.type === 'email_fsu') {
-    try { re = new RegExp(q.validate || '^[^@\\s]+@fsu\\.edu$'); } catch (e) { re = /^[^@\s]+@fsu\.edu$/; }
+    // any address now (not only @fsu.edu, which questions.json's older `validate` still says); the page checks
+    // the stricter plain-address rule before sending
+    re = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   }
   const refresh = () => {
     if (counter) counter.textContent = `${input.value.length} / ${input.maxLength}`;
@@ -355,9 +370,14 @@ function textCtrl(q, uid, ctx) {
     focusTarget: () => input,
     get() { const t = input.value.trim(); return t ? t : undefined; },
     set(v) { if (typeof v !== 'string') return; input.value = v.slice(0, input.maxLength > 0 ? input.maxLength : undefined); refresh(); },
-    clear() { input.value = ''; refresh(); },
+    clear() {
+      input.value = '';
+      refresh();
+      if (optIn && optIn.checked) { optIn.checked = false; ctx.emailOptIn.onChange(false); }
+    },
     validate() {
       const t = input.value.trim();
+      if (optIn && optIn.checked && !t) return MSG.emailNeeded;
       if (re) return t && !re.test(t) ? MSG.email : null;
       if (!this.required) return null;
       return t ? null : MSG.text;
@@ -559,7 +579,8 @@ function makeCtrl(q, uid, ctx) {
 // ------------------------------------------------------------------------------------------ wizard
 export function createSurvey(root, questions, opts = {}) {
   if (!root) throw new Error('createSurvey: no root element');
-  const { initialAnswers = {}, onSubmit, onChange, textScoringNote = '', emailNote = '' } = opts || {};
+  const { initialAnswers = {}, onSubmit, onChange, textScoringNote = '', emailNote = '', emailPrompt = '',
+    emailOptIn = null } = opts || {};
   const sections = questions && Array.isArray(questions.sections) ? questions.sections : [];
   if (!sections.length) throw new Error('createSurvey: questions.sections is empty');
 
@@ -573,6 +594,8 @@ export function createSurvey(root, questions, opts = {}) {
   const ctx = {
     textScoringNote: typeof textScoringNote === 'string' ? textScoringNote : '',
     emailNote: typeof emailNote === 'string' ? emailNote : '',
+    emailPrompt: typeof emailPrompt === 'string' ? emailPrompt : '',
+    emailOptIn: emailOptIn && typeof emailOptIn.onChange === 'function' ? emailOptIn : null,
     getAnswer: (qid) => (byId.has(qid) ? byId.get(qid).get() : undefined),
     setAnswer: (qid, v) => { if (byId.has(qid)) { byId.get(qid).set(v); recheck(byId.get(qid)); } },
     hasQuestion: (qid) => byId.has(qid),

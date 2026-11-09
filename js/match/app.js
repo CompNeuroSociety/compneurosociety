@@ -15,7 +15,8 @@
 //    anonymously" (never remembered), each rating is POSTed to api/rate: {session, lab_id, stars, rank,
 //    vector, model_version}. Never the email, written answers or transcript.
 // 5. Emailing the matches: only if api/status says "email" (the Worker has a Resend key; serve.py never does),
-//    the student typed an FSU address AND clicks "Email me my matches" (never automatic). POSTs ONLY
+//    the student either ticked "Email me my matches when they're ready" under the survey's email box (sent once
+//    the ranking settles) or presses "Email me my matches" next to the email box on the results. POSTs ONLY
 //    {v, email, lab_ids (top 5 shown, in card order), type_id, model_version} to api/email-results; the
 //    server writes the email itself from its own lab data. The address is never saved, logged or downloaded.
 // The two charts load on their own: if one fails, its mount point says so and the rest keeps working.
@@ -390,6 +391,7 @@ const state = {
   emailSeq: 0,            // bumped by "Start over" so a late answer can't touch the fresh page
   emailSentKey: null,     // emailKey() of the last body the server accepted (button reads "Sent" while it matches)
   emailMsgKey: null,      // emailKey() the message under the button is about (cleared when the results change)
+  emailOptIn: false,      // the survey's "Email me my matches when they're ready" box (never saved)
 };
 
 let resolveReady;
@@ -513,8 +515,8 @@ function scoringNote() {
 // text says exactly that (the same wording as the email's footer and worker/README.md).
 function emailNote() {
   return state.scoring.email === true
-    ? 'Used only if you press “Email me my matches” on your results, to send them to this address. Lab Match doesn’t ' +
-      'keep it; Resend, the mail service, keeps a delivery log for a limited time.'
+    ? 'Used only to send you your matches: tick the box to get them as soon as they’re ready, or send them from ' +
+      'your results. Lab Match doesn’t keep it; Resend, the mail service, keeps a delivery log for a limited time.'
     : 'Emailing your matches is off in this preview, so nothing is sent and your address isn’t stored.';
 }
 
@@ -522,8 +524,8 @@ function emailNote() {
 // while emailing is off (the default until the Worker has a Resend key, and always on serve.py).
 function emailPrompt() {
   return state.scoring.email === true
-    ? 'Your FSU email (optional; only used if you choose to email yourself your matches)'
-    : 'Your FSU email (optional)';
+    ? 'Your email (optional; only used if you choose to email yourself your matches)'
+    : 'Your email (optional)';
 }
 
 function errorCard(kind, err) {
@@ -868,6 +870,8 @@ async function submit(answers) {
     $('lm-draft-text').textContent = 'Something went wrong while working out your matches. Reload the page and try again.';
     return;
   }
+  const typed = typeof answers.email === 'string' ? answers.email.trim() : '';
+  if (typed && $('lm-email-input')) $('lm-email-input').value = typed;   // the results box starts from the survey's
   showResults();
   renderCards();
   setStatus('');
@@ -875,7 +879,11 @@ async function submit(answers) {
   scrollToResults();
   await ensureCharts();
   updateCharts();
-  scoreWrittenAnswers(answers);
+  // Ticked "Email me my matches": send once the ranking has settled (written answers can still move it), and
+  // only if these are still the answers on screen. sendEmail() skips a ranking that was already sent.
+  const seq = state.emailSeq;
+  await scoreWrittenAnswers(answers);
+  if (state.emailOptIn && state.answers === answers && seq === state.emailSeq && !$('lm-results').hidden) sendEmail();
 }
 
 // --------------------------------------------------------------------------------------- charts
@@ -1076,11 +1084,11 @@ async function scoreWrittenAnswers(answers) {
 // The server writes the email from its own lab data, so the page sends only the address and lab/type IDs.
 // The address check matches the Worker's (stricter than the survey's on purpose: no quotes, angle brackets,
 // commas, spaces or line breaks can reach a mail header), so the page never offers a send that would bounce.
-const EMAIL_RE = /^[a-z0-9._%+-]{1,64}@fsu\.edu$/i;
+const EMAIL_RE = /^[a-z0-9._%+-]{1,64}@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/i;   // = the Worker's PLAIN_EMAIL
 const EMAIL_MAX = 120;
 const EMAIL_LABS = 5;
-const EMAIL_INVALID = 'Lab Match can email only a plain name@fsu.edu address (letters, numbers and . _ % + -), ' +
-  'so emailing is off for the one you entered. Edit your answers to change it.';
+const EMAIL_INVALID = 'Lab Match can email only a plain address like name@example.com (letters, numbers and . _ % + -), ' +
+  'so check the one above and try again.';
 const EMAIL_ERRORS = {
   rate_limited: 'Lab Match has sent as many emails as it can for now (to this address or from your network). ' +
     'Try again later, or download your results instead.',
@@ -1096,9 +1104,16 @@ const EMAIL_ERRORS = {
 const EMAIL_NETWORK_MSG = 'The Lab Match server didn’t answer, so your email may not have been sent. Check your connection and try again.';
 const EMAIL_TIMEOUT_MSG = 'Sending took too long, so your email may not have been sent. Check your inbox in a few minutes before trying again.';
 
-/** The survey's email answer, trimmed and lowercased; null when blank or not a plain FSU address. */
+/** What's in the results page's email box (filled in from the survey answer), trimmed and lowercased. */
+function emailTyped() {
+  const box = $('lm-email-input');
+  const raw = box ? box.value : state.answers && typeof state.answers.email === 'string' ? state.answers.email : '';
+  return raw.trim().toLowerCase();
+}
+
+/** The address to send to; null when blank or not a plain address. */
 function emailAddress() {
-  const raw = state.answers && typeof state.answers.email === 'string' ? state.answers.email.trim().toLowerCase() : '';
+  const raw = emailTyped();
   return raw && raw.length <= EMAIL_MAX && EMAIL_RE.test(raw) ? raw : null;
 }
 
@@ -1130,28 +1145,35 @@ function setEmailNote(text, key = null, { busy = false } = {}) {
 // scores, edited answers). "Start over" forgets the send. aria-disabled, not disabled, so focus stays on it.
 function updateEmailUI() {
   const btn = $('lm-email-btn');
-  if (!btn) return;
+  const row = $('lm-email-row');
+  if (!btn || !row) return;
   const on = state.scoring.email === true && Boolean(state.results);
   const body = on ? emailBody() : null;
   const key = emailKey(body);
-  btn.hidden = !body;
+  row.hidden = !on;
   const sent = key !== null && key === state.emailSentKey;
   btn.textContent = state.emailBusy ? 'Sending…' : sent ? 'Sent'
     : state.emailSentKey ? 'Email me my updated matches' : 'Email me my matches';
   if (state.emailBusy || sent) btn.setAttribute('aria-disabled', 'true');
   else btn.removeAttribute('aria-disabled');
   if (state.emailBusy) return;
-  const typed = Boolean(state.answers && typeof state.answers.email === 'string' && state.answers.email.trim());
-  if (on && typed && !emailAddress()) setEmailNote(EMAIL_INVALID, 'invalid');   // a key no body has: cleared once fixed
-  else if (!on || state.emailMsgKey !== key) setEmailNote('');
+  if (!on || (state.emailMsgKey !== key && state.emailMsgKey !== 'invalid')) setEmailNote('');
+  else if (state.emailMsgKey === 'invalid' && emailAddress()) setEmailNote('');   // fixed: drop the complaint
 }
 
 async function sendEmail() {
-  const btn = $('lm-email-btn');
-  if (state.emailBusy || state.scoring.email !== true || !btn || btn.hidden) return;
+  const row = $('lm-email-row');
+  if (state.emailBusy || state.scoring.email !== true || !row || row.hidden) return;
   const body = emailBody();
   const key = emailKey(body);
-  if (!body || key === state.emailSentKey) return;
+  if (!body) {
+    // Nothing to send yet: say why, next to the box (only when there are results to send).
+    if (!state.results) return;
+    setEmailNote(emailTyped() ? EMAIL_INVALID : 'Type your email above, then press “Email me my matches”.', 'invalid');
+    $('lm-email-input').focus();
+    return;
+  }
+  if (key === state.emailSentKey) return;
   const seq = state.emailSeq;
   state.emailBusy = true;
   updateEmailUI();
@@ -1257,6 +1279,8 @@ function startOver() {
   state.emailSeq += 1;
   state.emailBusy = false;
   state.emailSentKey = null;
+  state.emailOptIn = false;
+  if ($('lm-email-input')) $('lm-email-input').value = '';
   setEmailNote('');
   try {
     if (state.survey) state.survey.reset();
@@ -1299,6 +1323,11 @@ function wireActions() {
   });
   const box = $('lm-share-box');
   if (box) box.addEventListener('change', onShareToggle);
+  const mail = $('lm-email-input');
+  if (mail) {
+    mail.addEventListener('input', () => { updateEmailUI(); renderDev(); });
+    mail.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendEmail(); } });
+  }
 }
 
 // ------------------------------------------------------------------------------------- dev panel
@@ -1372,8 +1401,8 @@ function renderDev() {
   if (mail) {
     // What "Email me my matches" would POST. Shown, never sent, from here.
     const body = emailBody();
-    const why = !state.answers || !state.answers.email ? 'no email typed'
-      : !emailAddress() ? 'the email is not a plain name@fsu.edu address' : 'no lab to send';
+    const why = !emailTyped() ? 'no email typed'
+      : !emailAddress() ? 'the email is not a plain address' : 'no lab to send';
     mail.textContent = body
       ? `POST api/email-results (emailing ${state.scoring.email ? 'on' : 'off'}; this panel never sends):\n${JSON.stringify(body, null, 1)}`
       : `No email body: ${why}.`;
@@ -1474,6 +1503,9 @@ async function init() {
       textScoringNote: scoringNote(),
       emailNote: emailNote(),
       emailPrompt: emailPrompt(),
+      emailOptIn: state.scoring.email === true
+        ? { checked: false, label: 'Email me my matches when they’re ready', onChange: (v) => { state.emailOptIn = Boolean(v); } }
+        : null,
     });
   } catch (e) {
     fail('survey', e);

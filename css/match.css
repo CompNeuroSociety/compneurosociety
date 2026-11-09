@@ -137,8 +137,14 @@
 .lm-actions .headline { margin: 0; }
 .lm-actions .sub { margin: 6px 0 0; }
 .lm-actions-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-/* the email result line: its own row under the band's text and buttons (empty = hidden, via .lm-status) */
-.lm-actions .lm-email-note { flex: 1 1 100%; margin: 0; }
+
+/* ------------------------------------------------------------------ email my matches (under the cards) */
+.lm-email-row { margin: 40px 0 0; max-width: 720px; }
+.lm-email-label { display: block; margin: 0 0 8px; font-weight: 700; font-size: 16px; color: var(--ink); }
+.lm-email-inline { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.lm-email-inline .lm-input { flex: 1 1 240px; min-width: 0; max-width: 420px; }
+.lm-email-row .lm-email-note { margin: 10px 0 0; }   /* empty = hidden, via .lm-status */
+.lm-email-optin { margin-top: 12px; }
 
 /* ------------------------------------------------------------------ error card */
 .lm-error { max-width: 72ch; }

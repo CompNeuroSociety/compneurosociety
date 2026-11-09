@@ -84,6 +84,16 @@
       <label class="lm-share" id="lm-share" hidden><input type="checkbox" id="lm-share-box"> Share my ratings anonymously to help improve Lab Match</label>
       <p class="lm-share-note" id="lm-share-note" aria-live="polite" hidden></p>
     </div>
+    <!-- shown only when api/status says emailing is set up; filled in from the survey's email answer -->
+    <div class="lm-email-row" id="lm-email-row" role="region" aria-label="Email your matches" hidden>
+      <label class="lm-email-label" for="lm-email-input">Email me my matches</label>
+      <div class="lm-email-inline">
+        <input class="lm-input" id="lm-email-input" type="email" autocomplete="email" inputmode="email" spellcheck="false"
+          maxlength="120" placeholder="you@example.com" aria-describedby="lm-email-note">
+        <button type="button" class="pill sm" id="lm-email-btn" data-lm-action="email">Email me my matches</button>
+      </div>
+      <p class="lm-status lm-email-note" id="lm-email-note" role="status" aria-live="polite"></p>
+    </div>
     <div class="lm-excluded" id="lm-excluded" hidden></div>
     <div class="lm-block" id="lm-written" hidden></div>
     <div class="lm-block" id="lm-how"></div>
@@ -96,11 +106,8 @@
       <div class="lm-actions-row">
         <button type="button" class="pill sm" data-lm-action="edit">Edit my answers</button>
         <button type="button" class="lm-ghost" data-lm-action="download">Download my results</button>
-        <!-- shown only when api/status says emailing is set up and the student typed an FSU address -->
-        <button type="button" class="lm-ghost" id="lm-email-btn" data-lm-action="email" hidden>Email me my matches</button>
         <button type="button" class="lm-ghost" data-lm-action="start-over">Start over</button>
       </div>
-      <p class="lm-status lm-email-note" id="lm-email-note" role="status" aria-live="polite"></p>
     </div>
   </section>
 

@@ -585,7 +585,7 @@ export function renderHowItWorks(container, model, opts = {}) {
 
   // 4. What happens to my answers
   const unless = emailOn
-    ? 'unless you choose to share your star ratings or press “Email me my matches”.'
+    ? 'unless you choose to share your star ratings or to email yourself your matches.'
     : 'unless you choose to share your star ratings.';
   const sent = scoring === true
     ? `Your ${writtenWord} are sent to Claude Haiku (Anthropic) only to read your interests. Nothing else you enter leaves this page, ${unless}`
@@ -593,7 +593,8 @@ export function renderHowItWorks(container, model, opts = {}) {
       ? `Written-answer scoring is off in this preview, so your ${writtenWord} stay on this page too. Nothing you enter leaves this page, ${unless}`
       : `When written-answer scoring is on, your ${writtenWord} are sent to Claude Haiku (Anthropic) only to read your interests. Nothing else you enter leaves this page, ${unless}`;
   const emailText = emailOn
-    ? 'Your email is sent only if you press “Email me my matches” on your results. Then the Lab Match server gets your ' +
+    ? 'Your email is sent only if you tick “Email me my matches” under the email box or press “Email me my matches” on ' +
+      'your results. Then the Lab Match server gets your ' +
       'address and the IDs of your top five labs and your top researcher type (nothing else you entered), writes one email from its ' +
       'own lab details and sends it to you through Resend, the email service it uses. Lab Match doesn’t store or log the ' +
       'address; Resend keeps a delivery log, which includes it, for a limited time. ' +
