@@ -9,6 +9,11 @@
 // student's own point at results.xyz. Next to it, a membership panel that is both the legend and the
 // table view. Works for any number of types (N >= 1).
 //
+// Two levels (model.families + results.membership.families, when the model has them): the headline
+// leads with the student's way of working ("You work computationally — mostly a computational
+// neuroscientist."), a compact line lists the family shares, and a student outside the neuro types
+// (membership.in_domain === false) gets the family level only: no type percentages, no top-three colors.
+//
 // Color rule (an all-pairs scatter is capped at 3 categorical colors): THIS student's top three types
 // by share get --viz-1, --viz-2, --viz-3 in rank order; every other type is neutral. Everything shown
 // comes from model.json; data-derived text only ever enters the DOM through textContent (via h()).
@@ -22,6 +27,12 @@ const YOU = 'you';
 const CAMERA = { yaw: -0.6, pitch: 0.35, zoom: 1 };
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const TOP_N = 3;
+// Headline wording tiers, the same at both levels: "mostly X" when the top share is at least half;
+// "leaning X" when it leads the next by at least 10 points; otherwise "a blend of X and Y".
+const MOSTLY = 0.5;
+const LEAN_MARGIN = 0.1;
+const NOTE_OUTSIDE = 'Each faint dot is a simulated student (not a real person). The map shows the neuroscience types for reference; your own point is marked "You".';
+const OUTSIDE = "Your interest answers don't point at brain, mind or animal research, so we describe how you like to work and leave the neuroscience types unscored.";
 const NARROW_LABEL_W = 110;   // px: prototype labels wider than this wrap onto two lines on narrow canvases
 const COLORS = ['var(--lm-types-c1)', 'var(--lm-types-c2)', 'var(--lm-types-c3)'];
 const CTX_DOT = 'var(--lm-types-ctx)';        // neutral cloud dots (context)
@@ -49,6 +60,14 @@ const withArticle = (phrase) => `${article(phrase)} ${phrase}`;
 function orList(items) {
   if (items.length <= 1) return items.join('');
   return `${items.slice(0, -1).join(', ')} or ${items[items.length - 1]}`;
+}
+
+/** 'mostly' | 'leaning' | 'blend' for shares {id: 0..1} and ids ordered by share (descending). */
+function tierOf(shares, order) {
+  const a = (shares && shares[order[0]]) || 0;
+  const b = order.length > 1 ? (shares && shares[order[1]]) || 0 : 0;
+  if (a >= MOSTLY || order.length < 2) return 'mostly';
+  return a - b >= LEAN_MARGIN ? 'leaning' : 'blend';
 }
 
 /** Shares (0..1) -> whole percentages that add up to exactly 100 (largest remainder). */
@@ -102,6 +121,10 @@ export function createTypesViz(container, model) {
   const axes = Array.isArray(tmap.axes) ? tmap.axes : [];
   const explained = Array.isArray(tmap.explained) ? tmap.explained : [];
 
+  const families = Array.isArray(model && model.families) ? model.families.filter((f) => f && f.id != null) : [];
+  const famById = new Map(families.map((f) => [f.id, f]));
+  const famLabel = (id) => String((famById.get(id) && famById.get(id).label) || id);
+  const famNoun = (id) => String((famById.get(id) && famById.get(id).noun) || `${lc(famLabel(id))} work`);
   const typeById = new Map(types.map((t) => [t.id, t]));
   const labelOf = (id) => String((typeById.get(id) && typeById.get(id).label) || id);
   const jobsOf = (id) => {
@@ -118,6 +141,9 @@ export function createTypesViz(container, model) {
   let order = types.map((t) => t.id);   // by share, descending (stable: model order on ties)
   let rankOf = new Map();               // type id -> 0..2 for this student's top three
   let focusType = null;                 // type highlighted from the panel or the map
+  let famShares = null;                 // {family_id: 0..1}, when the model and the results have families
+  let famOrder = [];                    // family ids by share, descending
+  let inDomain = true;                  // false: outside the neuro types, family level only
 
   const colorOf = (id) => (rankOf.has(id) ? COLORS[rankOf.get(id)] : CTX_DOT);
   const markOf = (id) => (rankOf.has(id) ? COLORS[rankOf.get(id)] : CTX_MARK);
@@ -140,6 +166,7 @@ export function createTypesViz(container, model) {
   // ---------------------------------------------------------------- DOM
   const ids = { hint: nextId('lm-types-hint'), note: nextId('lm-types-note'), head: nextId('lm-types-head') };
   const headline = h('h3', { class: 'h3 lm-types-headline', id: ids.head, text: 'Where you sit among the researcher types' });
+  const familyLine = h('p', { class: 'lm-types-family', hidden: true });
   const jobsLine = h('p', { class: 'lm-types-jobs', hidden: true });
   const canvas = h('canvas', { class: 'lm-types-canvas', role: 'img', 'aria-describedby': `${ids.hint} ${ids.note}` });
   const tip = h('div', { class: 'lm-types-tip', hidden: true, 'aria-hidden': 'true' });
@@ -155,9 +182,8 @@ export function createTypesViz(container, model) {
   const topList = h('ol', { class: 'lm-types-rows' });
   const otherHead = h('p', { class: 'lm-types-sub', text: 'other types', hidden: true });
   const otherList = h('ol', { class: 'lm-types-rows lm-types-rows-compact', hidden: true });
-  const panel = h('div', { class: 'lm-types-panel' },
-    h('p', { class: 'lm-types-panel-label', text: 'your mix of types' }),
-    topList, otherHead, otherList);
+  const panelLabel = h('p', { class: 'lm-types-panel-label', text: 'your mix of types' });
+  const panel = h('div', { class: 'lm-types-panel' }, panelLabel, topList, otherHead, otherList);
   const chartCol = h('div', { class: 'lm-types-chart' },
     stage,
     h('div', { class: 'lm-types-toolbar' }, hint, resetBtn),
@@ -166,6 +192,7 @@ export function createTypesViz(container, model) {
   const root = h('div', { class: 'lm-types' },
     h('p', { class: 'label lm-types-label', text: LABEL }),
     headline,
+    familyLine,
     jobsLine,
     note,
     h('div', { class: 'lm-types-grid' }, chartCol, panel));
@@ -338,21 +365,62 @@ export function createTypesViz(container, model) {
       return;
     }
     const parts = order.map((id) => `${labelOf(id)} ${percents[id]}%`).join(', ');
-    canvas.setAttribute('aria-label', `3-D map of ${n} researcher types made from simulated students, with your point marked "You". Your mix: ${parts}.`);
+    const way = famShares ? ` Your way of working: ${familyParts().join(', ')}.` : '';
+    canvas.setAttribute('aria-label', `3-D map of ${n} researcher types made from simulated students, with your point marked "You". Your mix: ${parts}.${way}`);
   }
 
+  /** ["Computational 62%", ...] by share. */
+  function familyParts() {
+    const pc = wholePercents(famOrder, famShares);
+    return famOrder.map((id) => `${famLabel(id)} ${pc[id]}%`);
+  }
+  /** Level 1: "You work computationally" / "You lean toward computational work" / "You mix A and B". */
+  function familyClause() {
+    const top = famOrder[0];
+    const tier = tierOf(famShares, famOrder);
+    if (tier === 'mostly') {
+      const phrase = famById.get(top) && famById.get(top).phrase;
+      return phrase ? `You ${phrase}` : `You do ${famNoun(top)}`;
+    }
+    if (tier === 'leaning') return `You lean toward ${famNoun(top)}`;
+    return `You mix ${famNoun(top)} and ${famNoun(famOrder[1])}`;
+  }
+  /** Level 2: "mostly a computational neuroscientist" / "leaning neuroengineer" / "a blend of X and Y". */
+  function typeClause() {
+    const tier = tierOf(shares, order);
+    const top = lc(labelOf(order[0]));
+    if (tier === 'mostly') return `mostly ${withArticle(top)}`;
+    if (tier === 'leaning') return `leaning ${top}`;
+    return `a blend of ${top} and ${lc(labelOf(order[1]))}`;
+  }
   function setHeadline() {
-    if (!shares || !order.length) {
+    const hasTypes = !!shares && order.length > 0;
+    const hasFams = !!famShares && famOrder.length > 0;
+    familyLine.hidden = !hasFams;
+    familyLine.textContent = hasFams ? `Way of working: ${familyParts().join('\u00a0· ')}` : '';
+    panelLabel.textContent = hasFams && !inDomain ? 'the neuroscience types (not scored for you)' : 'your mix of types';
+    note.textContent = hasFams && !inDomain ? NOTE_OUTSIDE : NOTE;
+    if (!hasTypes && !hasFams) {
       headline.textContent = 'Where you sit among the researcher types';
       jobsLine.hidden = true;
       return;
     }
+    if (!hasTypes) {   // outside the neuro types: the family level only
+      headline.textContent = `${familyClause()}.`;
+      jobsLine.textContent = OUTSIDE;
+      jobsLine.hidden = false;
+      return;
+    }
     const top = order[0];
-    const second = order[1];
-    const topLabel = lc(labelOf(top));
-    let text = `You're mostly ${withArticle(topLabel)}`;
-    if (second != null && (shares[second] || 0) >= 0.2) text += ` with a strong ${lc(labelOf(second))} side`;
-    headline.textContent = `${text}.`;
+    if (hasFams) {
+      // the top type normally sits in the top family; when it does not, say so instead of implying it
+      const parents = (typeById.get(top) && typeById.get(top).parents) || {};
+      const inFamily = !Object.keys(parents).length || (parents[famOrder[0]] || 0) > 0;
+      headline.textContent = inFamily ? `${familyClause()} — ${typeClause()}.`
+        : `${familyClause()}; your closest type is ${lc(labelOf(top))}.`;
+    } else {
+      headline.textContent = `You're ${typeClause()}.`;
+    }
     const jobs = jobsOf(top).slice(0, 3).map((j) => withArticle(lc(j)));
     jobsLine.textContent = jobs.length ? `People on this path often work as ${orList(jobs)}.` : '';
     jobsLine.hidden = !jobs.length;
@@ -365,8 +433,15 @@ export function createTypesViz(container, model) {
   // ---------------------------------------------------------------- public
   function update(r) {
     results = r || null;
-    const m = results && results.membership && results.membership.memberships;
-    shares = m && typeof m === 'object' ? Object.fromEntries(types.map((t) => [t.id, isNum(m[t.id]) ? m[t.id] : 0])) : null;
+    const mem = results && results.membership;
+    const m = mem && mem.memberships;
+    const fm = mem && mem.families;
+    famShares = families.length && fm && typeof fm === 'object'
+      ? Object.fromEntries(families.map((f) => [f.id, isNum(fm[f.id]) ? fm[f.id] : 0])) : null;
+    famOrder = families.map((f) => f.id);
+    if (famShares) famOrder.sort((a, b) => famShares[b] - famShares[a]);
+    inDomain = !(famShares && mem.in_domain === false);
+    shares = m && typeof m === 'object' && inDomain ? Object.fromEntries(types.map((t) => [t.id, isNum(m[t.id]) ? m[t.id] : 0])) : null;
     percents = shares ? wholePercents(types.map((t) => t.id), shares) : null;
     order = types.map((t) => t.id);
     if (shares) order.sort((a, b) => shares[b] - shares[a]);

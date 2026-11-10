@@ -6,11 +6,13 @@
 // 1. Loads data/model.json (the one file the Python side writes into the site) and GET api/status
 //    (serve.py now, a Worker later). A plain static server has no api/status: free-text scoring is off.
 // 2. Mounts the survey with the saved draft and saves the draft as you go: localStorage
-//    "cns-labmatch-draft-v1", never the email, the transcript or the consent box.
+//    "cns-labmatch-draft-v2", never the email, the transcript or the consent box.
 // 3. On submit: computeResults() and render right away. Then, only when scoring is on and something
 //    was written, POST ONLY {question_text, origin_text, bring_text} to api/score-text and re-render.
-// 4. Star ratings on the cards: saved in localStorage "cns-labmatch-ratings-v1" ({labId: 1..5}), applied
-//    with matcher.applyRatings when the student presses "Update my ranking" (cards never jump mid-click).
+// 4. Feedback on the cards (👎 / 👍 / "I'm gonna apply!", stored as the star values 1 / 4 / 5 they replaced, see
+//    results.FEEDBACK): saved in localStorage "cns-labmatch-ratings-v2" ({labId: 1|4|5}; v1 1-5 star ratings are
+//    converted once on load), applied with matcher.applyRatings when the student presses "Update my ranking"
+//    (cards never jump mid-click).
 //    Only if the server accepts them (api/status "ratings") AND the student ticks "Share my ratings
 //    anonymously" (never remembered), each rating is POSTed to api/rate: {session, lab_id, stars, rank,
 //    vector, model_version}. Never the email, written answers or transcript.
@@ -21,10 +23,14 @@
 //    server writes the email itself from its own lab data. The address is never saved, logged or downloaded.
 // The two charts load on their own: if one fails, its mount point says so and the rest keeps working.
 
-import { renderMatches, renderExcluded, renderWritten, renderHowItWorks, highlightCard } from './results.js';
+import { renderMatches, renderExcluded, renderWritten, renderHowItWorks, highlightCard, FEEDBACK } from './results.js';
 
-const DRAFT_KEY = 'cns-labmatch-draft-v1';
-const RATINGS_KEY = 'cns-labmatch-ratings-v1';
+const DRAFT_KEY = 'cns-labmatch-draft-v2';
+// v1 drafts predate the "Fish, frogs, birds, or reptiles" option: their "invertebrate" box read "Flies, fish, or
+// other small organisms", so a v1 draft with it ticked also gets other_vertebrate (loadDraft migrates once).
+const OLD_DRAFT_KEY = 'cns-labmatch-draft-v1';
+const RATINGS_KEY = 'cns-labmatch-ratings-v2';      // {labId: 1 | 4 | 5}: 👎, 👍, I'm gonna apply!
+const OLD_RATINGS_KEY = 'cns-labmatch-ratings-v1';  // {labId: 1..5} stars from before the buttons
 const NEVER_SAVED = ['email', 'transcript', 'consent'];   // not in the draft
 const NEVER_DOWNLOADED = ['email', 'transcript'];         // not in the downloaded file
 const FALLBACK_TEXT_FIELDS = ['question_text', 'origin_text', 'bring_text'];
@@ -379,7 +385,7 @@ const state = {
   cardSelect: null,
   draftMode: 'fresh',
   devExample: null,
-  ratings: {},            // {labId: 1..5}, this browser only
+  ratings: {},            // {labId: 1 | 4 | 5} (results.FEEDBACK), this browser only
   ratingsApplied: '[]',   // ratingsKey() of the ratings the cards were last ranked with
   share: false,           // "Share my ratings anonymously" (off on every visit)
   rateSession: null,      // random id kept with the saved ratings while the answers stay the same
@@ -586,9 +592,28 @@ function saveDraft(answers) {
   }
 }
 
+function migrateDraft() {
+  const raw = localStorage.getItem(OLD_DRAFT_KEY);
+  if (raw === null) return;
+  try {
+    const d = JSON.parse(raw);
+    if (d && typeof d === 'object' && !Array.isArray(d) && localStorage.getItem(DRAFT_KEY) === null) {
+      const oc = d.organism_comfort;
+      if (Array.isArray(oc) && oc.includes('invertebrate') && !oc.includes('other_vertebrate')) {
+        d.organism_comfort = [...oc, 'other_vertebrate'];
+      }
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+    }
+  } catch {
+    /* unreadable old draft: dropped */
+  }
+  localStorage.removeItem(OLD_DRAFT_KEY);
+}
+
 function loadDraft() {
   let raw = null;
   try {
+    migrateDraft();
     raw = localStorage.getItem(DRAFT_KEY);
   } catch {
     return null;
@@ -614,20 +639,34 @@ function clearDraft() {
 
 // --------------------------------------------------------------------------------------- ratings
 const SESSION_KEY = 'cns-labmatch-rate-session-v1';   // {id, vec}: the shared-rating session for these answers
-const SHARE_NOTE = 'Sends only your stars, the lab, its rank and your answer profile. Never your email, written answers or transcript.';
-const SHARE_DELAY_MS = 600;       // coalesce quick changes (arrowing through the stars) into one request per lab
+const SHARE_NOTE = 'Sends only which button you pressed, the lab, its rank and your answer profile. Never your email, written answers or transcript.';
+const SHARE_DELAY_MS = 600;       // coalesce quick changes (toggling a button back and forth) into one request per lab
 const RETRY_429_MS = 61000;
 
 /** Ratings as a string that ignores key order: [[labId, stars], ...] sorted by lab id. */
 const ratingsKey = (r) => JSON.stringify(Object.keys(r).sort().map((k) => [k, r[k]]));
 const NO_RATINGS = ratingsKey({});
 
+/** Old 1-5 stars -> buttons: 1-2 stars = 👎, 4-5 = 👍 (a 5-star fit isn't a plan to apply), 3 = no opinion. */
+const fromStars = (v) => (v <= 2 ? FEEDBACK.down : v >= 4 ? FEEDBACK.up : null);
+
 function loadRatings() {
+  const read = (key) => {
+    const d = JSON.parse(localStorage.getItem(key) || 'null');
+    return d && typeof d === 'object' && !Array.isArray(d) ? d : null;
+  };
   try {
-    const d = JSON.parse(localStorage.getItem(RATINGS_KEY) || '{}');
     const out = {};
-    if (d && typeof d === 'object' && !Array.isArray(d)) {
-      for (const [k, v] of Object.entries(d)) if (Number.isInteger(v) && v >= 1 && v <= 5) out[k] = v;
+    const valid = new Set(Object.values(FEEDBACK));
+    for (const [k, v] of Object.entries(read(RATINGS_KEY) || {})) if (valid.has(v)) out[k] = v;
+    const old = read(OLD_RATINGS_KEY);
+    if (old) {   // one-time conversion of ratings saved before the buttons
+      for (const [k, v] of Object.entries(old)) {
+        const b = Number.isInteger(v) && v >= 1 && v <= 5 && !Object.hasOwn(out, k) ? fromStars(v) : null;
+        if (b) out[k] = b;
+      }
+      if (Object.keys(out).length) localStorage.setItem(RATINGS_KEY, JSON.stringify(out));
+      localStorage.removeItem(OLD_RATINGS_KEY);
     }
     return out;
   } catch {

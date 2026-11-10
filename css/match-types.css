@@ -21,6 +21,8 @@
 
 .lm-types-label { margin-bottom: 14px; }
 .lm-types-headline { margin: 0; max-width: 32ch; font-size: clamp(22px, 2.2vw, 28px); }
+.lm-types-family { margin: 10px 0 0; max-width: 62ch; font-size: 15px; line-height: 1.6; color: var(--muted); }
+.lm-types-family[hidden] { display: none; }
 .lm-types-jobs { margin: 10px 0 0; max-width: 62ch; font-size: 17px; line-height: 1.6; color: var(--ink); }
 .lm-types-jobs[hidden] { display: none; }
 .lm-types-note { margin: 10px 0 28px; max-width: 70ch; font-size: 15px; line-height: 1.6; color: var(--muted); }

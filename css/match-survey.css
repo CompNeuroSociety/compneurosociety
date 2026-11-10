@@ -32,6 +32,8 @@
 .lm-prompt { display: block; float: none; width: 100%; padding: 0; margin: 0 0 14px; font-size: 18px; font-weight: 700;
   line-height: 1.4; color: var(--ink); letter-spacing: -.005em; max-width: 64ch; }
 .lm-help { font-family: var(--mono); font-size: 13px; color: var(--faint); margin: -6px 0 12px; }
+/* q.help: a plain supportive line under the prompt (readable size, AAA contrast) */
+.lm-hint { font-size: 15px; line-height: 1.5; color: var(--muted); margin: -8px 0 14px; max-width: 60ch; }
 .lm-sublabel { display: block; font-size: 15px; font-weight: 600; color: var(--ink); margin: 0 0 8px; padding: 0; }
 .lm-note { font-size: 14px; line-height: 1.5; color: var(--faint); margin: 8px 0 0; max-width: 60ch; }
 
@@ -69,7 +71,7 @@
 .lm-grid-head, .lm-grid-row { display: grid; grid-template-columns: var(--lm-label-col) repeat(var(--lm-cols, 5), minmax(0, 1fr));
   gap: 8px; align-items: center; }
 .lm-grid-head { padding-bottom: 10px; align-items: end; }
-.lm-grid-col { font-family: var(--mono); font-size: 12px; line-height: 1.35; color: var(--faint); text-align: center; }
+.lm-grid-col { font-size: 13px; line-height: 1.35; color: var(--muted); text-align: center; }
 .lm-grid-row { padding: 6px 0; border-top: 1px solid var(--line); }
 .lm-grid-row:last-child { border-bottom: 1px solid var(--line); }
 .lm-row-label { font-size: 16px; font-weight: 600; color: var(--ink); line-height: 1.35; padding-right: 8px; }

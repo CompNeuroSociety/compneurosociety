@@ -480,12 +480,12 @@ function transcriptCtrl(q, uid, ctx) {
     doneText.textContent = `Using ${confirmed.length} course${confirmed.length === 1 ? '' : 's'} from your transcript. Kept in this tab only.`;
     const m = suggestMath(confirmed);
     if (m && ctx.getAnswer('math_reached') !== m.level && ctx.hasQuestion('math_reached')) {
-      mathText.textContent = `Highest math looks like ${m.code} (${m.level}). Use it?`;
+      mathText.textContent = `Highest math looks like ${m.code} (${ctx.labelOf('math_reached', m.level)}). Use it?`;
       mathBtn.hidden = false;
       mathOffer.hidden = false;
       mathBtn.onclick = () => {
         ctx.setAnswer('math_reached', m.level);
-        mathText.textContent = `Highest math set to ${m.level}.`;
+        mathText.textContent = `Highest math set to ${ctx.labelOf('math_reached', m.level)}.`;
         mathBtn.hidden = true;
         ctx.changed();
         mathText.setAttribute('tabindex', '-1');
@@ -576,6 +576,17 @@ function makeCtrl(q, uid, ctx) {
   }
 }
 
+// q.help: one optional plain line under the prompt (what a term means, or that a rough answer is fine).
+// It is announced with the question's inputs (aria-describedby, via c.describe).
+function addHelp(c, q, uid) {
+  if (typeof q.help !== 'string' || !q.help.trim()) return;
+  const prompt = c.wrap.querySelector('.lm-prompt');
+  if (!prompt) return;
+  const hint = h('p', { class: 'lm-hint', id: `${uid}-hint-${q.id}`, text: q.help.trim() });
+  prompt.after(hint);
+  c.describe.unshift(hint.id);
+}
+
 // ------------------------------------------------------------------------------------------ wizard
 export function createSurvey(root, questions, opts = {}) {
   if (!root) throw new Error('createSurvey: no root element');
@@ -599,6 +610,12 @@ export function createSurvey(root, questions, opts = {}) {
     getAnswer: (qid) => (byId.has(qid) ? byId.get(qid).get() : undefined),
     setAnswer: (qid, v) => { if (byId.has(qid)) { byId.get(qid).set(v); recheck(byId.get(qid)); } },
     hasQuestion: (qid) => byId.has(qid),
+    // the wording shown for a stored option value (keys are stored; labels can be reworded)
+    labelOf: (qid, value) => {
+      const q = byId.has(qid) ? byId.get(qid).q : null;
+      const o = q && Array.isArray(q.options) ? q.options.find((x) => optKey(x) === String(value)) : null;
+      return o ? optLabel(o) : String(value);
+    },
     changed: () => schedule(),
   };
 
@@ -626,6 +643,7 @@ export function createSurvey(root, questions, opts = {}) {
       if (!q || typeof q.id !== 'string' || byId.has(q.id)) continue;
       const c = makeCtrl(q, uid, ctx);
       if (!c) continue;
+      addHelp(c, q, uid);
       for (const inp of c.inputs()) {
         const base = [inp.getAttribute('aria-describedby'), ...c.describe].filter(Boolean).join(' ');
         inp.dataset.lmDesc = base;

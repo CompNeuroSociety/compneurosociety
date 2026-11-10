@@ -5,7 +5,7 @@
 // (createElement + append, never innerHTML), links are kept only when they are absolute http(s) URLs,
 // and every number shown comes from model.json or the Results rows (lab count, facet mix, boosts, k).
 
-const MORE_STEP = 5;          // "Show 5 more"
+const MORE_STEP = 5;          // "Show 5 more matches"
 const FLASH_MS = 1800;        // how long highlightCard's highlight stays on
 
 // Friendlier names for the lab's project_fit keys; unknown keys are shown as they are.
@@ -16,7 +16,8 @@ const PROJECT_LABELS = { DIS: 'DIS', thesis: 'Honors thesis', UROP: 'UROP' };
 const ORGANISM_SHORT = {
   human: 'human participants',
   rodent: 'rats and mice',
-  invertebrate: 'small organisms like flies and fish',
+  other_vertebrate: 'fish and birds',
+  invertebrate: 'flies and worms',
 };
 
 const listState = new WeakMap();   // <ol class="lm-cards"> -> { revealThrough(index) }
@@ -149,46 +150,66 @@ function extLink(href, text, labName) {
     el('span', { class: 'sr-only', text: ` for ${labName} (opens in a new tab)` }));
 }
 
-const STAR_WORDS = ['', 'Poor fit', 'Weak fit', 'Okay fit', 'Good fit', 'Great fit'];
+/** A card's feedback choices. Each is saved and shared as the star value it replaced, so the re-ranking
+ *  (matcher.applyRatings), api/rate and build_model.py --ratings need no change:
+ *  👎 "Not for me" = 1 (−35%), 👍 "Looks right" = 4 (+17.5%), "I'm gonna apply!" = 5 (+35%, includes 👍). */
+export const FEEDBACK = Object.freeze({ down: 1, up: 4, apply: 5 });
+const FEEDBACK_NOTES = {
+  [FEEDBACK.down]: 'Marked not for you.',
+  [FEEDBACK.up]: 'Marked as a good match.',
+  [FEEDBACK.apply]: 'You’re planning to apply. Good luck! “How to reach out” above says how.',
+};
 
-/** The 1-5 star control on a card: native radios in a fieldset (arrow keys work), a clear button and a
- *  short note. onRate(labId, stars | null) is called on every change; the card itself never re-sorts. */
-function ratingControl(id, name, stars, onRate) {
-  const group = `lm-rate-${id}`;
+/** Thumbs up / down and "I'm gonna apply!" toggle buttons (aria-pressed) in a fieldset with a short note.
+ *  Pressing the active choice again takes it back; "apply" also presses 👍, and un-pressing 👍 drops "apply".
+ *  onRate(labId, 1 | 4 | 5 | null) is called on every change; the card itself never re-sorts. */
+// Thumb outlines (Feather icons, MIT), drawn as inline SVG so they look the same on every device: an emoji
+// needs an emoji font, which some systems (and headless test browsers) don't have.
+const THUMB_PATHS = {
+  up: 'M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3',
+  down: 'M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17',
+};
+function thumbIcon(which) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  for (const [k, v] of Object.entries({ class: 'lm-vote-icon', viewBox: '0 0 24 24', width: '18', height: '18', fill: 'none',
+    stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true',
+    focusable: 'false' })) svg.setAttribute(k, v);
+  const path = document.createElementNS(NS, 'path');
+  path.setAttribute('d', THUMB_PATHS[which]);
+  svg.append(path);
+  return svg;
+}
+
+function feedbackControl(id, name, value, onRate) {
   const note = el('span', { class: 'lm-rate-note', 'aria-live': 'polite' });
-  const clear = el('button', { type: 'button', class: 'mono-link lm-linkbtn lm-rate-clear' }, 'clear',
-    el('span', { class: 'sr-only', text: ` my rating of ${name}` }));
-  const stars_ = el('div', { class: 'lm-stars' });
-  const inputs = [];
-  for (let n = 1; n <= 5; n++) {
-    const input = el('input', { type: 'radio', class: 'sr-only', name: group, value: String(n), 'data-stars': String(n) });
-    inputs.push(input);
-    stars_.append(el('label', { class: 'lm-star', title: STAR_WORDS[n] }, input,
-      el('span', { class: 'lm-star-icon', 'aria-hidden': 'true', text: '★' }),
-      el('span', { class: 'sr-only', text: `${n} of 5: ${STAR_WORDS[n]}` })));
-  }
+  const button = (vote, label) => el('button',
+    { type: 'button', class: `lm-vote lm-vote-${vote}`, 'data-vote': vote, 'aria-pressed': 'false' },
+    THUMB_PATHS[vote] ? thumbIcon(vote) : null,
+    el('span', { text: label }),
+    el('span', { class: 'sr-only', text: ` (${name})` }));
+  const up = button('up', 'Looks right');
+  const down = button('down', 'Not for me');
+  const apply = button('apply', 'I’m gonna apply!');
+  let current = null;
   const show = (v) => {
-    for (const i of inputs) i.checked = Number(i.value) === v;
-    clear.hidden = !v;
-    note.textContent = v ? `You rated this ${v} of 5 (${STAR_WORDS[v].toLowerCase()}).` : '';
+    current = v;
+    up.setAttribute('aria-pressed', String(v === FEEDBACK.up || v === FEEDBACK.apply));
+    down.setAttribute('aria-pressed', String(v === FEEDBACK.down));
+    apply.setAttribute('aria-pressed', String(v === FEEDBACK.apply));
+    note.textContent = v ? FEEDBACK_NOTES[v] : '';
   };
-  for (const i of inputs) {
-    i.addEventListener('change', () => {
-      if (!i.checked) return;
-      const v = Number(i.value);
-      show(v);
-      onRate(id, v);
-    });
-  }
-  clear.addEventListener('click', () => {
-    show(null);
-    onRate(id, null);
-    if (inputs[0]) inputs[0].focus();
-  });
-  show(Number.isInteger(stars) && stars >= 1 && stars <= 5 ? stars : null);
+  const choose = (v) => {
+    show(v);
+    onRate(id, v);
+  };
+  up.addEventListener('click', () => choose(current === FEEDBACK.up || current === FEEDBACK.apply ? null : FEEDBACK.up));
+  down.addEventListener('click', () => choose(current === FEEDBACK.down ? null : FEEDBACK.down));
+  apply.addEventListener('click', () => choose(current === FEEDBACK.apply ? FEEDBACK.up : FEEDBACK.apply));
+  show(Object.values(FEEDBACK).includes(value) ? value : null);
   return el('fieldset', { class: 'lm-rate', 'data-lab-id': id },
-    el('legend', { class: 'lm-rate-q' }, 'How good a fit does this look to you?', el('span', { class: 'sr-only', text: ` (${name})` })),
-    el('div', { class: 'lm-rate-row' }, stars_, clear, note));
+    el('legend', { class: 'lm-rate-q' }, 'Does this match look right?', el('span', { class: 'sr-only', text: ` (${name})` })),
+    el('div', { class: 'lm-rate-row' }, el('div', { class: 'lm-votes' }, up, down), apply, note));
 }
 
 function buildCard(model, lab, row, rank, onSelect, rating = null) {
@@ -199,83 +220,98 @@ function buildCard(model, lab, row, rank, onSelect, rating = null) {
     class: rank === 1 ? 'card glow lm-card' : 'card lm-card',
     id: `lm-card-${id}`, tabindex: '-1', 'aria-labelledby': nameId, 'data-lab-id': id,
   });
+  const meta = (model && model.meta) || {};
+  const levels = Array.isArray(meta.comp_levels) ? meta.comp_levels : [];
+  const work = Array.isArray(meta.compute_levels) ? meta.compute_levels : [];
 
-  // Head: rank, name, PI + department | the fit as a big number
+  // ---- Always visible (built to be scanned): rank, name, who | fit, then one sentence and three quick facts
   const who = [lab.pi, lab.dept].filter(hasText).join(' · ');
   const title = el('div', { class: 'lm-card-title' },
-    el('p', { class: 'lm-rank', 'aria-hidden': 'true', text: String(rank).padStart(2, '0') }),
+    el('p', { class: 'lm-rank' }, el('span', { class: 'sr-only', text: 'Match ' }), String(rank)),
     el('h3', { class: 'lm-card-name', id: nameId, text: name }),
     who ? el('p', { class: 'lm-card-who', text: who }) : null);
   const fit = el('div', { class: 'lm-fit' },
     el('p', { class: 'lm-fit-line' },
       el('span', { class: 'lm-fit-num', text: isNum(row.fit) ? `${pct(row.fit)}%` : '—' }), ' ',
       el('span', { class: 'lm-fit-word', text: 'fit' })));
-  if (isNum(row.boost) && Math.round((row.boost - 1) * 100) > 0) {
-    fit.append(el('p', { class: 'lm-fit-boost', text: `+${Math.round((row.boost - 1) * 100)}% ranking boost` }));
-  }
   if (isNum(row.personal) && Math.round((row.personal - 1) * 100) !== 0) {
     const d = Math.round((row.personal - 1) * 100);
     fit.append(el('p', { class: 'lm-fit-personal', text: `${d > 0 ? '+' : '−'}${Math.abs(d)}% from your ratings` }));
   }
   card.append(el('div', { class: 'lm-card-head' }, title, fit));
+  if (hasText(lab.focus)) card.append(el('p', { class: 'lm-focus', text: lab.focus }));
 
-  // Side: the three facet meters + tags
+  const quick = el('ul', { class: 'lm-quick' });
+  const fact = (label, value) => el('li', null, el('span', { class: 'lm-quick-label', text: `${label}: ` }), value);
+  if (lab.openings === 'posted') quick.append(el('li', { class: 'lm-quick-open' }, el('span', { class: 'tag gold', text: 'Openings posted' })));
+  const kinds = (Array.isArray(lab.project_fit) ? lab.project_fit : []).filter(hasText)
+    .map((p) => (Object.hasOwn(PROJECT_LABELS, p) ? PROJECT_LABELS[p] : p));
+  if (kinds.length) quick.append(fact('Takes students for', kinds.join(', ')));
+  // what the day-to-day work is like (any field)
+  if (Number.isInteger(lab.compute_level) && hasText(work[lab.compute_level])) {
+    quick.append(fact('Day to day', lowerFirst(work[lab.compute_level])));
+  }
+  // the lab's way-of-working family (any field): the same three families the student's headline uses
+  const fams = Array.isArray(model && model.families) ? model.families : [];
+  const famLabel = (fid) => { const f = fams.find((x) => x && x.id === fid); return f && hasText(f.label) ? f.label : null; };
+  if (famLabel(lab.family)) {
+    const also = famLabel(lab.family_also);
+    quick.append(fact('Way of working', also ? `${famLabel(lab.family)} (also ${lowerFirst(also)})` : famLabel(lab.family)));
+  }
+  if (quick.childElementCount) card.append(quick);
+
+  // the three facets behind the fit, in one row
   const meters = el('div', { class: 'lm-meters' });
   for (const lens of lensList(model)) meters.append(meter(lens, row.lenses ? row.lenses[lens.id] : null));
-  const tags = el('div', { class: 'lm-tags' });
-  const meta = (model && model.meta) || {};
-  const levels = Array.isArray(meta.comp_levels) ? meta.comp_levels : [];
-  const work = Array.isArray(meta.compute_levels) ? meta.compute_levels : [];
-  // what the day-to-day work is like (any field), then how much of it is neuroscience modeling
-  if (Number.isInteger(lab.compute_level) && hasText(work[lab.compute_level])) {
-    tags.append(el('span', { class: 'tag dim', text: work[lab.compute_level] }));
-  }
-  if (Number.isInteger(lab.comp_neuro_level) && hasText(levels[lab.comp_neuro_level]) &&
-      (lab.comp_neuro_level > 0 || !work.length)) {
-    tags.append(el('span', { class: 'tag teal', text: levels[lab.comp_neuro_level] }));
-  }
-  if (lab.openings === 'posted') tags.append(el('span', { class: 'tag gold', text: 'Openings posted' }));
-  for (const p of Array.isArray(lab.project_fit) ? lab.project_fit : []) {
-    if (hasText(p)) tags.append(el('span', { class: 'chip', text: Object.hasOwn(PROJECT_LABELS, p) ? PROJECT_LABELS[p] : p }));
-  }
-  const side = el('div', { class: 'lm-card-side' }, meters, tags.childElementCount ? tags : null);
+  card.append(meters);
 
-  // Main: focus sentence, the practical lines, links
-  const main = el('div', { class: 'lm-card-main' });
-  if (hasText(lab.focus)) main.append(el('p', { class: 'lm-focus', text: lab.focus }));
-  for (const [label, value] of [
-    ['Stepping stone', lab.bridge],
-    ['What they expect', lab.expectations],
-    ['How to reach out', lab.how_to_apply],
-    ['Start here', lab.entry_point],
-  ]) {
-    if (hasText(value)) main.append(el('p', { class: 'lm-fact' }, el('strong', { text: `${label}:` }), ' ', value.trim()));
-  }
   const links = el('div', { class: 'lm-card-links' });
   const labUrl = safeUrl(lab.lab_url);
   const listUrl = safeUrl(lab.listing_url);
-  if (labUrl) links.append(extLink(labUrl, 'lab page', name));
-  if (listUrl) links.append(extLink(listUrl, 'listing', name));
-  if (typeof onSelect === 'function') {
-    links.append(el('button', { type: 'button', class: 'mono-link teal lm-linkbtn', onclick: () => onSelect(id) },
-      'Show in chart', el('span', { class: 'sr-only', text: `: ${name}` })));
-  }
-  if (links.childElementCount) main.append(links);
-  card.append(el('div', { class: 'lm-card-body' }, side, main));
-  if (rating && typeof rating.onRate === 'function') card.append(ratingControl(id, name, rating.stars, rating.onRate));
+  if (labUrl) links.append(extLink(labUrl, 'Lab page', name));
+  if (listUrl) links.append(extLink(listUrl, 'Listing for students', name));
 
-  // Provenance
+  // ---- Behind "How to reach out and more": the practical lines, the ranking note, provenance
+  const more = el('div', { class: 'lm-details-body' });
+  for (const [label, value] of [
+    ['How to reach out', lab.how_to_apply],
+    ['What they expect', lab.expectations],
+    ['Start here', lab.entry_point],
+    ['Stepping stone', lab.bridge],
+  ]) {
+    if (hasText(value)) more.append(el('p', { class: 'lm-fact' }, el('strong', { text: `${label}:` }), ' ', value.trim()));
+  }
+  // how much of the work is neuroscience modeling, when it is any
+  if (Number.isInteger(lab.comp_neuro_level) && hasText(levels[lab.comp_neuro_level]) &&
+      (lab.comp_neuro_level > 0 || !work.length)) {
+    more.append(el('p', { class: 'lm-fact' }, el('strong', { text: 'Neuroscience modeling:' }), ' ', levels[lab.comp_neuro_level]));
+  }
+  if (isNum(row.boost) && Math.round((row.boost - 1) * 100) > 0) {
+    more.append(el('p', { class: 'lm-fact lm-fit-boost' }, el('strong', { text: 'Ranking:' }), ' ',
+      `+${Math.round((row.boost - 1) * 100)}% ranking boost`, ' (explained under “How this works”).'));
+  }
+  if (typeof onSelect === 'function') {
+    more.append(el('p', { class: 'lm-fact' }, el('button', { type: 'button', class: 'mono-link teal lm-linkbtn', onclick: () => onSelect(id) },
+      'Show in chart', el('span', { class: 'sr-only', text: `: ${name}` }))));
+  }
   const checked = hasText(lab.last_checked) ? ` · last checked ${lab.last_checked}` : '';
-  card.append(el('p', {
+  more.append(el('p', {
     class: 'lm-card-note',
     text: lab.verified === true ? `Verified by a person${checked}` : `Not yet verified by a person${checked}`,
   }));
+  const details = el('details', { class: 'lm-details' },
+    el('summary', { class: 'lm-details-sum' }, 'How to reach out and more',
+      el('span', { class: 'sr-only', text: `: ${name}` })),
+    more);
+  card.append(el('div', { class: 'lm-card-foot' }, details, links.childElementCount ? links : null));
+
+  if (rating && typeof rating.onRate === 'function') card.append(feedbackControl(id, name, rating.stars, rating.onRate));
   return card;
 }
 
 /**
  * Lab cards for the top non-excluded rows (rows = results.ranks[3]), `limit` shown at first and a
- * "Show 5 more" button for the rest. onSelect(labId), when given, adds a "Show in chart" button.
+ * "Show 5 more matches" button for the rest (never the whole list at once). onSelect(labId), when given, adds a "Show in chart" button.
  */
 export function renderMatches(container, model, rows, { limit = 5, onSelect, ratings, onRate } = {}) {
   if (!container) return;
@@ -294,9 +330,8 @@ export function renderMatches(container, model, rows, { limit = 5, onSelect, rat
   }
   container.append(el('p', {
     class: 'lm-sub',
-    text: `Fit is how closely your answers line up with each lab on ${joinAnd(lensNames)}. ` +
-      'The order also includes two small boosts, explained under “How this works”.' +
-      (typeof onRate === 'function' ? ' Rate a card to tell us how it looks to you: your ratings can reorder this list.' : ''),
+    text: `Your best matches come first. Fit shows how well your answers line up with each lab on ${joinAnd(lensNames)}.` +
+      (typeof onRate === 'function' ? ' Tell us what you think of each match and we’ll reorder your list.' : ''),
   }));
 
   const ol = el('ol', { class: 'lm-cards', 'aria-labelledby': 'lm-matches-title' });
@@ -313,8 +348,8 @@ export function renderMatches(container, model, rows, { limit = 5, onSelect, rat
   const sync = () => {
     const left = items.length - shown;
     more.hidden = left <= 0;
-    more.textContent = `Show ${Math.min(MORE_STEP, left)} more`;
-    count.textContent = `Showing ${shown} of ${items.length} ${plural(items.length, 'lab', 'labs')} that pass your filters`;
+    more.textContent = `Show ${Math.min(MORE_STEP, left)} more ${plural(Math.min(MORE_STEP, left), 'match', 'matches')}`;
+    count.textContent = `Showing ${shown} of ${items.length} matching ${plural(items.length, 'lab', 'labs')}`;
   };
   const revealTo = (n) => {
     const from = shown;
@@ -343,8 +378,8 @@ function organismSentence(model, labsOut, vector) {
   const n = labsOut.length;
   const one = n === 1;
   // one group:    "with rats and mice, which you didn’t pick"
-  // two groups:   "with rats and mice or with small organisms like flies and fish, and you didn’t pick either"
-  // three groups: "with human participants, rats and mice, or small organisms like flies and fish, and you didn’t pick any of them"
+  // two groups:   "with rats and mice or with flies and worms, and you didn’t pick either"
+  // three groups: "with human participants, rats and mice, or flies and worms, and you didn’t pick any of them"
   let what;
   let picked;
   if (names.length <= 1) {
@@ -385,6 +420,8 @@ export function renderExcluded(container, model, rows, vector) {
     if (!byReason.has(key)) byReason.set(key, []);
     byReason.get(key).push(labs.get(String(r.id)));
   }
+  // One short line; the reasons and the lab names open on request, so a long list never crowds the page.
+  const body = el('div', { class: 'lm-excl-body' });
   for (const [reason, group] of byReason) {
     const lead = reason === 'organism'
       ? organismSentence(model, group, vector)
@@ -392,8 +429,13 @@ export function renderExcluded(container, model, rows, vector) {
     const names = group.map((lab) => el('span', {
       class: 'lm-excl-name', 'data-lab-id': String(lab.id), tabindex: '-1', text: hasText(lab.name) ? lab.name : String(lab.id),
     }));
-    container.append(el('p', { class: 'lm-excl-line' }, lead, joinList(names), '.'));
+    body.append(el('p', { class: 'lm-excl-line' }, lead, joinList(names), '.'));
   }
+  const n = out.length;
+  container.append(el('details', { class: 'lm-excl-details' },
+    el('summary', { class: 'lm-details-sum' },
+      `${n} ${plural(n, 'lab is', 'labs are')} not shown because of your answers. See which and why`),
+    body));
   container.hidden = false;
 }
 
@@ -500,6 +542,11 @@ export function renderHowItWorks(container, model, opts = {}) {
     el('p', {
       text: 'Your percentages show how close your answers are to each profile, and they add up to 100%. Most people are a blend.',
     }),
+    ...(Array.isArray(model.families) && model.families.length ? [el('p', {
+      text: `Each type belongs to a broader way of working: ${model.families.map((f) => f.label).filter(hasText).join(', ')}. ` +
+        'Every lab, in any field, has one too (it is on each card). Your share of a way of working is the sum of the shares of its types. ' +
+        'If your interest answers do not point at brain, mind or animal research, we show your way of working only.',
+    })] : []),
     el('p', {
       text: (nDots ? `The faint dots on the map are ${nDots} simulated students` : 'The faint dots on the map are simulated students') +
         ' we made up to test the tool, not real people.',
@@ -548,18 +595,20 @@ export function renderHowItWorks(container, model, opts = {}) {
         'If you’d rather stay on the computer, labs where coding is a regular part of the work stay in.',
     }),
   ));
-  // 2b. Star ratings
-  faq.append(faqItem('What do the star ratings do?',
+  // 2b. Feedback buttons
+  faq.append(faqItem('What do “Looks right”, “Not for me” and “I’m gonna apply!” do?',
     el('p', {
-      text: 'Each card has 1 to 5 stars for how good a fit the lab looks to you. Your ratings stay in this browser and, when you ' +
-        'press “Update my ranking”, move that lab up or down your list; labs that look like it (similar skills and interests) move ' +
-        'a little the same way. A 5-star lab gets up to +35%, a 1-star lab −35%.',
+      text: 'Each card asks whether the match looks right. Your answers stay in this browser and, when you press “Update my ' +
+        'ranking”, move that lab up or down your list; labs that look like it (similar skills and interests) move a little the ' +
+        'same way. “Not for me” moves a lab down by up to 35%, “Looks right” moves it up by up to 17.5%, and “I’m gonna apply!” ' +
+        '(which counts as “Looks right” too) ' +
+        'moves it up by up to 35%. Press a button again to take it back.',
     }),
     el('p', {
       text: (sharing
         ? 'You can also choose to share your ratings anonymously. '
         : 'When the server accepts shared ratings, you can choose to share yours anonymously. ') +
-        'A shared rating is the stars, the lab, where it sat in your list and the number profile your answers make (the same one ' +
+        'A shared rating is which button you pressed, the lab, where it sat in your list and the number profile your answers make (the same one ' +
         'used for matching). Never your email, your written answers or your transcript, and nothing that names you. We use shared ' +
         'ratings only to tune how much skills, interests and goals count for everyone; they never score a lab or its PI.',
     }),
@@ -585,8 +634,8 @@ export function renderHowItWorks(container, model, opts = {}) {
 
   // 4. What happens to my answers
   const unless = emailOn
-    ? 'unless you choose to share your star ratings or to email yourself your matches.'
-    : 'unless you choose to share your star ratings.';
+    ? 'unless you choose to share your ratings or to email yourself your matches.'
+    : 'unless you choose to share your ratings.';
   const sent = scoring === true
     ? `Your ${writtenWord} are sent to Claude Haiku (Anthropic) only to read your interests. Nothing else you enter leaves this page, ${unless}`
     : scoring === false
@@ -613,7 +662,7 @@ export function renderHowItWorks(container, model, opts = {}) {
     el('p', { text: emailText }),
     el('p', { text: sent }),
     el('p', {
-      text: '“Download my results” saves a file to your device; there is no copy on a server. Star ratings stay in this browser ' +
+      text: '“Download my results” saves a file to your device; there is no copy on a server. Your “Looks right”, “Not for me” and “apply” choices stay in this browser ' +
         'unless you tick “Share my ratings anonymously”. This page has no analytics or tracking cookies; our server only adds one ' +
         'to a count of how many times the page was opened that day, with nothing about who opened it. It loads its ' +
         'fonts from Google Fonts, and pdf.js from cdnjs only if you upload a PDF transcript; neither gets your answers.',
@@ -657,6 +706,8 @@ export function highlightCard(labId) {
     }
   } else {
     target = [...document.querySelectorAll('.lm-excl-name[data-lab-id]')].find((n) => n.getAttribute('data-lab-id') === id) || null;
+    const closed = target ? target.closest('details:not([open])') : null;
+    if (closed) closed.open = true;   // the left-out names sit behind "See which and why"
   }
   if (!target || !target.isConnected || target.closest('[hidden]')) return false;
   const card = target.classList.contains('lm-card');

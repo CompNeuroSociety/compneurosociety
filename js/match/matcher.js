@@ -16,7 +16,9 @@
 // (serve.py locally, a Worker in production). The page posts to /api/score-text instead.
 
 export const AXES = ['computational', 'cognitive', 'organism', 'clinical'];
-export const ORGANISMS = ['human', 'rodent', 'invertebrate', 'in_silico_only'];
+// rodent = rats, mice and other lab mammals; other_vertebrate = fish, frogs, birds, reptiles;
+// invertebrate = flies, worms, Aplysia, bees and other invertebrates. Must match matcher.py.
+export const ORGANISMS = ['human', 'rodent', 'other_vertebrate', 'invertebrate', 'in_silico_only'];
 export const TEXT_FIELDS = ['question_text', 'origin_text', 'bring_text'];
 export const LENSES = ['skills', 'interests', 'goals'];
 
@@ -328,25 +330,73 @@ export function rankLabs(vec, model, upto = 3) {
 }
 
 // ----------------------------------------------------------------------------- typing (viz 2)
-/** Fuzzy c-means membership from distance to each researcher-type profile (u_t ∝ d_t^(-2/(m-1)), d² = 1 - sim). */
-export function typeMembership(vec, model) {
-  const w = model.weights.type, spec = model.spec, m = model.typing.fuzzifier;
-  const e = -1.0 / (m - 1.0);
+/** Fuzzy c-means shares over `items` ({id, profile}): u_t ∝ d_t^-sharp, d = 1 - similarity. `sharp` is a
+ *  whole number, multiplied out (bit-identical to matcher.py); a model without it uses the fuzzifier m. */
+function fuzzy(vec, items, w, spec, sharp, m) {
   const raw = {};
-  for (const t of model.types) {
+  for (const t of items) {
     const d2 = Math.max(1e-9, 1.0 - gower(vec, t.profile, w, spec));
-    // libm pow() is correctly rounded, so pow(d2, -1) == 1/d2 exactly; V8's pow is not guaranteed to be
-    raw[t.id] = e === -1 ? 1 / d2 : Math.pow(d2, e);
+    if (isNone(sharp)) {
+      const e = -1.0 / (m - 1.0);
+      // libm pow() is correctly rounded, so pow(d2, -1) == 1/d2 exactly; V8's pow is not guaranteed to be
+      raw[t.id] = e === -1 ? 1 / d2 : Math.pow(d2, e);
+    } else {
+      const inv = 1.0 / d2;
+      let r = 1.0;
+      for (let i = 0; i < sharp; i++) r *= inv;
+      raw[t.id] = r;
+    }
   }
-  let z = 0;
+  let z = 0.0;
   for (const k of Object.keys(raw)) z += raw[k];
   const u = {};
+  for (const k of Object.keys(raw)) u[k] = round4(raw[k] / z);
+  return u;
+}
+
+/** First key with the largest value, like Python's max(u, key=u.get). */
+function argmax(u) {
   let top = null;
-  for (const k of Object.keys(raw)) {
-    u[k] = round4(raw[k] / z);
-    if (top === null || u[k] > u[top]) top = k;       // first maximum wins, like max(u, key=u.get)
+  for (const k of Object.keys(u)) if (top === null || u[k] > u[top]) top = k;
+  return top;
+}
+
+/** Two-level typing (see matcher.py type_membership): type shares, plus the way-of-working families.
+ *  In the types' domain a family's share is the sum of its child types' shares (type.parents weights);
+ *  a student whose guard features are all below the threshold gets the families' own profiles instead
+ *  and in_domain: false (show the family level only). */
+export function typeMembership(vec, model) {
+  const ty = model.typing, w = model.weights, spec = model.spec;
+  const m = get(ty, 'fuzzifier', 2.0);
+  const u = fuzzy(vec, model.types, w.type, spec, get(ty, 'sharpness'), m);
+  const out = { memberships: u, top: argmax(u) };
+  const fams = get(model, 'families');
+  if (!truthy(fams)) return out;
+  const guard = get(ty, 'guard') || {};
+  const known = [];
+  for (const f of get(guard, 'features', [])) if (!isNone(get(vec, f))) known.push(vec[f]);
+  let hi = -Infinity;
+  for (const v of known) if (v > hi) hi = v;
+  const inDomain = !(known.length > 0 && hi < guard.below);
+  let fam;
+  if (inDomain) {
+    const acc = {};
+    for (const f of fams) acc[f.id] = 0.0;
+    for (const t of model.types) {
+      const parents = get(t, 'parents', {});
+      for (const fid of Object.keys(parents)) acc[fid] += parents[fid] * u[t.id];
+    }
+    let z = 0.0;
+    for (const k of Object.keys(acc)) z += acc[k];
+    fam = {};
+    for (const k of Object.keys(acc)) fam[k] = round4(acc[k] / z);
+  } else {
+    fam = fuzzy(vec, fams, w.family, spec, get(ty, 'family_sharpness'), m);
   }
-  return { memberships: u, top };
+  out.families = fam;
+  out.family = argmax(fam);
+  out.in_domain = inDomain;
+  return out;
 }
 
 /** Gower's add-a-point formula for classical MDS: x = P (b - d²), d² = 1 - similarity to each anchor. */
