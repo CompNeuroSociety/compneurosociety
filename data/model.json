@@ -12248,15 +12248,42 @@
    }
   },
   "ratings": {
-   "file": "ratings.json",
-   "rows": 17,
+   "rows": 15,
    "rejected": 0,
-   "ratings": 17,
-   "sessions": 3,
-   "sessions_with_pairs": 1,
-   "pairs": 59,
+   "ratings": 15,
+   "sessions": 5,
+   "sessions_with_pairs": 0,
+   "pairs": 25,
+   "skipped_pairs": 0,
    "adopted": false,
-   "agreement": 0.5084745762711864
+   "counts": "rounded to 5",
+   "agreement": 0.56
+  },
+  "coarsen": {
+   "students": 150,
+   "step": 1,
+   "kendall_tau_mean": 0.9688,
+   "kendall_tau_p10": 0.9467,
+   "kendall_tau_min": 0.9174,
+   "share_features": [
+    "axis_computational",
+    "axis_cognitive",
+    "axis_organism",
+    "axis_clinical",
+    "org_human",
+    "org_rodent",
+    "org_other_vertebrate",
+    "org_invertebrate",
+    "org_in_silico_only",
+    "wet_dry",
+    "coding_level",
+    "math_level",
+    "project_kind",
+    "career",
+    "hours",
+    "semesters"
+   ],
+   "ok": true
   }
  },
  "ratings": {

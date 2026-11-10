@@ -150,8 +150,8 @@ function extLink(href, text, labName) {
     el('span', { class: 'sr-only', text: ` for ${labName} (opens in a new tab)` }));
 }
 
-/** A card's feedback choices. Each is saved and shared as the star value it replaced, so the re-ranking
- *  (matcher.applyRatings), api/rate and build_model.py --ratings need no change:
+/** A card's feedback choices. Each is saved (and, if the student agrees, shared) as the star value it replaced,
+ *  so the re-ranking (matcher.applyRatings) needs no change; api/rate v2 accepts only these three values:
  *  👎 "Not for me" = 1 (−35%), 👍 "Looks right" = 4 (+17.5%), "I'm gonna apply!" = 5 (+35%, includes 👍). */
 export const FEEDBACK = Object.freeze({ down: 1, up: 4, apply: 5 });
 const FEEDBACK_NOTES = {
@@ -162,7 +162,8 @@ const FEEDBACK_NOTES = {
 
 /** Thumbs up / down and "I'm gonna apply!" toggle buttons (aria-pressed) in a fieldset with a short note.
  *  Pressing the active choice again takes it back; "apply" also presses 👍, and un-pressing 👍 drops "apply".
- *  onRate(labId, 1 | 4 | 5 | null) is called on every change; the card itself never re-sorts. */
+ *  onRate(labId, 1 | 4 | 5 | null) is called on every change; the card itself never re-sorts. While "Not for me"
+ *  is pressed, an optional row of reason buttons (REASONS) shows; onReason(labId, key | null) on every change. */
 // Thumb outlines (Feather icons, MIT), drawn as inline SVG so they look the same on every device: an emoji
 // needs an emoji font, which some systems (and headless test browsers) don't have.
 const THUMB_PATHS = {
@@ -181,8 +182,36 @@ function thumbIcon(which) {
   return svg;
 }
 
-function feedbackControl(id, name, value, onRate) {
+/** The optional "Not for me" reasons (matcher.REASONS): fixed choices, never free text. */
+export const REASONS = Object.freeze([
+  ['topic', 'Topic'], ['organism', 'Organisms'], ['skills', 'Skills'], ['time', 'Time'],
+  ['lab_info_wrong', 'Lab info is wrong'], ['other', 'Other'],
+]);
+
+function feedbackControl(id, name, value, onRate, reason = null, onReason = null) {
   const note = el('span', { class: 'lm-rate-note', 'aria-live': 'polite' });
+  // "Why not? (optional)": one choice or none, shown only while "Not for me" is pressed
+  let why = null;
+  let whyButtons = [];
+  let currentReason = REASONS.some(([k]) => k === reason) ? reason : null;
+  const showReason = (r) => {
+    currentReason = r;
+    for (const b of whyButtons) b.setAttribute('aria-pressed', String(b.getAttribute('data-reason') === r));
+  };
+  if (typeof onReason === 'function') {
+    whyButtons = REASONS.map(([key, label]) => {
+      const b = el('button', { type: 'button', class: 'lm-reason', 'data-reason': key, 'aria-pressed': 'false' },
+        label, el('span', { class: 'sr-only', text: ` (${name})` }));
+      b.addEventListener('click', () => {
+        const next = currentReason === key ? null : key;
+        showReason(next);
+        onReason(id, next);
+      });
+      return b;
+    });
+    why = el('div', { class: 'lm-why', role: 'group', 'aria-label': `Why not? (optional) ${name}`, hidden: true },
+      el('span', { class: 'lm-why-q', 'aria-hidden': 'true', text: 'Why not? (optional)' }), whyButtons);
+  }
   const button = (vote, label) => el('button',
     { type: 'button', class: `lm-vote lm-vote-${vote}`, 'data-vote': vote, 'aria-pressed': 'false' },
     THUMB_PATHS[vote] ? thumbIcon(vote) : null,
@@ -198,6 +227,10 @@ function feedbackControl(id, name, value, onRate) {
     down.setAttribute('aria-pressed', String(v === FEEDBACK.down));
     apply.setAttribute('aria-pressed', String(v === FEEDBACK.apply));
     note.textContent = v ? FEEDBACK_NOTES[v] : '';
+    if (why) {
+      why.hidden = v !== FEEDBACK.down;
+      if (v !== FEEDBACK.down) showReason(null);
+    }
   };
   const choose = (v) => {
     show(v);
@@ -206,10 +239,12 @@ function feedbackControl(id, name, value, onRate) {
   up.addEventListener('click', () => choose(current === FEEDBACK.up || current === FEEDBACK.apply ? null : FEEDBACK.up));
   down.addEventListener('click', () => choose(current === FEEDBACK.down ? null : FEEDBACK.down));
   apply.addEventListener('click', () => choose(current === FEEDBACK.apply ? FEEDBACK.up : FEEDBACK.apply));
-  show(Object.values(FEEDBACK).includes(value) ? value : null);
+  const start = Object.values(FEEDBACK).includes(value) ? value : null;
+  show(start);
+  if (start === FEEDBACK.down) showReason(currentReason);
   return el('fieldset', { class: 'lm-rate', 'data-lab-id': id },
     el('legend', { class: 'lm-rate-q' }, 'Does this match look right?', el('span', { class: 'sr-only', text: ` (${name})` })),
-    el('div', { class: 'lm-rate-row' }, el('div', { class: 'lm-votes' }, up, down), apply, note));
+    el('div', { class: 'lm-rate-row' }, el('div', { class: 'lm-votes' }, up, down), apply, note), why);
 }
 
 function buildCard(model, lab, row, rank, onSelect, rating = null) {
@@ -305,7 +340,9 @@ function buildCard(model, lab, row, rank, onSelect, rating = null) {
     more);
   card.append(el('div', { class: 'lm-card-foot' }, details, links.childElementCount ? links : null));
 
-  if (rating && typeof rating.onRate === 'function') card.append(feedbackControl(id, name, rating.stars, rating.onRate));
+  if (rating && typeof rating.onRate === 'function') {
+    card.append(feedbackControl(id, name, rating.stars, rating.onRate, rating.reason, rating.onReason));
+  }
   return card;
 }
 
@@ -313,7 +350,7 @@ function buildCard(model, lab, row, rank, onSelect, rating = null) {
  * Lab cards for the top non-excluded rows (rows = results.ranks[3]), `limit` shown at first and a
  * "Show 5 more matches" button for the rest (never the whole list at once). onSelect(labId), when given, adds a "Show in chart" button.
  */
-export function renderMatches(container, model, rows, { limit = 5, onSelect, ratings, onRate } = {}) {
+export function renderMatches(container, model, rows, { limit = 5, onSelect, ratings, onRate, reasons, onReason } = {}) {
   if (!container) return;
   const labs = labMap(model);
   const list = (Array.isArray(rows) ? rows : []).filter((r) => r && !r.excluded && labs.has(String(r.id)));
@@ -338,7 +375,10 @@ export function renderMatches(container, model, rows, { limit = 5, onSelect, rat
   const first = Math.max(1, Math.min(list.length, Number.isFinite(limit) ? Math.floor(limit) : MORE_STEP));
   const items = list.map((row, i) => el('li', { class: 'lm-card-item', hidden: i >= first },
     buildCard(model, labs.get(String(row.id)), row, i + 1, onSelect,
-      typeof onRate === 'function' ? { stars: ratings && Object.hasOwn(ratings, String(row.id)) ? ratings[String(row.id)] : null, onRate } : null)));
+      typeof onRate === 'function' ? {
+        stars: ratings && Object.hasOwn(ratings, String(row.id)) ? ratings[String(row.id)] : null, onRate,
+        reason: reasons && Object.hasOwn(reasons, String(row.id)) ? reasons[String(row.id)] : null, onReason,
+      } : null)));
   ol.append(...items);
   container.append(ol);
 
@@ -602,15 +642,24 @@ export function renderHowItWorks(container, model, opts = {}) {
         'ranking”, move that lab up or down your list; labs that look like it (similar skills and interests) move a little the ' +
         'same way. “Not for me” moves a lab down by up to 35%, “Looks right” moves it up by up to 17.5%, and “I’m gonna apply!” ' +
         '(which counts as “Looks right” too) ' +
-        'moves it up by up to 35%. Press a button again to take it back.',
+        'moves it up by up to 35%. Press a button again to take it back. After “Not for me” you can pick why (optional). ' +
+        'One “Not for me” helps your ranking most, because it tells the list what to move down.',
     }),
     el('p', {
       text: (sharing
-        ? 'You can also choose to share your ratings anonymously. '
-        : 'When the server accepts shared ratings, you can choose to share yours anonymously. ') +
-        'A shared rating is which button you pressed, the lab, where it sat in your list and the number profile your answers make (the same one ' +
-        'used for matching). Never your email, your written answers or your transcript, and nothing that names you. We use shared ' +
-        'ratings only to tune how much skills, interests and goals count for everyone; they never score a lab or its PI.',
+        ? 'The first time you press one of these buttons, we ask whether you want to share your ratings to help improve Lab Match. '
+        : 'When the server accepts shared ratings, the first time you press one of these buttons we ask whether you want to share them. ') +
+        'Nothing is shared unless you say yes, and the answer lasts only until you leave the page. A shared rating is the button ' +
+        'you pressed (and the reason, if you picked one), which labs you were shown and where they were in your list, and a rounded ' +
+        'version of your multiple-choice answers, with the week only. Never your name, email, written answers or transcript.',
+    }),
+    el('p', {
+      text: 'We use shared ratings only to improve Lab Match: to tune how much skills, interests and goals count for everyone, and ' +
+        'to find lab details that need fixing. They are never used for research or publications, never for reports about a lab, ' +
+        'a PI or FSU, and they never score a lab. Only the club officer who runs Lab Match can see them. They are kept for up to ' +
+        '13 months. “Delete what I shared” removes them; Cloudflare, which runs our server, keeps short-lived request logs, and ' +
+        'its database backups can restore deleted rows for up to 30 days, so deleting isn’t instant everywhere. Lab Match has few ' +
+        'users, so someone who already knows your answers could recognise your ratings.',
     }),
   ));
 
@@ -663,7 +712,7 @@ export function renderHowItWorks(container, model, opts = {}) {
     el('p', { text: sent }),
     el('p', {
       text: '“Download my results” saves a file to your device; there is no copy on a server. Your “Looks right”, “Not for me” and “apply” choices stay in this browser ' +
-        'unless you tick “Share my ratings anonymously”. This page has no analytics or tracking cookies; our server only adds one ' +
+        'unless you say yes when we ask to share them. This page has no analytics or tracking cookies; our server only adds one ' +
         'to a count of how many times the page was opened that day, with nothing about who opened it. It loads its ' +
         'fonts from Google Fonts, and pdf.js from cdnjs only if you upload a PDF transcript; neither gets your answers.',
     }),

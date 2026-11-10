@@ -59,6 +59,7 @@
     <p class="lm-draft-line" id="lm-draft-line" hidden>
       <span id="lm-draft-text" data-lm-draft-text>Answers save in this browser as you go. Never your email or transcript.</span>
       <button type="button" class="mono-link lm-linkbtn" data-lm-action="clear-draft">Clear my saved answers</button>
+      <button type="button" class="mono-link lm-linkbtn" id="lm-forget-link" data-lm-action="forget-shared" hidden>Delete what I shared</button>
     </p>
     <div id="lm-survey">
       <p class="lm-loading" role="status">Loading the questions…</p>
@@ -82,7 +83,15 @@
     <div class="lm-rate-bar" id="lm-rate-bar" role="region" aria-label="Your ratings" hidden>
       <p class="lm-rate-count" id="lm-rate-count" tabindex="-1" aria-live="polite"></p>
       <button type="button" class="pill sm" id="lm-rate-apply" data-lm-action="apply-ratings" hidden>Update my ranking</button>
-      <label class="lm-share" id="lm-share" hidden><input type="checkbox" id="lm-share-box"> Share my ratings anonymously to help improve Lab Match</label>
+      <p class="lm-rate-hint" id="lm-rate-hint" hidden>One “Not for me” helps your ranking most.</p>
+      <p class="lm-share-state" id="lm-share-state" hidden>
+        <span id="lm-share-on" hidden><span class="lm-share-dot" aria-hidden="true"></span>Sharing is on <span aria-hidden="true">·</span>
+          <button type="button" class="mono-link lm-linkbtn" data-lm-action="share-off">Turn off</button></span>
+        <span id="lm-share-off" hidden>Not sharing <span aria-hidden="true">·</span>
+          <button type="button" class="mono-link teal lm-linkbtn" data-lm-action="share-on">Share my ratings</button></span>
+        <span id="lm-share-forget" hidden><span aria-hidden="true">·</span>
+          <button type="button" class="mono-link lm-linkbtn" data-lm-action="forget-shared">Delete what I shared</button></span>
+      </p>
       <p class="lm-share-note" id="lm-share-note" aria-live="polite" hidden></p>
     </div>
     <!-- shown only when api/status says emailing is set up; filled in from the survey's email answer -->

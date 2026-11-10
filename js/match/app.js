@@ -13,9 +13,11 @@
 //    results.FEEDBACK): saved in localStorage "cns-labmatch-ratings-v2" ({labId: 1|4|5}; v1 1-5 star ratings are
 //    converted once on load), applied with matcher.applyRatings when the student presses "Update my ranking"
 //    (cards never jump mid-click).
-//    Only if the server accepts them (api/status "ratings") AND the student ticks "Share my ratings
-//    anonymously" (never remembered), each rating is POSTed to api/rate: {session, lab_id, stars, rank,
-//    vector, model_version}. Never the email, written answers or transcript.
+//    Only if the server accepts them (api/status "ratings") AND the student says "Yes, share" on the card that
+//    appears the first time they press a button (asked once per page, never remembered), each rating is POSTed
+//    to api/rate (v2, see the ratings section): the button, an optional "Not for me" reason, the no-text rank,
+//    the labs shown and a rounded profile of the multiple-choice answers. Never the email, written answers or
+//    anything derived from them, or the transcript. "Delete what I shared" asks the server to delete it all.
 // 5. Emailing the matches: only if api/status says "email" (the Worker has a Resend key; serve.py never does),
 //    the student either ticked "Email me my matches when they're ready" under the survey's email box (sent once
 //    the ranking settles) or presses "Email me my matches" next to the email box on the results. POSTs ONLY
@@ -387,10 +389,14 @@ const state = {
   devExample: null,
   ratings: {},            // {labId: 1 | 4 | 5} (results.FEEDBACK), this browser only
   ratingsApplied: '[]',   // ratingsKey() of the ratings the cards were last ranked with
-  share: false,           // "Share my ratings anonymously" (off on every visit)
-  rateSession: null,      // random id kept with the saved ratings while the answers stay the same
+  reasons: {},            // {labId: reason}: the optional "Not for me" reason, this browser only
+  share: null,            // sharing ratings: null = not asked yet, true / false = the answer (this page only)
+  consentShown: false,    // the share question was shown on this page (counted once)
+  rateSession: null,      // random id kept with the saved ratings while the no-text answers stay the same
+  shareBasis: null,       // {hash, profile, rank, order} from the no-text answers (what a shared rating uses)
+  forgetChain: Promise.resolve(),
   cardRows: [],           // the rows the cards show, in their order
-  sent: new Map(),        // labId -> stars the server has for this session (sharing on)
+  sent: new Map(),        // labId -> "stars|reason" the server has for this session (sharing on)
   shareTimers: new Map(), // labId -> pending coalesce timer
   shareChain: Promise.resolve(),
   emailBusy: false,       // a POST to api/email-results is in flight
@@ -638,10 +644,35 @@ function clearDraft() {
 }
 
 // --------------------------------------------------------------------------------------- ratings
-const SESSION_KEY = 'cns-labmatch-rate-session-v1';   // {id, vec}: the shared-rating session for these answers
-const SHARE_NOTE = 'Sends only which button you pressed, the lab, its rank and your answer profile. Never your email, written answers or transcript.';
+// Feedback stays in this browser and re-ranks the list. Sharing is asked the first time a feedback button is
+// pressed (only when api/status says the server takes ratings), never pre-ticked, and lasts for this page only.
+// What is shared (POST api/rate, v2): the button, an optional "Not for me" reason, the lab's place in the
+// NO-TEXT ranking, which labs were shown, and matcher.coarsenProfile of the no-text answer vector, with the
+// session id. "Delete what I shared", "Start over" and "Clear my saved answers" ask the server to delete every
+// session this browser shared ({v: 2, session, forget: true}); a delete that fails is retried on a later visit.
+const SESSION_KEY = 'cns-labmatch-rate-session-v2';     // {id, answersHash}: never the answers themselves
+const OLD_SESSION_KEY = 'cns-labmatch-rate-session-v1'; // {id, vec}: held the raw vector; dropped on load
+const SHARED_SESSIONS_KEY = 'cns-labmatch-shared-v1';   // [id, ...]: up to 10 sessions this browser shared
+const FORGET_QUEUE_KEY = 'cns-labmatch-forget-queue-v1'; // [id, ...]: delete requests not yet confirmed
+const REASONS_KEY = 'cns-labmatch-reasons-v1';          // {labId: reason}: the optional "Not for me" reason
+const MAX_SHARED_SESSIONS = 10;
+const CONSENT_V = 2;                                    // the consent text below (matcher.CONSENT_V)
+const MAX_SEEN = 20;
 const SHARE_DELAY_MS = 600;       // coalesce quick changes (toggling a button back and forth) into one request per lab
 const RETRY_429_MS = 61000;
+const MAX_429_RETRIES = 3;
+const REASON_KEYS = ['topic', 'organism', 'skills', 'time', 'lab_info_wrong', 'other'];
+const CONSENT_LEAD = 'Share your ratings to help improve Lab Match? No name, email or written answers are sent.';
+const CONSENT_TEXT = [
+  'If you say yes, we get the buttons you press (and a “Not for me” reason if you pick one), which labs you were shown and ' +
+    'where they were in your list, and a rounded version of your multiple-choice answers, with the week only. Never your ' +
+    'name, email, written answers or transcript.',
+  'We use it only to improve Lab Match. It is never used for research or publications, and never for reports about a ' +
+    'lab, a PI or FSU.',
+  'It’s kept for up to 13 months. Use “Delete what I shared” any time.',
+  'Lab Match has few users, so someone who already knows your answers could recognise your ratings.',
+];
+const SHARE_NOTE = 'Your ratings stay in this browser unless you choose to share them.';
 
 /** Ratings as a string that ignores key order: [[labId, stars], ...] sorted by lab id. */
 const ratingsKey = (r) => JSON.stringify(Object.keys(r).sort().map((k) => [k, r[k]]));
@@ -649,6 +680,23 @@ const NO_RATINGS = ratingsKey({});
 
 /** Old 1-5 stars -> buttons: 1-2 stars = 👎, 4-5 = 👍 (a 5-star fit isn't a plan to apply), 3 = no opinion. */
 const fromStars = (v) => (v <= 2 ? FEEDBACK.down : v >= 4 ? FEEDBACK.up : null);
+
+function readJson(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || 'null');
+  } catch {
+    return null;
+  }
+}
+function writeJson(key, value) {
+  try {
+    if (value === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* storage blocked: kept for this page only */
+  }
+}
+const idList = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string' && /^[0-9a-f]{24,64}$/.test(x)) : []);
 
 function loadRatings() {
   const read = (key) => {
@@ -674,6 +722,15 @@ function loadRatings() {
   }
 }
 
+function loadReasons() {
+  const d = readJson(REASONS_KEY);
+  const out = {};
+  if (d && typeof d === 'object' && !Array.isArray(d)) {
+    for (const [k, v] of Object.entries(d)) if (REASON_KEYS.includes(v) && state.ratings[k] === FEEDBACK.down) out[k] = v;
+  }
+  return out;
+}
+
 function saveRatings() {
   try {
     if (Object.keys(state.ratings).length) localStorage.setItem(RATINGS_KEY, JSON.stringify(state.ratings));
@@ -681,6 +738,7 @@ function saveRatings() {
   } catch {
     /* storage blocked: ratings last until the page closes */
   }
+  writeJson(REASONS_KEY, Object.keys(state.reasons).length ? state.reasons : null);
 }
 
 function newSessionId() {
@@ -689,43 +747,128 @@ function newSessionId() {
   return [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
 }
 
-/** The same random id while the answer vector is the same (so re-sharing replaces rows instead of adding a
- *  second "student"); a new one when the answers change or the ratings are cleared. */
-function sessionFor(vector) {
-  const vec = JSON.stringify(vector);
-  try {
-    const d = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
-    if (d && typeof d.id === 'string' && /^[0-9a-f]{24}$/.test(d.id) && d.vec === vec) return d.id;
-  } catch {
-    /* fall through */
-  }
+/** A short fingerprint of the no-text answer vector (two 32-bit FNV-1a hashes): enough to notice that the answers
+ *  changed, and all SESSION_KEY keeps, so a shared computer doesn't hold the student's profile. */
+function answersHash(vector) {
+  const s = JSON.stringify(vector);
+  const fnv = (seed) => {
+    let h = seed >>> 0;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    return h.toString(16).padStart(8, '0');
+  };
+  return fnv(2166136261) + fnv(0x9747b28c);
+}
+
+/** The same random id while the no-text answers are the same (so re-sharing replaces rows instead of adding a
+ *  second "student", and finishing written-answer scoring doesn't start a new one); a new id when they change,
+ *  the ratings are cleared or the student deletes what they shared. */
+function sessionFor(hash) {
+  const d = readJson(SESSION_KEY);
+  if (d && typeof d.id === 'string' && /^[0-9a-f]{24}$/.test(d.id) && d.answersHash === hash) return d.id;
   const id = newSessionId();
-  try {
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ id, vec }));
-  } catch {
-    /* storage blocked: the id lasts for this page */
-  }
+  writeJson(SESSION_KEY, { id, answersHash: hash });
   return id;
 }
 
-function clearRatings() {
-  state.ratings = {};
-  state.ratingsApplied = NO_RATINGS;
+/** Old pages kept {id, vec} (the raw answer vector) under OLD_SESSION_KEY: drop it. If this browser has saved
+ *  ratings (an old page only shared ratings), remember the id as one that may have been shared, so "Delete what I
+ *  shared" also covers ratings shared before this version. */
+function migrateSessionKey() {
+  const d = readJson(OLD_SESSION_KEY);
+  if (d === null) return;
+  const hadRatings = Object.keys(state.ratings).length > 0;
+  if (hadRatings && d && typeof d.id === 'string' && /^[0-9a-f]{24}$/.test(d.id)) rememberShared(d.id);
+  writeJson(OLD_SESSION_KEY, null);
+}
+
+const sharedSessions = () => idList(readJson(SHARED_SESSIONS_KEY));
+const forgetQueue = () => idList(readJson(FORGET_QUEUE_KEY));
+function rememberShared(id) {
+  const list = sharedSessions().filter((x) => x !== id);
+  list.push(id);
+  writeJson(SHARED_SESSIONS_KEY, list.slice(-MAX_SHARED_SESSIONS));
+}
+
+/** What a shared rating says about the student: built from the answers WITHOUT the written-answer scores. */
+function shareBasis() {
+  const m = state.matcher;
+  const vec = m.featurizeStudent(state.answers || {}, state.model, null);
+  const rows = m.rankLabs(vec, state.model, 3);
+  return {
+    hash: answersHash(vec),
+    profile: m.coarsenProfile(vec, state.model),
+    rank: new Map(rows.map((r, i) => [r.id, i + 1])),
+    order: rows.filter((r) => !r.excluded).map((r) => r.id),
+  };
+}
+
+/** Send every queued delete; each id leaves the queue only when the server answers 200. Returns how many are left. */
+async function flushForgets() {
+  if (state.scoring.ratings !== true) return forgetQueue().length;
+  for (const id of forgetQueue()) {
+    try {
+      const r = await fetch(apiUrl('api/rate'), {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ v: 2, session: id, forget: true }),
+      });
+      if (r.ok) writeJson(FORGET_QUEUE_KEY, forgetQueue().filter((x) => x !== id));
+    } catch {
+      /* offline: stays queued for the next visit */
+    }
+  }
+  return forgetQueue().length;
+}
+
+/** Ask the server to delete every session this browser shared. The ids go into the retry queue (in storage)
+ *  BEFORE anything else is cleared, so a closed tab or a failed request still gets them deleted later. */
+function forgetShared() {
+  const ids = [...new Set([...sharedSessions(), ...forgetQueue(), ...(state.sent.size && state.rateSession ? [state.rateSession] : [])])];
+  if (!ids.length) return Promise.resolve(0);
+  writeJson(FORGET_QUEUE_KEY, ids);
+  writeJson(SHARED_SESSIONS_KEY, null);
+  state.forgetChain = state.forgetChain.then(flushForgets);
+  return state.forgetChain;
+}
+
+function stopSharing() {
   state.share = false;
-  state.sent = new Map();
   for (const t of state.shareTimers.values()) clearTimeout(t);
   state.shareTimers = new Map();
+}
+
+/** "Delete what I shared": delete on the server, stop sharing, and use a fresh session id from now on. */
+async function deleteShared() {
+  stopSharing();
+  const pending = forgetShared();
+  state.sent = new Map();
+  writeJson(SESSION_KEY, null);
+  if (state.results && state.shareBasis) state.rateSession = sessionFor(state.shareBasis.hash);
+  updateRateBar();
+  const note = $('lm-share-note');
+  note.textContent = 'Deleting what you shared…';
+  const left = await pending;
+  note.textContent = left
+    ? 'The server didn’t answer, so we’ll ask it to delete your shared ratings again next time you open Lab Match.'
+    : 'Deleted. Nothing you shared is kept on the server now. Sharing is off.';
+  updateForgetLink();
+}
+
+function clearRatings() {
+  forgetShared();   // queued first: the ids are safe in storage before anything below is cleared
+  state.ratings = {};
+  state.reasons = {};
+  state.ratingsApplied = NO_RATINGS;
+  stopSharing();
+  state.share = null;
+  state.consentShown = false;
+  state.sent = new Map();
   saveRatings();
-  try {
-    localStorage.removeItem(SESSION_KEY);
-  } catch {
-    /* nothing saved */
-  }
+  writeJson(SESSION_KEY, null);
   state.rateSession = null;   // the next result gets a fresh id (sessionFor finds none saved)
-  const box = $('lm-share-box');
-  if (box) box.checked = false;
+  removeConsentCard();
   $('lm-share-note').textContent = SHARE_NOTE;
   updateRateBar();
+  updateForgetLink();
 }
 
 function ratingsChanged() {
@@ -739,25 +882,40 @@ function updateRateBar(message) {
   bar.hidden = !state.results || (n === 0 && state.ratingsApplied === NO_RATINGS);
   const changed = ratingsChanged();
   $('lm-rate-apply').hidden = !changed;
+  const anyDown = Object.values(state.ratings).includes(FEEDBACK.down);
   $('lm-rate-count').textContent = message || (n === 0
     ? 'Ratings cleared. Update your ranking to undo them.'
     : `You rated ${numberWord(n)} ${n === 1 ? 'lab' : 'labs'}.` +
       (changed ? ' Update your ranking to apply them.' : ' Your list uses them.'));
+  $('lm-rate-hint').hidden = n === 0 || anyDown;
   const canShare = state.scoring.ratings === true;
-  $('lm-share').hidden = !canShare;
-  $('lm-share-note').hidden = !canShare;
+  const shared = sharedSessions().length > 0 || state.sent.size > 0;
+  $('lm-share-state').hidden = !canShare || state.share === null;
+  $('lm-share-on').hidden = state.share !== true;
+  $('lm-share-off').hidden = state.share !== false;
+  $('lm-share-forget').hidden = !shared;
+  $('lm-share-note').hidden = !canShare || state.share === null;
+}
+
+/** The "Delete what I shared" button next to "Clear my saved answers" (visible on the survey too). */
+function updateForgetLink() {
+  const b = $('lm-forget-link');
+  if (b) b.hidden = !(state.scoring.ratings === true && (sharedSessions().length > 0 || forgetQueue().length > 0));
 }
 
 function onRate(labId, stars) {
   if (stars) state.ratings[labId] = stars;
   else delete state.ratings[labId];
+  if (stars !== FEEDBACK.down) delete state.reasons[labId];
   saveRatings();
   updateRateBar();
+  if (state.share === null && state.scoring.ratings === true) showConsentCard(labId);
   queueShare(labId);
 }
 
 function applyRatingsNow() {
   state.ratingsApplied = ratingsKey(state.ratings);
+  removeConsentCard();
   renderCards({ keepView: true });
   const n = Object.keys(state.ratings).length;
   const msg = n ? `Re-ranked with your ${numberWord(n)} ${n === 1 ? 'rating' : 'ratings'}.` : 'Your ranking no longer uses ratings.';
@@ -768,10 +926,78 @@ function applyRatingsNow() {
   target.focus({ preventScroll: true });
 }
 
+function onReason(labId, reason) {
+  if (reason && state.ratings[labId] === FEEDBACK.down) state.reasons[labId] = reason;
+  else delete state.reasons[labId];
+  saveRatings();
+  queueShare(labId);
+}
+
+// ---- the consent card: shown under the first card the student rates, once per page
+function removeConsentCard() {
+  const c = document.getElementById('lm-ask');
+  if (c) c.remove();
+}
+
+function countPrompt(prompt) {   // a daily count of the question being shown / answered; nothing else is sent
+  fetch(apiUrl('api/rate'), {
+    method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ v: 2, prompt }),
+  }).catch(() => { /* uncounted */ });
+}
+
+function showConsentCard(labId) {
+  if (document.getElementById('lm-ask')) return;
+  const card = [...document.querySelectorAll('#lm-matches .lm-card')].find((n) => n.getAttribute('data-lab-id') === labId);
+  if (!card) return;
+  const details = el('div', { class: 'lm-ask-more', id: 'lm-ask-more', hidden: true },
+    CONSENT_TEXT.map((t) => el('p', { text: t })));
+  const more = el('button', { type: 'button', class: 'mono-link teal lm-linkbtn', 'aria-expanded': 'false', 'aria-controls': 'lm-ask-more' },
+    'What’s sent?');
+  more.addEventListener('click', () => {
+    details.hidden = !details.hidden;
+    more.setAttribute('aria-expanded', String(!details.hidden));
+  });
+  const choose = (yes) => {
+    const back = card.querySelector('.lm-vote[aria-pressed="true"]') || card.querySelector('.lm-vote');
+    removeConsentCard();
+    countPrompt(yes ? 'yes' : 'no');
+    setShare(yes);
+    if (back) back.focus({ preventScroll: true });
+  };
+  const box = el('div', { class: 'lm-ask', id: 'lm-ask', role: 'group', 'aria-labelledby': 'lm-ask-lead' },
+    el('p', { class: 'lm-ask-lead', id: 'lm-ask-lead', text: CONSENT_LEAD }),
+    el('div', { class: 'lm-ask-row' },
+      el('button', { type: 'button', class: 'pill sm', 'data-lm-ask': 'yes', onclick: () => choose(true) }, 'Yes, share'),
+      el('button', { type: 'button', class: 'lm-ghost lm-ask-no', 'data-lm-ask': 'no', onclick: () => choose(false) }, 'No thanks'),
+      more),
+    details);
+  card.append(box);
+  if (!state.consentShown) {
+    state.consentShown = true;
+    countPrompt('shown');
+  }
+}
+
+/** Turn sharing on (sends the ratings made so far) or off, for this page only. */
+function setShare(on) {
+  if (!on) {
+    stopSharing();
+    $('lm-share-note').textContent = 'Not sharing. Your ratings stay in this browser.';
+    updateRateBar();
+    return;
+  }
+  state.share = true;
+  updateRateBar();
+  const labs = Object.keys(state.ratings);
+  $('lm-share-note').textContent = labs.length ? 'Sharing your ratings…' : 'Your ratings will be shared as you make them.';
+  for (const labId of labs) state.shareChain = state.shareChain.then(() => shareNow(labId));
+}
+
 // Sharing: at most one pending request per lab (the latest value wins), sent one at a time, and only when
 // it differs from what the server already has for this session (undefined = nothing sent yet).
 function queueShare(labId) {
-  if (!state.share || state.scoring.ratings !== true || !state.results) return;
+  if (state.share !== true || state.scoring.ratings !== true || !state.results) return;
   clearTimeout(state.shareTimers.get(labId));
   state.shareTimers.set(labId, setTimeout(() => {
     state.shareTimers.delete(labId);
@@ -779,48 +1005,46 @@ function queueShare(labId) {
   }, SHARE_DELAY_MS));
 }
 
-async function shareNow(labId, retried = false) {
-  if (!state.share || !state.results || !state.rateSession) return;
+const sentKey = (stars, reason) => (stars === null ? null : `${stars}|${reason || ''}`);
+
+async function shareNow(labId, tries = 0) {
+  if (state.share !== true || !state.results || !state.rateSession || !state.shareBasis) return;
   const stars = Object.hasOwn(state.ratings, labId) ? state.ratings[labId] : null;
+  const reason = stars === FEEDBACK.down && Object.hasOwn(state.reasons, labId) ? state.reasons[labId] : null;
+  const want = sentKey(stars, reason);
   const sent = state.sent.get(labId);
-  if (sent === stars || (sent === undefined && stars === null)) return;   // server already agrees
-  const shown = state.cardRows.filter((r) => !r.excluded);
-  const at = shown.findIndex((r) => r.id === labId);
-  const body = stars === null
-    ? { v: 1, session: state.rateSession, lab_id: labId, stars: null }
-    : { v: 1, model_version: String(state.model.version || ''), session: state.rateSession, lab_id: labId, stars,
-        rank: at >= 0 ? at + 1 : null, vector: state.results.vector };
+  if (sent === want || (sent === undefined && want === null)) return;   // server already agrees
+  const basis = state.shareBasis;
+  const shownN = document.querySelectorAll('#lm-matches .lm-card-item:not([hidden])').length;
+  const base = { v: 2, consent_v: CONSENT_V, session: state.rateSession, lab_id: labId };
+  const body = stars === null ? { ...base, stars: null } : {
+    ...base, model_version: String(state.model.version || ''), stars, reason,
+    model_rank: basis.rank.get(labId) || null, profile: basis.profile, text_used: Boolean(state.textScores),
+    shown_n: shownN, seen: basis.order.slice(0, Math.min(shownN, MAX_SEEN)),
+  };
   const note = $('lm-share-note');
+  const session = state.rateSession;
   try {
     const r = await fetch(apiUrl('api/rate'), {
       method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body),
     });
-    if (r.status === 429 && !retried) {
-      note.textContent = 'Sharing is busy. Trying again in a minute. Ratings stay saved in this browser.';
-      setTimeout(() => { state.shareChain = state.shareChain.then(() => shareNow(labId, true)); }, RETRY_429_MS);
+    if (r.status === 429 && tries < MAX_429_RETRIES) {
+      note.textContent = 'Sharing is busy right now. We’ll try again in a minute; your ratings stay in this browser.';
+      setTimeout(() => { state.shareChain = state.shareChain.then(() => shareNow(labId, tries + 1)); }, RETRY_429_MS);
       return;
     }
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    if (stars === null) state.sent.delete(labId);
-    else state.sent.set(labId, stars);
+    if (session !== state.rateSession) return;   // deleted or started over meanwhile
+    if (want === null) state.sent.delete(labId);
+    else state.sent.set(labId, want);
+    if (want !== null) rememberShared(session);
     const n = state.sent.size;
-    note.textContent = `Shared anonymously: ${numberWord(n)} ${n === 1 ? 'rating' : 'ratings'}. Thank you.`;
+    note.textContent = `Shared ${numberWord(n)} ${n === 1 ? 'rating' : 'ratings'}. Thank you.`;
+    updateRateBar();
+    updateForgetLink();
   } catch {
     note.textContent = 'A rating couldn’t be shared. It’s still saved in this browser.';
   }
-}
-
-function onShareToggle(e) {
-  state.share = Boolean(e.target.checked);
-  if (!state.share) {
-    for (const t of state.shareTimers.values()) clearTimeout(t);
-    state.shareTimers = new Map();
-    $('lm-share-note').textContent = SHARE_NOTE;
-    return;
-  }
-  const labs = Object.keys(state.ratings);
-  if (!labs.length) $('lm-share-note').textContent = 'Ratings will be shared anonymously as you make them.';
-  for (const labId of labs) state.shareChain = state.shareChain.then(() => shareNow(labId));
 }
 
 function onSurveyChange(answers) {
@@ -842,8 +1066,14 @@ function compute() {
     const r = state.matcher.computeResults(state.answers, state.model, state.textScores);
     if (!r || !r.ranks || !Array.isArray(r.ranks[3])) throw new Error('computeResults returned no ranking');
     state.results = r;
+    try {
+      state.shareBasis = shareBasis();
+    } catch (e) {
+      console.warn('[lab match] the no-text ranking failed; sharing stays off:', e);
+      state.shareBasis = null;
+    }
     const prev = state.rateSession;
-    state.rateSession = sessionFor(r.vector);
+    state.rateSession = state.shareBasis ? sessionFor(state.shareBasis.hash) : null;
     if (state.rateSession !== prev) state.sent = new Map();
     return r;
   } catch (e) {
@@ -870,6 +1100,7 @@ function renderCards({ keepView = false } = {}) {
   }
   renderMatches(box, state.model, rows, {
     limit, onSelect: state.cubeFailed ? undefined : showInChart, ratings: state.ratings, onRate,
+    reasons: state.reasons, onReason,
   });
   updateRateBar();
   renderExcluded($('lm-excluded'), state.model, rows, r.vector);
@@ -1353,14 +1584,15 @@ function wireActions() {
     else if (action === 'retry') scoreWrittenAnswers(state.answers);
     else if (action === 'apply-ratings') applyRatingsNow();
     else if (action === 'email') sendEmail();
+    else if (action === 'share-off') setShare(false);
+    else if (action === 'share-on') setShare(true);
+    else if (action === 'forget-shared') deleteShared();
     else if (action === 'clear-draft') {
       clearDraft();
       clearRatings();
       setDraftMode('cleared');
     }
   });
-  const box = $('lm-share-box');
-  if (box) box.addEventListener('change', onShareToggle);
   const mail = $('lm-email-input');
   if (mail) {
     mail.addEventListener('input', () => { updateEmailUI(); renderDev(); });
@@ -1551,7 +1783,11 @@ async function init() {
   }
   state.answers = draft;
   state.ratings = loadRatings();
+  state.reasons = loadReasons();
+  migrateSessionKey();
   $('lm-share-note').textContent = SHARE_NOTE;
+  updateForgetLink();
+  if (forgetQueue().length) flushForgets().then(updateForgetLink);   // deletes a past visit couldn't finish
   setDraftMode(draft ? 'restored' : 'fresh');
   $('lm-draft-line').hidden = false;
 

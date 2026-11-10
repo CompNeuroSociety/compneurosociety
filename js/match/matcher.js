@@ -462,6 +462,27 @@ export function applyRatings(rows, ratings, model) {
   return out.map((t) => t[1]);
 }
 
+// ----------------------------------------------------------------------------- shared ratings (v2)
+/** matcher.share_features: the spec features at least one lab codes, in spec order. */
+export function shareFeatures(model) {
+  return Object.keys(model.spec).filter((k) => model.labs.some((lab) => hasOwn(lab.vector, k) && !isNone(lab.vector[k])));
+}
+
+/** matcher.coarsen_profile: share features only, unknown ones left out, numeric features (axes, wet_dry)
+ *  rounded half up to whole numbers (floor(x + 0.5), the same float steps in both languages). Idempotent.
+ *  This is all a shared rating carries about the student's answers; the Worker coarsens again. */
+export function coarsenProfile(vec, model) {
+  const out = {};
+  for (const k of shareFeatures(model)) {
+    let v = isDict(vec) ? get(vec, k) : null;
+    if (isNone(v)) continue;
+    if (model.spec[k].kind === 'numeric') v = Math.floor(v + 0.5);
+    else if (Array.isArray(v)) v = [...v];
+    out[k] = v;
+  }
+  return out;
+}
+
 // ----------------------------------------------------------------------------- everything the page needs
 /** The README's Results object: vector, fuzzy type membership, type-map position, and the lab ranking
  *  for each step of viz 1 (1 = skills, 2 = + interests, 3 = + goals). */
